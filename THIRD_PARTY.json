@@ -306,12 +306,12 @@
     {
       "ecosystem": "Go",
       "name": "github.com/spf13/pflag",
-      "version": "v1.0.9",
+      "version": "v1.1.0",
       "license": "BSD-3-Clause",
       "role": "compiled in the backend build",
       "license_files": [
         {
-          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fspf13%2Fpflag@v1.0.9/LICENSE",
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fspf13%2Fpflag@v1.1.0/LICENSE",
           "sha256": "b8514c577c1c4b46cee454d5a882b15fa411e72c5bd7f801f241591789fce61a"
         }
       ]
