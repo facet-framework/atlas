@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -90,9 +91,11 @@ func readJSON(path string, value any) error {
 func output(env []string, program string, args ...string) (string, error) {
 	cmd := exec.Command(program, args...)
 	cmd.Env = env
-	data, err := cmd.CombinedOutput()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	data, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("%s %s: %w\n%s", program, strings.Join(args, " "), err, data)
+		return "", fmt.Errorf("%s %s: %w\n%s%s", program, strings.Join(args, " "), err, data, stderr.Bytes())
 	}
 	return strings.TrimSpace(string(data)), nil
 }
