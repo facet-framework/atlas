@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/unread-answer-glow
+lifecycle: active
+intent:
+  summary: Find completed answers in other conversation tabs.
+contract:
+  scenarios:
+    - id: unread-answer-glow
+      statement: |
+        Given an answer completes in an inactive tab
+        When the reader views the session tabs
+        Then the completed answer's tab is marked unread
+    - id: clear-the-read-indicator
+      statement: |
+        Given an answer finishes in a background conversation
+        When the reader opens that conversation
+        Then the unread indicator clears
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat-reading.spec.tsx::marks the conversation whose answer finished
+        while another was open, until the reader looks at it
+      proves:
+        - clear-the-read-indicator
+
+

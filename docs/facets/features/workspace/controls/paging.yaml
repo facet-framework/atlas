@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/controls/paging
+lifecycle: active
+intent:
+  summary: Browse a long list in pages with stable navigation controls.
+contract:
+  scenarios:
+    - id: paging
+      statement: |
+        Given a list with more than one page
+        When the reader advances to the last page
+        Then the forward control remains visible and is disabled
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

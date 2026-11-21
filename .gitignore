@@ -1,0 +1,11 @@
+# Installed browser dependencies and individual plugin package links.
+node_modules
+/dist/
+/frontend/dist/
+/frontend/coverage/
+/frontend/tsconfig.tsbuildinfo
+
+/backend/server/assets/*
+!/backend/server/assets/.gitkeep
+
+/backend/internal/bundledsums/*.sha256

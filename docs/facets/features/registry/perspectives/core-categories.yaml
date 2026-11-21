@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/perspectives/core-categories
+lifecycle: active
+intent:
+  summary: Use the declared taxonomy to group the registry for readers.
+contract:
+  scenarios:
+    - id: core-categories
+      statement: |
+        Given a registry with a declared taxonomy
+        When Atlas prepares its domain views
+        Then the views use the declared domain names and capabilities
+    - id: show-the-classified-core
+      statement: |
+        Given a domain declares core and supporting capabilities
+        When a reader opens the newcomer overview
+        Then the domain card shows its purpose and core capabilities
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/overview-newcomer.spec.tsx::names only the core category of an area,
+        with its purpose, and none of its supporting ones
+      proves:
+        - show-the-classified-core
+
+

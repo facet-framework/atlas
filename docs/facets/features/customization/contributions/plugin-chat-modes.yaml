@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-chat-modes
+lifecycle: active
+intent:
+  summary: Offer additional modes in the Companion composer.
+contract:
+  scenarios:
+    - id: plugin-chat-modes
+      statement: |
+        Given a plugin contributes a chat mode with defaults
+        When a reader sends a question in that mode
+        Then the composer applies the mode's defaults
+    - id: apply-plugin-guidance
+      statement: |
+        Given a plugin mode supplies guidance for the Companion
+        When the reader selects the mode and submits a question
+        Then the request includes the guidance before the question
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-host.spec.tsx::offers a plugin's mode and folds its guidance
+        into the question
+      proves:
+        - apply-plugin-guidance
+
+

@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-tiles
+lifecycle: active
+intent:
+  summary: Add plugin tiles to the reader's contents catalogue.
+contract:
+  scenarios:
+    - id: plugin-tiles
+      statement: |
+        Given a plugin contributes a tile
+        When the reader opens Contents
+        Then the contributed tile appears in the catalogue
+    - id: open-a-tile-detail
+      statement: |
+        Given a plugin contributes a catalogue tile with a list and details
+        When the reader opens the tile and selects a list entry
+        Then the plugin detail views the selected entry
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-host.spec.tsx::draws a plugin's tile in the catalogue and opens
+        its list and detail
+      proves:
+        - open-a-tile-detail
+
+

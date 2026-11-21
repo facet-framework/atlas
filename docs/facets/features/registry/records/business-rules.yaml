@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/records/business-rules
+lifecycle: active
+intent:
+  summary: Read business rules declared by a feature.
+contract:
+  scenarios:
+    - id: business-rules
+      statement: |
+        Given a feature with business rules
+        When the reader opens its rules
+        Then each rule is listed with its identifier and statement
+    - id: open-a-declared-case
+      statement: |
+        Given a business rule names an existing promise as a case
+        When the reader selects the case from the rule
+        Then Atlas moves to that promise within the same record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::opens a declared case's promise and shows
+        an undeclared one without a link
+      proves:
+        - open-a-declared-case
+
+

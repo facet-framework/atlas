@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: registry/records/unmeasured-values
+lifecycle: active
+intent:
+  summary: Recognize which startup measurements Atlas can report.
+contract:
+  scenarios:
+    - id: unmeasured-values
+      statement: |
+        Given the scan has not counted the source files
+        When Atlas renders the boot status
+        Then it withholds a measured progress share
+    - id: omit-an-unavailable-share
+      statement: |
+        Given the scan is enumerating files without a measured total
+        When Atlas calculates the boot progress
+        Then the file count adds no fractional progress
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/boot-progress.spec.ts::adds nothing while the phase has no denominator
+      proves:
+        - omit-an-unavailable-share
+
+

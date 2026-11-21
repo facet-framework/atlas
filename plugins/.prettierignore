@@ -1,0 +1,7 @@
+node_modules/
+
+# Written by the Go test `TestTheBrowserFixtureIsWhatTheLibraryAnswers`
+# (`BPMN_UPDATE_FIXTURE=1`) with Go's JSON indentation. Formatting it would
+# turn every regeneration into a formatting failure; the test compares the
+# file as values, so its layout carries no meaning.
+bpmn/src/testdata/order.json

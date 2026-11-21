@@ -1,0 +1,31 @@
+schema_version: '0.1'
+id: customization/documents/write-actions
+lifecycle: active
+intent:
+  summary: Use document write actions that the reader currently supports.
+contract:
+  scenarios:
+    - id: hide-an-unavailable-glossary-action
+      statement: |
+        Given the reader cannot propose glossary terms
+        When the reader opens the glossary
+        Then no term proposal action is shown
+    - id: hide-an-unavailable-decision-action
+      statement: |
+        Given the reader cannot create architecture decisions
+        When the reader opens the decisions area
+        Then no new decision action is shown
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/pages.spec.tsx::does not show an unavailable decision creation control
+      proves:
+        - hide-an-unavailable-decision-action
+    - id: frontend/src/reader/catalogue.spec.tsx::omits glossary proposal controls and explains an undeclared glossary
+      proves:
+        - hide-an-unavailable-glossary-action
+
+

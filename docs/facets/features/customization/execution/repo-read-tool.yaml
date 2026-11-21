@@ -1,0 +1,37 @@
+schema_version: '0.1'
+id: customization/execution/repo-read-tool
+lifecycle: active
+intent:
+  summary: Read documents inside a plugin's declared repository scope.
+contract:
+  scenarios:
+    - id: repo-read-tool
+      statement: |
+        Given a plugin with an allowed document directory
+        When it requests a file in that directory
+        Then the host returns the file's text
+    - id: read-a-declared-file
+      statement: |
+        Given a plugin has an allowed repository directory containing a document
+        When it requests that named file
+        Then the host returns its body
+    - id: refuse-an-out-of-scope-file
+      statement: |
+        Given a plugin is limited to a declared repository directory
+        When it requests a file outside that directory
+        Then the host refuses the read
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: backend/server/repo_read_tools_test.go::TestHostRepoReadReadsTheNamedFile
+      proves:
+        - read-a-declared-file
+    - id: backend/server/repo_read_tools_test.go::TestHostRepoReadRefusesAPathOutsideTheDeclaredDirectory
+      proves:
+        - refuse-an-out-of-scope-file
+
+
+

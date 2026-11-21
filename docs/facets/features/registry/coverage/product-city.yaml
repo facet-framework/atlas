@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/coverage/product-city
+lifecycle: active
+intent:
+  summary: Explore the registry's domains and capabilities from the Product page.
+contract:
+  scenarios:
+    - id: product-city
+      statement: |
+        Given a registry with a taxonomy
+        When the reader opens Product
+        Then the product view offers navigation to the domains
+    - id: responsive-label-layout
+      statement: |
+        Given the product city is shown in a narrow canvas
+        When Atlas lays out its labels
+        Then every area label remains inside the canvas
+        And lower-priority capability labels do not cover the controls
+verification:
+  unit_tests:
+    - id: frontend/src/screens/frame/city3d.spec.tsx::keeps labels apart from each other and the controls at narrow and wide sizes
+      proves:
+        - responsive-label-layout
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

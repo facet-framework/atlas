@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/contribution-list
+lifecycle: active
+intent:
+  summary: Find unfinished work that can be picked up in a project.
+contract:
+  scenarios:
+    - id: contribution-list
+      statement: |
+        Given a registry with contribution openings
+        When the reader views the newcomer overview
+        Then the page lists the openings
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

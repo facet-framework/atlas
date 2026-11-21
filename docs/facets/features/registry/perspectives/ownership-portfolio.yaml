@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/perspectives/ownership-portfolio
+lifecycle: active
+intent:
+  summary: Browse declared ownership across the registry.
+contract:
+  scenarios:
+    - id: ownership-portfolio
+      statement: |
+        Given records with owner teams
+        When the reader opens the ownership portfolio
+        Then the page groups records by owner team
+    - id: group-by-team
+      statement: |
+        Given the ownership overview has records belonging to multiple teams
+        When the reader inspects a team's group
+        Then the group shows that team's records and its promise counts
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/overview-report.spec.tsx::puts in each team's group only its own features,
+        with its own counts
+      proves:
+        - group-by-team
+
+

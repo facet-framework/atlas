@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/documents/adr-reading
+lifecycle: active
+intent:
+  summary: Find decisions by text or status and read them in Atlas.
+contract:
+  scenarios:
+    - id: adr-reading
+      statement: |
+        Given a decisions list with entries of several statuses
+        When the reader filters by status
+        Then matching decisions remain in the list
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

@@ -1,0 +1,4 @@
+/* The placeholder's look, as a file: the server's CSP refuses inline <style>. */
+body { font: 16px/1.5 system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1rem; }
+code, pre { font: 14px ui-monospace, monospace; background: #8881; padding: .1rem .3rem; border-radius: 3px; }
+pre { padding: .75rem 1rem; }

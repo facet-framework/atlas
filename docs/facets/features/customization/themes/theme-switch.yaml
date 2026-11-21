@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/themes/theme-switch
+lifecycle: active
+intent:
+  summary: Switch between light and dark appearance from the reader.
+contract:
+  scenarios:
+    - id: theme-switch
+      statement: |
+        Given Atlas is displayed in light mode
+        When the reader activates the theme switch
+        Then Atlas uses dark mode
+    - id: toggle-to-dark
+      statement: |
+        Given the reader uses light mode
+        When the reader presses the top-bar appearance button
+        Then Atlas uses dark mode and offers the switch back to light
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/settings-language.spec.tsx::names the other scheme on the top-bar button,
+        and pressing it asks for that scheme
+      proves:
+        - toggle-to-dark
+
+

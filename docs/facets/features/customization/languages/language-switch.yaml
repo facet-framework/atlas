@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/languages/language-switch
+lifecycle: active
+intent:
+  summary: Select a reader language and import a local language catalogue.
+contract:
+  scenarios:
+    - id: language-switch
+      statement: |
+        Given a valid complete language catalogue on disk
+        When the reader imports the catalogue from Settings
+        Then its language becomes available
+    - id: import-a-catalogue
+      statement: |
+        Given a complete local language catalogue is available
+        When the reader imports it on the language settings page
+        Then the imported language becomes an option and is selected
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/settings-language.spec.tsx::makes a language file an option under its
+        own name and the active language, and clears the input
+      proves:
+        - import-a-catalogue
+
+

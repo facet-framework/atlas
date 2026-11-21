@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  id="Defs_Order" name="Order handling" targetNamespace="http://example.com/bpmn">
+  <bpmn2:collaboration id="Collab_1">
+    <bpmn2:participant id="P_Shop" name="Shop" processRef="Proc_Shop" />
+    <bpmn2:participant id="P_Customer" name="Customer" />
+    <bpmn2:messageFlow id="MF_Order" name="order" sourceRef="P_Customer" targetRef="Start_Order" />
+  </bpmn2:collaboration>
+  <bpmn2:process id="Proc_Shop" isExecutable="true">
+    <bpmn2:laneSet id="LS_1">
+      <bpmn2:lane id="Lane_Sales" name="Sales">
+        <bpmn2:flowNodeRef>Start_Order</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Warehouse" name="Warehouse" />
+    </bpmn2:laneSet>
+    <bpmn2:startEvent id="Start_Order" name="Order received">
+      <bpmn2:messageEventDefinition id="MED_1" />
+    </bpmn2:startEvent>
+    <bpmn2:userTask id="Task_Check" name="Check the order against the stock" camunda:name="vendor-name-must-not-win">
+      <bpmn2:multiInstanceLoopCharacteristics isSequential="true" />
+    </bpmn2:userTask>
+    <bpmn2:exclusiveGateway id="GW_Ok" name="In stock?" default="SF_No" />
+    <bpmn2:serviceTask id="Task_Ship" name="Ship" />
+    <bpmn2:boundaryEvent id="BE_Timer" name="2 days" attachedToRef="Task_Ship" cancelActivity="false">
+      <bpmn2:timerEventDefinition id="TED_1" />
+    </bpmn2:boundaryEvent>
+    <bpmn2:subProcess id="Sub_Reorder" name="Reorder" />
+    <bpmn2:endEvent id="End_Done" name="Done" />
+    <bpmn2:sequenceFlow id="SF_1" sourceRef="Start_Order" targetRef="Task_Check" />
+    <bpmn2:sequenceFlow id="SF_2" sourceRef="Task_Check" targetRef="GW_Ok">
+      <bpmn2:conditionExpression>${valid}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SF_Yes" name="yes" sourceRef="GW_Ok" targetRef="Task_Ship">
+      <bpmn2:conditionExpression>${stock}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SF_No" name="no" sourceRef="GW_Ok" targetRef="Sub_Reorder" />
+    <bpmn2:sequenceFlow id="SF_3" sourceRef="Task_Ship" targetRef="End_Done" />
+    <bpmn2:dataStoreReference id="DS_Stock" name="Stock" />
+    <bpmn2:textAnnotation id="TA_1"><bpmn2:text>Checked by a person, every time</bpmn2:text></bpmn2:textAnnotation>
+    <bpmn2:association id="A_1" sourceRef="TA_1" targetRef="Task_Check" />
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="Diag_1" name="Order">
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Collab_1">
+      <bpmndi:BPMNShape id="Task_Check_di" bpmnElement="Task_Check"><dc:Bounds x="250" y="80" width="100" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P_Shop_di" bpmnElement="P_Shop" isHorizontal="true"><dc:Bounds x="120" y="40" width="760" height="320" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Sales_di" bpmnElement="Lane_Sales" isHorizontal="true"><dc:Bounds x="150" y="40" width="730" height="160" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Warehouse_di" bpmnElement="Lane_Warehouse" isHorizontal="true"><dc:Bounds x="150" y="200" width="730" height="160" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P_Customer_di" bpmnElement="P_Customer" isHorizontal="true"><dc:Bounds x="120" y="420" width="760" height="60" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Order_di" bpmnElement="Start_Order"><dc:Bounds x="182" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="164" y="145" width="72" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Ok_di" bpmnElement="GW_Ok" isMarkerVisible="true"><dc:Bounds x="405" y="95" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Ship_di" bpmnElement="Task_Ship"><dc:Bounds x="510" y="80" width="100" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BE_Timer_di" bpmnElement="BE_Timer"><dc:Bounds x="542" y="142" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_Reorder_di" bpmnElement="Sub_Reorder" isExpanded="false"><dc:Bounds x="380" y="240" width="100" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Done_di" bpmnElement="End_Done"><dc:Bounds x="682" y="102" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DS_Stock_di" bpmnElement="DS_Stock"><dc:Bounds x="275" y="245" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TA_1_di" bpmnElement="TA_1"><dc:Bounds x="720" y="230" width="140" height="40" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ghost_di" bpmnElement="Does_Not_Exist"><dc:Bounds x="0" y="0" width="10" height="10" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SF_1_di" bpmnElement="SF_1"><di:waypoint x="218" y="120" /><di:waypoint x="250" y="120" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_2_di" bpmnElement="SF_2"><di:waypoint x="350" y="120" /><di:waypoint x="405" y="120" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_Yes_di" bpmnElement="SF_Yes"><di:waypoint x="455" y="120" /><di:waypoint x="510" y="120" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_No_di" bpmnElement="SF_No"><di:waypoint x="430" y="145" /><di:waypoint x="430" y="240" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_3_di" bpmnElement="SF_3"><di:waypoint x="610" y="120" /><di:waypoint x="682" y="120" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Order_di" bpmnElement="MF_Order"><di:waypoint x="200" y="420" /><di:waypoint x="200" y="138" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A_1_di" bpmnElement="A_1"><di:waypoint x="720" y="250" /><di:waypoint x="350" y="140" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

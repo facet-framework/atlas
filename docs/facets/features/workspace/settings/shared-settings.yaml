@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/settings/shared-settings
+lifecycle: active
+intent:
+  summary: Keep shared reader preferences across visits.
+contract:
+  scenarios:
+    - id: shared-settings
+      statement: |
+        Given a saved shared preference
+        When the reader reloads Atlas
+        Then the new session loads the saved preference
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

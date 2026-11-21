@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/leadership-overview
+lifecycle: active
+intent:
+  summary: Review product issues from the leadership overview.
+contract:
+  scenarios:
+    - id: leadership-overview
+      statement: |
+        Given a loaded registry with declared defects
+        When the reader opens the leadership overview
+        Then the view summarizes the defects
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

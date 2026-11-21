@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/controls/prose-markup
+lifecycle: active
+intent:
+  summary: Read inline formatting and glossary terms within registry prose.
+contract:
+  scenarios:
+    - id: prose-markup
+      statement: |
+        Given a passage with inline code and a glossary term outside it
+        When Atlas renders the prose
+        Then the code is formatted and the glossary term can be opened
+    - id: keep-code-distinct-from-terms
+      statement: |
+        Given registry prose contains a glossary term both inside and outside inline code
+        When Atlas renders the prose
+        Then the code stays formatted and only the term outside it is linked
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::draws an identifier in backticks as code
+        and does not link a term inside it, while the same term beside it is one
+      proves:
+        - keep-code-distinct-from-terms
+
+

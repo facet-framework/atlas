@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/review-bench
+lifecycle: active
+intent:
+  summary: Inspect promises and gaps from the review bench.
+contract:
+  scenarios:
+    - id: review-bench
+      statement: |
+        Given a registry with promises at several evidence levels
+        When the reviewer selects an evidence filter
+        Then the bench shows the promises matching that selection
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

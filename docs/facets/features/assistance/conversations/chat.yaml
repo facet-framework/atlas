@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/chat
+lifecycle: active
+intent:
+  summary: Ask Atlas questions from the reader and inspect the conversation beside the current page.
+contract:
+  scenarios:
+    - id: chat
+      statement: |
+        Given the Companion composer is open
+        When the reader submits a question
+        Then the question appears in a conversation
+    - id: send-with-enter
+      statement: |
+        Given the Companion composer is open at desktop width
+        When the reader presses Enter after typing a question
+        Then the composer sends the question
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat.spec.tsx::sends on Enter at desktop width and keeps Shift+Enter
+        for a new line
+      proves:
+        - send-with-enter
+
+

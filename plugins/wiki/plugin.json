@@ -1,0 +1,32 @@
+{
+  "id": "wiki",
+  "name": "Wiki",
+  "version": "0.1.0-rc.1",
+  "license": "AGPL-3.0-only",
+  "api": 0,
+  "entry": "src/entry.tsx",
+  "description": "Wiki pages, page history and Confluence integration.",
+  "areas": ["wiki", "confluence-setup"],
+  "slots": [],
+  "tools": [
+    "repo.state",
+    "repo.log",
+    "repo.write",
+    "repo.branch",
+    "repo.commit",
+    "repo.pr",
+    "confluence.state",
+    "confluence.reach",
+    "confluence.import",
+    "confluence.mirror"
+  ],
+  "events": {
+    "listens": ["facets.changed", "scan.done"],
+    "emits": ["wiki.page-saved", "wiki.tree-changed"]
+  },
+  "sidecar": {
+    "bin": "confluence",
+    "env": ["CONFLUENCE_URL", "CONFLUENCE_EMAIL", "CONFLUENCE_API_TOKEN"],
+    "sha256": {}
+  }
+}

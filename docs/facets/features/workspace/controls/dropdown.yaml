@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: workspace/controls/dropdown
+lifecycle: active
+intent:
+  summary: Select Companion options with menus that support keyboard operation.
+contract:
+  scenarios:
+    - id: dropdown
+      statement: |
+        Given the composer has model options
+        When the reader opens the model menu and selects an option
+        Then the selected model appears on the control
+    - id: return-focus-on-escape
+      statement: |
+        Given the reader has opened the model menu
+        When the reader presses Escape
+        Then the menu closes and focus returns to the model picker
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat.spec.tsx::closes on Escape and gives the picker the focus back
+      proves:
+        - return-focus-on-escape
+
+

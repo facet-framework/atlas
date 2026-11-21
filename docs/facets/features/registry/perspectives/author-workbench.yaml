@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/author-workbench
+lifecycle: active
+intent:
+  summary: Find missing content in records by inspecting their field coverage.
+contract:
+  scenarios:
+    - id: author-workbench
+      statement: |
+        Given records with different levels of field coverage
+        When the author opens the workbench
+        Then records with the most missing fields appear first
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

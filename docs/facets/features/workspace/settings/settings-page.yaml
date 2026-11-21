@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/settings/settings-page
+lifecycle: active
+intent:
+  summary: Inspect and change available Atlas preferences.
+contract:
+  scenarios:
+    - id: settings
+      statement: |
+        Given the reader opens Settings with local browser storage available
+        When the reader changes a reader preference
+        Then the page reflects the selection
+    - id: apply-focus-mode
+      statement: |
+        Given the reader opens Appearance with focus mode off
+        When the reader enables focus mode
+        Then the shell enters focus mode and retains it when reopened
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/pages.spec.tsx::turns focus mode on under appearance, applies it to
+        the shell and keeps it
+      proves:
+        - apply-focus-mode
+
+

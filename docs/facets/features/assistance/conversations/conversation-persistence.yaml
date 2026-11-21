@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/conversation-persistence
+lifecycle: active
+intent:
+  summary: Reopen saved Companion conversations after a reload.
+contract:
+  scenarios:
+    - id: conversation-persistence
+      statement: |
+        Given a conversation saved during a running answer
+        When the reader reloads the page
+        Then the saved exchange is restored and the unfinished response is marked interrupted
+    - id: restore-an-interrupted-answer
+      statement: |
+        Given a saved conversation contains part of an unfinished answer
+        When the reader reopens it
+        Then the partial text remains visible and the answer is marked interrupted
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat-reading.spec.tsx::draws an answer cut off with the page as interrupted,
+        not running, and asks it again on Continue
+      proves:
+        - restore-an-interrupted-answer
+
+

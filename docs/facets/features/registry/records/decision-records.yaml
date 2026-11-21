@@ -1,0 +1,24 @@
+schema_version: '0.1'
+id: registry/records/decision-records
+lifecycle: active
+intent:
+  summary: Read references to architecture decisions from a record.
+contract:
+  scenarios:
+    - id: decision-records
+      statement: |
+        Given a record that declares decision references
+        When the reader opens its decisions section
+        Then the section displays the declared references
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::names them in record order and opens
+        the chosen one in the decision reader
+      proves:
+        - decision-records
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

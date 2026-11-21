@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/controls/stylesheet-integrity
+lifecycle: active
+intent:
+  summary: Bundle the styles used by the standalone reader.
+contract:
+  scenarios:
+    - id: stylesheet-integrity
+      statement: |
+        Given the standalone reader is built
+        When the build collects reader styles
+        Then it writes the stylesheet served with the browser bundle
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

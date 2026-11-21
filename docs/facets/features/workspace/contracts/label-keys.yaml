@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/contracts/label-keys
+lifecycle: active
+intent:
+  summary: Check that reader labels use translation keys.
+contract:
+  scenarios:
+    - id: label-keys
+      statement: |
+        Given reader JSX contains untranslated visible text
+        When the source checker reads that JSX
+        Then it reports the untranslated text
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

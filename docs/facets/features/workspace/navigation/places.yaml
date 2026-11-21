@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/navigation/places
+lifecycle: active
+intent:
+  summary: Open Atlas pages directly through their addresses.
+contract:
+  scenarios:
+    - id: places
+      statement: |
+        Given a record address identifying a loaded feature
+        When the reader opens the address
+        Then Atlas selects that record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

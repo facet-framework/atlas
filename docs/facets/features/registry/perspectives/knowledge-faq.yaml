@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/perspectives/knowledge-faq
+lifecycle: active
+intent:
+  summary: Find authored answers from the registry in the overview.
+contract:
+  scenarios:
+    - id: knowledge-faq
+      statement: |
+        Given records with answered Knowledge slots
+        When Atlas prepares the FAQ
+        Then it includes the authored questions and answers
+    - id: read-an-authored-answer
+      statement: |
+        Given the New Here overview has an authored answer for the selected Knowledge slot
+        When the reader opens that slot in the FAQ
+        Then the FAQ shows the authored question and answer and links to the record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/overview-newcomer.spec.tsx::puts each answer under the owner's own
+        question, with its kind and its record, which opens
+      proves:
+        - read-an-authored-answer
+
+

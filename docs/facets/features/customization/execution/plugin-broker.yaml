@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/execution/plugin-broker
+lifecycle: active
+intent:
+  summary: Send browser plugin requests through the host's broker.
+contract:
+  scenarios:
+    - id: plugin-broker
+      statement: |
+        Given a plugin without a grant for a declared action
+        When the plugin requests that action
+        Then the host reports a refusal
+    - id: refuse-without-a-plugin-directory
+      statement: |
+        Given the host has no configured plugin directory
+        When a plugin requests a tool
+        Then the host returns a refusal without a tool result
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: backend/server/plugincall_test.go::TestWithoutAPluginDirectoryEveryCallIsRefused
+      proves:
+        - refuse-without-a-plugin-directory
+
+
+

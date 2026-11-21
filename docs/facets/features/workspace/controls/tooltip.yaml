@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/controls/tooltip
+lifecycle: active
+intent:
+  summary: Read short descriptions for controls in the Atlas shell.
+contract:
+  scenarios:
+    - id: tooltip
+      statement: |
+        Given a control with a tooltip label
+        When the reader focuses the control
+        Then the tooltip shows the label
+    - id: dismiss-from-the-keyboard
+      statement: |
+        Given a labeled control has keyboard focus and shows a tooltip
+        When the reader presses Escape
+        Then the tooltip closes and the control retains focus
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/tooltip.spec.tsx::explains an icon button to the keyboard at once,
+        and goes away on Escape
+      proves:
+        - dismiss-from-the-keyboard
+
+

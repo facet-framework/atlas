@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/plugins/plugin-install-grants
+lifecycle: active
+intent:
+  summary: Enforce installed plugin grants when handling tool requests.
+contract:
+  scenarios:
+    - id: plugin-install-grants
+      statement: |
+        Given an installed plugin whose manifest declares a tool without granting it
+        When the plugin requests the tool
+        Then the broker refuses the call
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

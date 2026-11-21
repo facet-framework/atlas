@@ -1,0 +1,33 @@
+schema_version: '0.1'
+id: customization/documents/adr-plugin
+lifecycle: active
+intent:
+  summary: Browse a project's architecture decision records with the bundled ADR plugin.
+contract:
+  scenarios:
+    - id: adr-plugin
+      statement: |
+        Given an Atlas session with the ADR plugin enabled
+        When the plugin activates
+        Then it registers a decisions area
+    - id: use-the-configured-directory
+      statement: |
+        Given the project configures an ADR directory and has decisions in that directory
+        When the ADR plugin requests the listing
+        Then the host lists decisions from that directory
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+knowledge:
+  discoverability:
+    question: Where does Atlas look for decisions?
+    answer: The ADR plugin uses `docs/adr` by default. Set `adr.directory` in `.facetrc.yaml` to use
+      another repository directory.
+verification:
+  unit_tests:
+    - id: backend/server/repo_read_tools_test.go::TestADRConfiguredDirectory
+      proves:
+        - use-the-configured-directory
+
+

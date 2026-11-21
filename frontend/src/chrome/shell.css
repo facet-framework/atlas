@@ -1,0 +1,931 @@
+/* Top bar ---------------------------------------------------------------- */
+
+.t-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: var(--t-head-h);
+  padding: 0 20px;
+}
+/* Only the command field and the plugins' actions give way on a narrow bar.
+   At 768 px the theme and settings buttons were squeezed to their 16 px icon
+   and the last one ran over the bar's padding (measured in Chromium). */
+.t-top > :not(.t-top__command):not(.t-top__actions) {
+  flex-shrink: 0;
+}
+.t-top[data-compact] {
+  gap: 6px;
+  height: 56px;
+  padding: 0 8px;
+}
+.t-top__history {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--t-line);
+  border-radius: var(--t-r-ctl);
+  background: var(--t-surface);
+}
+.t-top[data-compact] .t-top__history {
+  border: 0;
+  background: none;
+}
+.t-top__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--t-r-ctl);
+  background: none;
+  color: var(--t-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.t-top__brand:hover {
+  background: var(--t-signal-wash);
+}
+.t-top__name {
+  font-weight: 600;
+  font-size: var(--t-fs-15);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.t-top__stats {
+  display: flex;
+  gap: 18px;
+  margin: 0 0 0 8px;
+  padding-left: 18px;
+  border-left: 1px solid var(--t-line);
+}
+.t-top__stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.t-top__stats dt {
+  color: var(--t-muted);
+  font-size: var(--t-fs-11);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.t-top__stats dd {
+  margin: 0;
+  font-size: var(--t-fs-14);
+  font-weight: 600;
+}
+.t-top__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.t-more-actions {
+  gap: 8px;
+  margin-bottom: 16px;
+}
+/* Plugin doors in the bar: each plugin gets its own block holder from the
+   host, so without a row of their own two doors stack into a column. Scoped
+   to the shell so the older reader's own rule (and its bar gap) stays its own;
+   the gap is the bar's own 6px. */
+.t-shell .pluginslot[data-slot="header.action"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* The host's dot beside a plugin place nobody has opened yet. */
+.t-shell .pluginslot > .glow {
+  display: inline-block;
+  flex-shrink: 0;
+  align-self: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--t-signal);
+  animation: t-d-glow 1.8s ease-out infinite;
+}
+.t-shell[data-motion="reduced"] .pluginslot > .glow {
+  animation: none;
+}
+.t-top__command {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+  width: min(420px, 34vw);
+  height: 36px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--t-line);
+  border-radius: var(--t-r-ctl);
+  background: var(--t-sunken);
+  color: var(--t-muted);
+  font: inherit;
+  font-size: var(--t-fs-13);
+  text-align: left;
+  cursor: text;
+  transition: border-color var(--t-dur-hit);
+}
+.t-top__command:hover {
+  border-color: var(--t-line-strong);
+  color: var(--t-ink-2);
+}
+.t-top__command > span:nth-child(2) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@media (max-width: 1279px) {
+  .t-top__stats {
+    display: none;
+  }
+}
+/* The offset follows the measured drift; a change slides, never blocks, and
+   reduced motion jumps straight to the new offset. */
+.t-logo-mark {
+  flex: none;
+}
+.t-logo-mark rect {
+  transition:
+    transform var(--t-dur-enter) var(--t-ease-out),
+    fill var(--t-dur-enter);
+}
+.t-top__alpha {
+  color: var(--t-muted);
+  font-family: var(--t-mono);
+  font-size: var(--t-fs-11);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.t-history .t-menu-item[aria-current="true"] {
+  background: var(--t-signal-wash);
+  box-shadow: inset 2px 0 0 var(--t-signal);
+}
+
+/* Area bar ---------------------------------------------------------------- */
+
+.t-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--t-nav-h);
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+@media (max-width: 900px) {
+  .t-nav {
+    padding-right: 44px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+  }
+}
+.t-nav__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--t-r-ctl);
+  background: none;
+  color: var(--t-muted);
+  font: inherit;
+  font-size: var(--t-fs-13);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--t-dur-hit),
+    background var(--t-dur-hit);
+}
+.t-nav__item:hover {
+  color: var(--t-ink);
+  background: var(--t-signal-wash);
+}
+.t-nav__item[aria-current="page"] {
+  color: var(--t-ink);
+}
+.t-nav__item[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -8px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--t-signal);
+  animation: t-fade var(--t-dur-enter) var(--t-ease-out) both;
+}
+.t-nav__badge {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: var(--t-r-pill);
+  background: var(--t-warn-wash);
+  color: var(--t-warn);
+  font-family: var(--t-mono);
+  font-size: var(--t-fs-11);
+  line-height: 18px;
+  text-align: center;
+}
+.t-nav__divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 8px;
+  background: var(--t-line);
+}
+.t-plugin-mark {
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  transform: rotate(45deg);
+  border: 1.5px solid currentColor;
+  border-radius: 1px;
+}
+.t-nav__item[aria-current="page"] .t-plugin-mark {
+  background: var(--t-signal);
+  border-color: var(--t-signal);
+}
+
+@media (max-height: 500px) {
+  .t-top,
+  .t-top[data-compact] {
+    height: 44px;
+  }
+  .t-nav {
+    height: 40px;
+  }
+  .t-nav__item {
+    height: 32px;
+  }
+  .t-tabbar {
+    height: calc(44px + env(safe-area-inset-bottom, 0px));
+  }
+  .t-tabbar__item {
+    gap: 0;
+    font-size: 10px;
+  }
+}
+
+/* Mobile tab bar ------------------------------------------------------------ */
+
+.t-tabbar {
+  position: fixed;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  height: calc(var(--t-tab-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--t-line);
+  background: color-mix(in srgb, var(--t-ground-2) 92%, transparent);
+  backdrop-filter: blur(16px);
+}
+.t-shell[data-layout="mobile"] .t-tabbar {
+  position: sticky;
+}
+.t-tabbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  background: none;
+  color: var(--t-muted);
+  font: inherit;
+  font-size: var(--t-fs-11);
+  cursor: pointer;
+}
+.t-tabbar__item[aria-current="page"] {
+  color: var(--t-signal);
+}
+.t-tabbar__item[aria-current="page"] svg {
+  animation: t-pop var(--t-dur-enter) var(--t-ease-spring);
+}
+.t-tabbar__dot {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--t-warn);
+  box-shadow: 0 0 0 2px var(--t-ground-2);
+}
+.t-more-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.t-more-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border: 1px solid var(--t-line);
+  color: var(--t-ink-2);
+  font: inherit;
+  font-size: var(--t-fs-12);
+  cursor: pointer;
+}
+
+/* Boot ------------------------------------------------------------------------ */
+
+.t-boot {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(60% 50% at 50% 40%, var(--t-signal-wash), transparent 70%), var(--t-ground);
+  color: var(--t-ink);
+  font-family: var(--t-font);
+}
+.t-boot__in {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: min(420px, 100%);
+}
+.t-loadmark rect {
+  transform-box: fill-box;
+  animation: t-wave 2s var(--t-ease-out) infinite;
+}
+@keyframes t-wave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+  60% {
+    transform: translateY(-16px);
+  }
+}
+.t-boot__phase {
+  margin: 0;
+  font-size: var(--t-fs-20);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.t-boot__file {
+  margin: 0;
+  min-height: 1.4em;
+  overflow: hidden;
+  color: var(--t-muted);
+  font-family: var(--t-mono);
+  font-size: var(--t-fs-12);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.t-boot__steps {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.t-boot__steps li {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--t-line);
+  transition: background var(--t-dur-enter);
+}
+.t-boot__steps li[data-state="done"] {
+  background: var(--t-ink-2);
+}
+.t-boot__steps li[data-state="now"] {
+  background: var(--t-signal);
+  animation: t-pulse 1.2s ease-in-out infinite;
+}
+.t-boot [data-indeterminate] .t-meter__value {
+  animation: t-indeterminate 1.4s var(--t-ease-out) infinite;
+}
+@keyframes t-indeterminate {
+  0% {
+    transform: translateX(-100%) scaleX(0.3);
+  }
+  100% {
+    transform: translateX(260%) scaleX(0.3);
+  }
+}
+.t-boot__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  color: var(--t-muted);
+  font-size: var(--t-fs-12);
+}
+.t-boot__counts b {
+  color: var(--t-ink);
+  font-family: var(--t-mono);
+  font-weight: 500;
+}
+/* Leaving: the mark shrinks toward the logo's place, the ground fades. */
+.t-boot[data-leaving] {
+  animation: t-boot-out var(--t-dur-flight) var(--t-ease-out) forwards;
+}
+.t-boot {
+  /* Where the top bar draws the logo: after the history group on desktop,
+     after the back chevron on mobile. The mark lands there. */
+  --t-boot-target-x: 144px;
+  --t-boot-target-y: 32px;
+}
+@media (max-width: 767px) {
+  .t-boot {
+    --t-boot-target-x: 62px;
+    --t-boot-target-y: 28px;
+  }
+}
+/* Leaving: the mark leaves the flow and flies from the middle to the logo. */
+.t-boot[data-leaving] .t-loadmark {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  animation: t-boot-fly var(--t-dur-flight) var(--t-ease-spring) forwards;
+}
+.t-boot[data-leaving] .t-boot__in > :not(.t-loadmark) {
+  animation: t-fade var(--t-dur-hit) reverse forwards;
+}
+@keyframes t-boot-fly {
+  to {
+    left: var(--t-boot-target-x);
+    top: var(--t-boot-target-y);
+    transform: translate(-50%, -50%) scale(0.13);
+  }
+}
+@keyframes t-boot-out {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-shell .pluginslot > .glow {
+    animation: none;
+  }
+  .t-loadmark rect,
+  .t-boot__steps li[data-state="now"],
+  .t-boot [data-indeterminate] .t-meter__value {
+    animation: none;
+  }
+  .t-boot[data-leaving] .t-loadmark {
+    animation: none;
+  }
+  .t-logo-mark rect {
+    transition: none;
+  }
+}
+
+/*
+ * Mark geometry: two 44×78 blocks, gap 12, offset 22, resting field 100×100.
+ * Motion uses five bars in a 158×100 field via data-facet-mark-bar.
+ * open-* returns to rest after one pass; load-* repeats until loading ends.
+ */
+@keyframes facet-mark-w2 {
+  0%,
+  10% {
+    transform: translate(40px, -11px) scaleX(2);
+  }
+  30%,
+  38% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  42% {
+    transform: translate(0, -16px) scaleX(1);
+  }
+  46%,
+  76% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  90%,
+  100% {
+    transform: translate(40px, -11px) scaleX(2);
+  }
+}
+
+@keyframes facet-mark-w3 {
+  0%,
+  10% {
+    transform: translate(62px, 11px) scaleX(2);
+    fill: var(--signal);
+  }
+  30%,
+  40% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  44.5% {
+    transform: translate(0, -16px) scaleX(1);
+  }
+  48.6% {
+    fill: var(--signal);
+  }
+  49% {
+    transform: translate(0, 0) scaleX(1);
+    fill: var(--ink);
+  }
+  74% {
+    fill: var(--ink);
+  }
+  76% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  82% {
+    fill: var(--signal);
+  }
+  90%,
+  100% {
+    transform: translate(62px, 11px) scaleX(2);
+    fill: var(--signal);
+  }
+}
+
+@keyframes facet-mark-w1 {
+  0%,
+  10% {
+    transform: translate(112px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+  13% {
+    opacity: 1;
+  }
+  26% {
+    transform: translate(-7px, 0);
+  }
+  30% {
+    transform: translate(2px, 0);
+  }
+  34%,
+  43% {
+    transform: translate(0, 0);
+  }
+  47% {
+    transform: translate(0, -16px);
+  }
+  50.6% {
+    fill: var(--line-2);
+  }
+  51% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  74% {
+    fill: var(--ink);
+  }
+  76% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  82% {
+    fill: var(--line-2);
+  }
+  88%,
+  100% {
+    transform: translate(112px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+}
+
+@keyframes facet-mark-w4 {
+  0%,
+  10% {
+    transform: translate(80px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+  14% {
+    opacity: 1;
+  }
+  28% {
+    transform: translate(-7px, 0);
+  }
+  32% {
+    transform: translate(2px, 0);
+  }
+  36%,
+  45% {
+    transform: translate(0, 0);
+  }
+  49.5% {
+    transform: translate(0, -16px);
+  }
+  53.6% {
+    fill: var(--line-2);
+  }
+  54% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  74% {
+    fill: var(--ink);
+  }
+  76% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  82% {
+    fill: var(--line-2);
+  }
+  88%,
+  100% {
+    transform: translate(80px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+}
+
+@keyframes facet-mark-w5 {
+  0%,
+  10% {
+    transform: translate(50px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+  15% {
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-7px, 0);
+  }
+  34% {
+    transform: translate(2px, 0);
+  }
+  38%,
+  47% {
+    transform: translate(0, 0);
+  }
+  52% {
+    transform: translate(0, -16px);
+  }
+  55.6% {
+    fill: var(--line-2);
+  }
+  56% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  74% {
+    fill: var(--ink);
+  }
+  76% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  82% {
+    fill: var(--line-2);
+  }
+  88%,
+  100% {
+    transform: translate(50px, 0);
+    opacity: 0;
+    fill: var(--line-2);
+  }
+}
+
+@keyframes facet-mark-ldk {
+  0% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  6.25% {
+    transform: translate(0, -2.34px);
+  }
+  12.5% {
+    transform: translate(0, -8px);
+  }
+  18.75% {
+    transform: translate(0, -13.66px);
+  }
+  25% {
+    transform: translate(0, -16px);
+  }
+  31.25% {
+    transform: translate(0, -13.66px);
+  }
+  37.5% {
+    transform: translate(0, -8px);
+  }
+  43.75% {
+    transform: translate(0, -2.34px);
+  }
+  49.6% {
+    fill: var(--ink);
+  }
+  50% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  56.25% {
+    transform: translate(0, -2.34px);
+  }
+  62.5% {
+    transform: translate(0, -8px);
+  }
+  68.75% {
+    transform: translate(0, -13.66px);
+  }
+  75% {
+    transform: translate(0, -16px);
+  }
+  81.25% {
+    transform: translate(0, -13.66px);
+  }
+  87.5% {
+    transform: translate(0, -8px);
+  }
+  93.75% {
+    transform: translate(0, -2.34px);
+  }
+  99.6% {
+    fill: var(--ink);
+  }
+  100% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+}
+
+@keyframes facet-mark-ldb {
+  0% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  6.25% {
+    transform: translate(0, -2.34px);
+  }
+  12.5% {
+    transform: translate(0, -8px);
+  }
+  18.75% {
+    transform: translate(0, -13.66px);
+  }
+  25% {
+    transform: translate(0, -16px);
+  }
+  31.25% {
+    transform: translate(0, -13.66px);
+  }
+  37.5% {
+    transform: translate(0, -8px);
+  }
+  43.75% {
+    transform: translate(0, -2.34px);
+  }
+  49.6% {
+    fill: var(--ink);
+  }
+  50% {
+    transform: translate(0, 0);
+    fill: var(--signal);
+  }
+  56.25% {
+    transform: translate(0, -2.34px);
+  }
+  62.5% {
+    transform: translate(0, -8px);
+  }
+  68.75% {
+    transform: translate(0, -13.66px);
+  }
+  75% {
+    transform: translate(0, -16px);
+  }
+  81.25% {
+    transform: translate(0, -13.66px);
+  }
+  87.5% {
+    transform: translate(0, -8px);
+  }
+  93.75% {
+    transform: translate(0, -2.34px);
+  }
+  99.6% {
+    fill: var(--signal);
+  }
+  100% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+}
+
+@keyframes facet-mark-ldg {
+  0% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+  6.25% {
+    transform: translate(0, -2.34px);
+  }
+  12.5% {
+    transform: translate(0, -8px);
+  }
+  18.75% {
+    transform: translate(0, -13.66px);
+  }
+  25% {
+    transform: translate(0, -16px);
+  }
+  31.25% {
+    transform: translate(0, -13.66px);
+  }
+  37.5% {
+    transform: translate(0, -8px);
+  }
+  43.75% {
+    transform: translate(0, -2.34px);
+  }
+  49.6% {
+    fill: var(--ink);
+  }
+  50% {
+    transform: translate(0, 0);
+    fill: var(--line-2);
+  }
+  56.25% {
+    transform: translate(0, -2.34px);
+  }
+  62.5% {
+    transform: translate(0, -8px);
+  }
+  68.75% {
+    transform: translate(0, -13.66px);
+  }
+  75% {
+    transform: translate(0, -16px);
+  }
+  81.25% {
+    transform: translate(0, -13.66px);
+  }
+  87.5% {
+    transform: translate(0, -8px);
+  }
+  93.75% {
+    transform: translate(0, -2.34px);
+  }
+  99.6% {
+    fill: var(--line-2);
+  }
+  100% {
+    transform: translate(0, 0);
+    fill: var(--ink);
+  }
+}
+
+[data-facet-mark-bar] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+[data-facet-mark-bar="open-1"] {
+  animation: facet-mark-w2 7.2s cubic-bezier(0.3, 0, 0.2, 1) 1 both;
+}
+[data-facet-mark-bar="open-2"] {
+  animation: facet-mark-w3 7.2s cubic-bezier(0.3, 0, 0.2, 1) 1 both;
+}
+[data-facet-mark-bar="open-3"] {
+  animation: facet-mark-w1 7.2s cubic-bezier(0.3, 0, 0.2, 1) 1 both;
+}
+[data-facet-mark-bar="open-4"] {
+  animation: facet-mark-w4 7.2s cubic-bezier(0.3, 0, 0.2, 1) 1 both;
+}
+[data-facet-mark-bar="open-5"] {
+  animation: facet-mark-w5 7.2s cubic-bezier(0.3, 0, 0.2, 1) 1 both;
+}
+[data-facet-mark-bar="load-1"] {
+  animation: facet-mark-ldk 2s linear -2s infinite;
+}
+[data-facet-mark-bar="load-2"] {
+  animation: facet-mark-ldb 2s linear -1.8s infinite;
+}
+[data-facet-mark-bar="load-3"] {
+  animation: facet-mark-ldg 2s linear -1.6s infinite;
+}
+[data-facet-mark-bar="load-4"] {
+  animation: facet-mark-ldg 2s linear -1.4s infinite;
+}
+[data-facet-mark-bar="load-5"] {
+  animation: facet-mark-ldg 2s linear -1.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-facet-mark-bar] {
+    animation: none;
+  }
+}

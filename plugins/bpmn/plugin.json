@@ -1,0 +1,27 @@
+{
+  "id": "bpmn",
+  "name": "Processes",
+  "version": "0.1.0-rc.1",
+  "license": "AGPL-3.0-only",
+  "api": 0,
+  "entry": "src/reader/entry.tsx",
+  "description": "Read BPMN diagrams from the configured process directory.",
+  "areas": ["processes"],
+  "slots": [],
+  "tools": ["repo.list", "repo.read", "bpmn.diagram"],
+  "reads": [
+    {
+      "dir": "docs/bpmn",
+      "ext": [".bpmn"]
+    }
+  ],
+  "events": {
+    "listens": [],
+    "emits": []
+  },
+  "sidecar": {
+    "bin": "bpmn",
+    "env": [],
+    "sha256": {}
+  }
+}

@@ -1,0 +1,10 @@
+FACET Atlas
+Copyright 2026 Pascal Malbranche
+
+FACET Atlas is licensed under AGPL-3.0-only.
+FACET Core, facet-ui and the DMN plugin are licensed under Apache-2.0.
+
+THIRD_PARTY.json lists dependency versions and licenses. Verbatim notices and
+license texts are supplied in THIRD_PARTY_LICENSES/.
+Preserve that corpus with redistributed source and browser/application bundles.
+This NOTICE does not modify any license.

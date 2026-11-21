@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-context
+lifecycle: active
+intent:
+  summary: Provide plugins with the current reader location.
+contract:
+  scenarios:
+    - id: plugin-context
+      statement: |
+        Given a plugin requests the reader context on a record page
+        When the host prepares the location
+        Then the exposed context identifies the open record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

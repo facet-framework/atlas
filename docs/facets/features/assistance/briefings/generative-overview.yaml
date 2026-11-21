@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/briefings/generative-overview
+lifecycle: active
+intent:
+  summary: Open a generated section for a supported overview role.
+contract:
+  scenarios:
+    - id: generative-overview
+      statement: |
+        Given a role with generated overview content enabled
+        When the reader opens Overview in that role
+        Then the generated section appears on the page
+    - id: enable-one-role
+      statement: |
+        Given generated content is disabled for two reader roles
+        When the reader enables the section for one role
+        Then the generated section appears for that role and stays hidden for the other
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/generative-switches.spec.tsx::turns only its own role's section on
+        and off, and keeps the choice across a restart
+      proves:
+        - enable-one-role
+
+

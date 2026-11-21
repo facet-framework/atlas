@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/navigation/visible-depth
+lifecycle: active
+intent:
+  summary: Keep focus on the visible view while searching.
+contract:
+  scenarios:
+    - id: visible-depth
+      statement: |
+        Given the reader opens modal search
+        When the palette takes focus
+        Then the covered application is inert until search closes
+    - id: release-the-covered-page
+      statement: |
+        Given the search palette is open over the reader
+        When the reader presses Escape
+        Then the palette closes and the underlying page becomes interactive again
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/palette.spec.tsx::holds the focus and makes the bars, the page and
+        the chat inert while it is open, and gives them back on close
+      proves:
+        - release-the-covered-page
+
+

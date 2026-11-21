@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/navigation/top-bar
+lifecycle: active
+intent:
+  summary: Reach search, reader options and navigation from the Atlas header.
+contract:
+  scenarios:
+    - id: top-bar
+      statement: |
+        Given the reader opens any Atlas page
+        When the reader uses the header's product mark
+        Then the overview opens
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

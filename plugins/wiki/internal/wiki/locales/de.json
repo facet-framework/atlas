@@ -1,0 +1,49 @@
+{
+  "fields": {
+    "category": "kategorie",
+    "categories": "kategorien",
+    "areas": "bereiche",
+    "depth": "tiefe",
+    "target": "ziel",
+    "space": "raum",
+    "no-mirror": "nicht-spiegeln"
+  },
+  "status": {
+    "draft": "entwurf",
+    "maintained": "gepflegt",
+    "reviewed": "geprüft",
+    "outdated": "veraltet"
+  },
+  "references": {
+    "promise": "zusage",
+    "file": "datei",
+    "term": "begriff",
+    "anchor": "anker",
+    "contents": "inhalte",
+    "role": "rolle"
+  },
+  "selectors": {
+    "component": "komponente",
+    "assumption": "annahme",
+    "height": "hoehe",
+    "value": "wert",
+    "number": "zahl",
+    "percent": "prozent",
+    "share": "anteil",
+    "ratio": "quote",
+    "data": "daten",
+    "promise": "zusage",
+    "area": "bereich",
+    "file": "datei",
+    "only-gaps": "nur-luecken",
+    "title": "titel"
+  },
+  "flags": {
+    "area": "bereich",
+    "group": "gruppe",
+    "category": "kategorie"
+  },
+  "categories": {
+    "guide": "anleitung"
+  }
+}

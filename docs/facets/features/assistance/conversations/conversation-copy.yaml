@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: assistance/conversations/conversation-copy
+lifecycle: active
+intent:
+  summary: Copy a question or an answer with its source locations.
+contract:
+  scenarios:
+    - id: conversation-copy
+      statement: |
+        Given an answer with cited source locations
+        When the reader copies the answer
+        Then the copied text includes those locations
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

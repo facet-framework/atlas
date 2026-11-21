@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/records/promise-evidence
+lifecycle: active
+intent:
+  summary: Inspect the evidence associated with a record's promises.
+contract:
+  scenarios:
+    - id: promise-evidence
+      statement: |
+        Given a record with promises and associated test references
+        When the reader opens its promise list
+        Then the list shows the evidence status of the promises
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

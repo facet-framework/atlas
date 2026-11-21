@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/catalogue/contents
+lifecycle: active
+intent:
+  summary: Read one kind of registry content on its own page.
+contract:
+  scenarios:
+    - id: contents
+      statement: |
+        Given a contents catalogue with a Promises entry
+        When the reader opens that entry
+        Then the page lists promises across the registry
+    - id: read-a-catalogue-promise
+      statement: |
+        Given the Contents Promises list is open
+        When the reader selects a promise
+        Then its detail opens at the same address and offers a link to its record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/contents-pages.spec.tsx::a promise on the Promises page opens into
+        its Given/When/Then reader and leads to its record
+      proves:
+        - read-a-catalogue-promise
+
+

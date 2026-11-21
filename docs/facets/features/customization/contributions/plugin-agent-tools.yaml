@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-agent-tools
+lifecycle: active
+intent:
+  summary: Make granted agent tools available to the Companion.
+contract:
+  scenarios:
+    - id: plugin-agent-tools
+      statement: |
+        Given an installed plugin with a granted agent tool
+        When the host resolves Companion tools
+        Then the granted tool is included
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

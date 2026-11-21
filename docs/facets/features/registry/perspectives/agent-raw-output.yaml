@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/agent-raw-output
+lifecycle: active
+intent:
+  summary: Inspect scan data and tool endpoints from the Agent overview.
+contract:
+  scenarios:
+    - id: agent-raw-output
+      statement: |
+        Given a loaded registry and the Agent role
+        When the reader opens Overview
+        Then the page provides structured scan data and endpoint references
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

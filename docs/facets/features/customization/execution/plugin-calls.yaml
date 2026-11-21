@@ -1,0 +1,19 @@
+schema_version: '0.1'
+id: customization/execution/plugin-calls
+lifecycle: active
+intent:
+  summary: Request plugin tools from the current reader session.
+contract:
+  scenarios:
+    - id: plugin-calls
+      statement: |
+        Given a reader document with a plugin session
+        When an installed plugin calls a host tool
+        Then the browser sends the request with its session capability
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+
+

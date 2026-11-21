@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/session-host
+lifecycle: active
+intent:
+  summary: Make plugin contributions available within the current reader session.
+contract:
+  scenarios:
+    - id: session-host
+      statement: |
+        Given a reader session with an enabled plugin
+        When the plugin registers a contribution
+        Then the reader can present the contribution
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

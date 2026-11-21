@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/plugins/plugin-loading
+lifecycle: active
+intent:
+  summary: Load compatible plugin browser entries from local installations.
+contract:
+  scenarios:
+    - id: plugin-loading
+      statement: |
+        Given an installed plugin with a supported API and an eligible browser entry
+        When the reader loads its plugins
+        Then the host makes the browser entry available
+    - id: require-the-document-capability
+      statement: |
+        Given an installed plugin has no session capability
+        When the reader starts loading plugins
+        Then the reader reports the unavailable session and skips the installed entry
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/installed-plugin.spec.tsx::does not import when a session capability
+        is absent
+      proves:
+        - require-the-document-capability
+
+

@@ -1,0 +1,64 @@
+{
+  "facetrc": "records: docs/facets\nschema: schema\nsources:\n  - src\n",
+  "index": "records:\n  - docs/facets/features/library/catalog/search.yaml\n  - docs/facets/features/library/catalog/loan.yaml\n  - docs/facets/features/operations/service/health.yaml\n",
+  "records": {
+    "docs/facets/features/library/catalog/search.yaml": "schema_version: \"0.1\"\nid: library/catalog/search\nlifecycle: active\nintent:\n  summary: Find books in a fictional library catalogue.\ncontract:\n  scenarios:\n    - id: matching-title\n      statement: |\n        Given a catalogue with a book named Sea Birds\n        When a reader searches for Sea\n        Then the matching book is shown\n    - id: no-match\n      statement: |\n        Given a catalogue without matching books\n        When a reader searches for Volcanoes\n        Then an empty result is shown\n    - id: invalid-request\n      statement: |\n        Given an empty search phrase\n        When a reader submits the search\n        Then a validation message is shown\nverification:\n  unit_tests:\n    - id: tests/search.spec.ts\n      proves: [matching-title, no-match]\n  integration_tests:\n    - id: tests/search-browser.spec.ts\n      proves: [matching-title]\nobservation:\n  slos:\n    - name: search-response\n      target: \"95% under 200 ms\"\n      window: 7d\nknowledge:\n  discoverability:\n    question: Where can a reader search?\n    answer: Use the catalogue search field.\n  common_pitfalls:\n    question: What happens with an empty phrase?\n    answer: Enter at least one word.\nlineage:\n  owner:\n    team: library-team\n  created_at: \"2025-01-01\"\n  depends_on: []\n  depended_on_by: [library/catalog/loan]\ndefects:\n  fixes:\n    - commit: \"0123456789abcdef0123456789abcdef01234567\"\n      date: \"2025-01-10\"\n      files: [src/catalog/search.ts]\n      subject: Keep search results in catalogue order\n      recorded_by: fixture-author\n",
+    "docs/facets/features/library/catalog/loan.yaml": "schema_version: \"0.1\"\nid: library/catalog/loan\nlifecycle: active\nintent:\n  summary: Record the loan of an available book.\ncontract:\n  scenarios:\n    - id: loan-recorded\n      statement: |\n        Given an available book\n        When a librarian records a loan\n        Then the book is marked as borrowed\nverification:\n  unit_tests:\n    - id: tests/loan.spec.ts\n      proves: [loan-recorded]\nknowledge:\n  prerequisite_knowledge:\n    question: Who can record a loan?\nlineage:\n  owner:\n    team: library-team\n  created_at: \"2025-01-02\"\n  depends_on: [library/catalog/search]\n  depended_on_by: []\n",
+    "docs/facets/features/operations/service/health.yaml": "schema_version: \"0.1\"\nid: operations/service/health\nlifecycle: active\nintent:\n  summary: Show whether the fictional catalogue service is ready.\ncontract:\n  scenarios:\n    - id: reports-status\n      statement: |\n        Given a running catalogue service\n        When an operator checks readiness\n        Then the service reports ready\nverification:\n  unit_tests:\n    - id: tests/health.spec.ts\n      proves: [reports-status]\nlineage:\n  owner:\n    team: service-team\n  created_at: \"2025-01-03\"\n  depends_on: []\n  depended_on_by: []\n"
+  },
+  "scan": {
+    "scannedAt": "2025-01-15T09:30:00Z",
+    "root": "example-library",
+    "files": 4,
+    "totalLoc": 120,
+    "anchoredFiles": [
+      {
+        "path": "src/catalog/search.ts",
+        "loc": 45
+      },
+      {
+        "path": "src/catalog/loan.ts",
+        "loc": 35
+      },
+      {
+        "path": "src/service/health.ts",
+        "loc": 20
+      }
+    ],
+    "unanchoredFiles": [
+      {
+        "path": "src/format.ts",
+        "loc": 20
+      }
+    ],
+    "anchors": {
+      "library/catalog/search": [
+        {
+          "path": "src/catalog/search.ts",
+          "line": 3,
+          "role": "primary",
+          "excerpt": "export function search() {}"
+        }
+      ],
+      "library/catalog/loan": [
+        {
+          "path": "src/catalog/loan.ts",
+          "line": 3,
+          "role": "primary",
+          "excerpt": "export function loan() {}"
+        }
+      ],
+      "operations/service/health": [
+        {
+          "path": "src/service/health.ts",
+          "line": 3,
+          "role": "primary",
+          "excerpt": "export function health() {}"
+        }
+      ]
+    },
+    "orphanAnchors": [],
+    "drift": []
+  },
+  "taxonomy": "schema_version: \"0.1\"\ndomains:\n  library:\n    title: Library\n    purpose: Help readers find and borrow fictional books.\n    capabilities:\n      catalog:\n        title: Catalogue\n        purpose: Search and loans.\n  operations:\n    title: Operations\n    purpose: Keep the example service available.\n    capabilities:\n      service:\n        title: Service\n        purpose: Readiness information.\n"
+}

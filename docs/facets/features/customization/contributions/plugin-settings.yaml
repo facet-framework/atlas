@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-settings
+lifecycle: active
+intent:
+  summary: Inspect installed plugins from the reader's settings.
+contract:
+  scenarios:
+    - id: plugin-settings
+      statement: |
+        Given the host reports an installed plugin
+        When the reader opens plugin settings
+        Then the page shows its entry
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

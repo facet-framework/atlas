@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-contributed-page
+lifecycle: active
+intent:
+  summary: Give plugins their own page in Atlas settings.
+contract:
+  scenarios:
+    - id: plugin-contributed-page
+      statement: |
+        Given an active plugin contributes a settings page
+        When the reader opens the contributed settings entry
+        Then the plugin's page renders inside Settings
+    - id: address-a-plugin-setting
+      statement: |
+        Given a plugin contributes a settings page
+        When the reader selects it from the Plugins settings group
+        Then its body opens at its own settings address
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-host.spec.tsx::lists a plugin's settings page in the group Plugins
+        and opens it at its address
+      proves:
+        - address-a-plugin-setting
+
+

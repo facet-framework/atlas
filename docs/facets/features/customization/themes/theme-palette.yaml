@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/themes/theme-palette
+lifecycle: active
+intent:
+  summary: Choose a palette for Atlas and retain it across visits.
+contract:
+  scenarios:
+    - id: themes
+      statement: |
+        Given a saved plugin palette that is unavailable in the current session
+        When the reader opens Atlas
+        Then the reader uses the default palette
+    - id: retain-an-unavailable-choice
+      statement: |
+        Given a saved palette belongs to an installed plugin that is disabled
+        When the reader opens Atlas
+        Then Atlas uses the default palette and keeps the saved palette choice
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-themes.spec.tsx::is drawn as FACET while its plugin is switched
+        off, and the choice stays stored
+      proves:
+        - retain-an-unavailable-choice
+
+

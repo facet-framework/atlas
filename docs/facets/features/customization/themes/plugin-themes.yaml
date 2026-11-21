@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/themes/plugin-themes
+lifecycle: active
+intent:
+  summary: Add a validated palette through a plugin.
+contract:
+  scenarios:
+    - id: plugin-themes
+      statement: |
+        Given a plugin contributes a valid palette
+        When the host registers it
+        Then the palette becomes available to the reader
+    - id: report-an-unknown-token
+      statement: |
+        Given a plugin attempts to contribute a palette containing an unknown token
+        When the reader opens plugin settings
+        Then the palette refusal identifies the token
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-themes.spec.tsx::is refused, and the plugins page says why beside
+        the plugin
+      proves:
+        - report-an-unknown-token
+
+

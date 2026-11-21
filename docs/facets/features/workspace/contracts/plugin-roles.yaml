@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: workspace/contracts/plugin-roles
+lifecycle: active
+intent:
+  summary: Let a plugin contribute a reader role.
+contract:
+  scenarios:
+    - id: plugin-roles
+      statement: |
+        Given an active plugin registers a role with a distinct identifier
+        When the role selector is opened
+        Then the contributed role is available for selection
+    - id: open-a-plugin-role
+      statement: |
+        Given a plugin contributes a reader role with an overview
+        When the reader selects the role
+        Then Atlas shows the plugin overview
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/plugin-host.spec.tsx::offers a plugin's role and draws its overview
+      proves:
+        - open-a-plugin-role
+
+

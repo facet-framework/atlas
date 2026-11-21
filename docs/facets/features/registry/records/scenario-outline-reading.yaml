@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/records/scenario-outline-reading
+lifecycle: active
+intent:
+  summary: Read example tables with the promises they illustrate.
+contract:
+  scenarios:
+    - id: scenario-outline-reading
+      statement: |
+        Given a promise with an examples block
+        When the reader opens the promise
+        Then the view shows its example columns and rows
+    - id: inherit-example-columns
+      statement: |
+        Given an outline has two example blocks and only the first declares columns
+        When the reader opens the record's promise
+        Then the second table uses the first table's column headings
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::draws every case under its block's headings,
+        the second block under the first one's columns
+      proves:
+        - inherit-example-columns
+
+

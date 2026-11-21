@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/navigation/shell
+lifecycle: active
+intent:
+  summary: Read the current Atlas page inside a shared application frame.
+contract:
+  scenarios:
+    - id: shell
+      statement: |
+        Given a loaded Atlas registry
+        When the reader selects a page
+        Then the shell displays the page with shared navigation
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

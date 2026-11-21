@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/catalogue/contents-catalogue
+lifecycle: active
+intent:
+  summary: Browse categories of registry content from one catalogue.
+contract:
+  scenarios:
+    - id: contents-catalogue
+      statement: |
+        Given a loaded registry
+        When the reader opens Contents
+        Then the catalogue shows tiles that lead to available content views
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

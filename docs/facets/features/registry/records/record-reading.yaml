@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/records/record-reading
+lifecycle: active
+intent:
+  summary: Read a record, its promises and its declared details.
+contract:
+  scenarios:
+    - id: record-reading
+      statement: |
+        Given a record with a declared promise
+        When the reader selects the promise
+        Then Atlas opens the promise's Given, When and Then steps
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

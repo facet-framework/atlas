@@ -1,0 +1,140 @@
+{
+  "id": "dmn",
+  "name": "DMN",
+  "version": "0.1.0-rc.1",
+  "license": "Apache-2.0",
+  "api": 0,
+  "entry": "src/plugin.js",
+  "description": "Decision tables, input gaps and scenario candidates.",
+  "areas": ["dmn"],
+  "slots": [],
+  "tools": [
+    "repo.list",
+    "repo.read",
+    "dmn.inspect",
+    "dmn.analyze",
+    "dmn.evaluate",
+    "facet.lint"
+  ],
+  "reads": [
+    {
+      "dir": "rules",
+      "ext": [".dmn"]
+    }
+  ],
+  "sidecar": {
+    "bin": "dmn",
+    "env": [],
+    "sha256": {}
+  },
+  "ai_tools": [
+    {
+      "tool": "dmn.inspect",
+      "description": "Read decisions, typed input domains and table rules from DMN XML.",
+      "input": {
+        "type": "object",
+        "required": ["xml"],
+        "properties": {
+          "xml": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "cases": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "type": "object",
+              "required": ["id", "inputs"],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "inputs": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "tool": "dmn.analyze",
+      "description": "Analyze supported decision tables for gaps, conflicts and unreachable or uncovered rules. Returns concrete scenario candidates, model digest and analysis limits. Candidates are not verified promises.",
+      "input": {
+        "type": "object",
+        "required": ["xml", "decision"],
+        "properties": {
+          "xml": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "cases": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "type": "object",
+              "required": ["id", "inputs"],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "inputs": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "tool": "dmn.evaluate",
+      "description": "Evaluate explicit typed inputs against a supported DMN decision table, returning contributing rules and outputs.",
+      "input": {
+        "type": "object",
+        "required": ["xml", "decision", "inputs"],
+        "properties": {
+          "xml": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "cases": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "type": "object",
+              "required": ["id", "inputs"],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "inputs": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  ]
+}

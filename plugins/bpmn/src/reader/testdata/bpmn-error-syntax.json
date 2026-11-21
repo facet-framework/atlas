@@ -1,0 +1,5 @@
+{
+  "path": "docs/bpmn/kaputt.bpmn",
+  "xml": "<?xml version=\"1.0\"?>\n<definitions xmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\">\n  <process id=\"p\">\n    <task id=\"t\" name=\"x\">\n  </process>\n</definitions>\n",
+  "error": "docs/bpmn/kaputt.bpmn: bpmn: not a BPMN 2.0 document: XML syntax error on line 5: element <task> closed by </process>"
+}

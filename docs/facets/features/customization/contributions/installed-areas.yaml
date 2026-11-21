@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/contributions/installed-areas
+lifecycle: active
+intent:
+  summary: Open an installed plugin's area from the reader.
+contract:
+  scenarios:
+    - id: installed-areas
+      statement: |
+        Given an installed plugin contributes an area
+        When the reader opens its area address
+        Then Atlas renders the plugin's area view
+    - id: open-a-place-in-an-installed-area
+      statement: |
+        Given an installed area is open
+        When the reader selects another model inside that area
+        Then the view and address reflect the new model
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/installed-plugin.spec.tsx::loads an installed area and keeps its selected
+        model in the address
+      proves:
+        - open-a-place-in-an-installed-area
+
+

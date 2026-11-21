@@ -1,0 +1,23 @@
+schema_version: '0.1'
+id: workspace/hosting/scan-progress
+lifecycle: active
+intent:
+  summary: Follow the scan while Atlas indexes a repository.
+contract:
+  scenarios:
+    - id: scan-progress
+      statement: |
+        Given a registry being scanned
+        When the scan reports its current stage
+        Then the host streams a progress event to the reader
+verification:
+  unit_tests:
+    - id: backend/server/server_test.go::TestStreamEndsWithTheWholeCorpus
+      proves:
+        - scan-progress
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

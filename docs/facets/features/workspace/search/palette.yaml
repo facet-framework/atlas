@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: workspace/search/palette
+lifecycle: active
+intent:
+  summary: Search records, promises, files and commands from one palette.
+contract:
+  scenarios:
+    - id: palette
+      statement: |
+        Given the search index contains a matching record
+        When the reader searches for its identifier
+        Then the palette offers the record as a selectable result
+    - id: report-no-matches-for-one-kind
+      statement: |
+        Given the palette is filtered to records
+        When the reader enters a query with no matches
+        Then the palette names the selected kind and offers no result rows
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/palette.spec.tsx::names the chosen kind when nothing in it matches
+      proves:
+        - report-no-matches-for-one-kind
+
+

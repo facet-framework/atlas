@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/controls/switch
+lifecycle: active
+intent:
+  summary: Change on or off preferences in Settings.
+contract:
+  scenarios:
+    - id: switch
+      statement: |
+        Given a reader preference displayed as a switch
+        When the reader activates the switch
+        Then its checked state changes
+    - id: save-follow-preference
+      statement: |
+        Given the user opens the AI settings
+        When the user toggles the follow-answer switch
+        Then Atlas stores the new preference
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/settings-language.spec.tsx::turns following the answer off and on again
+        and stores each choice
+      proves:
+        - save-follow-preference
+
+

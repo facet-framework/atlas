@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/contracts/plugin-areas
+lifecycle: active
+intent:
+  summary: Register navigable areas through the Atlas plugin API.
+contract:
+  scenarios:
+    - id: plugin-areas
+      statement: |
+        Given a plugin registers an area with a distinct identifier
+        When the reader builds navigation
+        Then the contributed area is included
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

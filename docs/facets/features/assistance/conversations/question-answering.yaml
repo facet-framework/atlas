@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: assistance/conversations/question-answering
+lifecycle: active
+intent:
+  summary: Ask the Companion about the repository open in Atlas.
+contract:
+  scenarios:
+    - id: question-answering
+      statement: |
+        Given an available companion and a repository open in Atlas
+        When a reader submits a question
+        Then the host runs the agent in the repository
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

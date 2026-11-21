@@ -1,0 +1,30 @@
+@import "@facet-tools/ui/tokens.css";
+
+/** The reader's own sheet. Everything else Atlas draws comes from the FACET
+ * design system (`facet-ui/styles.css`) or from a surface's own sheet beside
+ * its component, each reading only `--t-` tokens. */
+
+/** The reader fills the window. */
+html,
+body,
+#atlas {
+  height: 100%;
+  margin: 0;
+}
+
+html[data-atlas="reader"],
+html[data-atlas="reader"] body,
+html[data-atlas="reader"] #atlas {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
+/** The Overview's role sections continue the page below the role body: the
+ *    page above leaves its bottom room to them, and they keep the gap of a section. */
+.t-a-overview:has(+ .overview-tail) {
+  padding-bottom: 0;
+}
+.overview-tail {
+  padding-top: var(--t-s-6);
+}

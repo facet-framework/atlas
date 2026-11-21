@@ -1,0 +1,44 @@
+schema_version: '0.1'
+id: workspace/navigation/mobile
+lifecycle: active
+intent:
+  summary: Reach Atlas navigation and controls on narrow screens.
+contract:
+  scenarios:
+    - id: mobile
+      statement: |
+        Given Atlas is open at phone width
+        When the reader uses the mobile navigation
+        Then the tab bar offers the main destinations
+    - id: use-the-mobile-tab-bar
+      statement: |
+        Given the reader is open at phone width
+        When the user selects Product or Records in the tab bar
+        Then Atlas opens the selected page
+    - id: one-mobile-ask-action
+      statement: |
+        Given the mobile tab bar offers Ask
+        When Atlas is open at phone width
+        Then the floating Ask action is not shown
+    - id: compact-low-height-navigation
+      statement: |
+        Given Atlas is open in a narrow low-height viewport
+        When the navigation chrome is shown
+        Then the top bar and tab bar use their compact layout
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/mobile.spec.tsx::reaches the first three areas from the tab bar
+      proves:
+        - use-the-mobile-tab-bar
+    - id: frontend/src/reader/mobile.spec.tsx::shows one Ask action in the tab bar and no floating Ask pill
+      proves:
+        - one-mobile-ask-action
+    - id: frontend/src/reader/mobile.spec.tsx::marks the top and tab bars for the compact mobile layout
+      proves:
+        - compact-low-height-navigation
+
+

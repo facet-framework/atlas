@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: registry/records/unmeasured
+lifecycle: active
+intent:
+  summary: Distinguish unavailable content counts from measured zeroes.
+contract:
+  scenarios:
+    - id: unmeasured
+      statement: |
+        Given data for a content count is unavailable
+        When Atlas prepares the catalogue
+        Then the count is displayed as unmeasured
+    - id: knowledge-without-a-declaration-is-unmeasured
+      statement: |
+        Given no record declares a Knowledge block
+        When Atlas shows Knowledge on the Contents and Records pages
+        Then the Knowledge values are shown as unmeasured
+verification:
+  unit_tests:
+    - id: frontend/src/reader/unmeasured.spec.tsx::shows undeclared Knowledge as unmeasured on the author, Records and Contents surfaces
+      proves:
+        - knowledge-without-a-declaration-is-unmeasured
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

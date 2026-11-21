@@ -1,0 +1,93 @@
+schema_version: '0.1'
+domains:
+  workspace:
+    title: Workspace
+    purpose: >-
+      The application readers work in: frame, navigation, search, settings, hosting, and the contracts other domains dock onto.
+    classification: generic
+    owner:
+      team: atlas
+    capabilities:
+      navigation:
+        title: Navigation
+        purpose: Move between addressable places in the reader and retrace navigation history.
+      search:
+        title: Search
+        purpose: Find project material and invoke available commands from the reader.
+      settings:
+        title: Settings
+        purpose: Give readers a common place to find and use settings contributed by each domain.
+      controls:
+        title: Controls
+        purpose: Give reader surfaces consistent interaction, markup, and styling.
+      hosting:
+        title: Hosting
+        purpose: Serve the reader and its registry data with visible scan progress.
+      contracts:
+        title: Contracts
+        purpose: Own the published, versioned contracts for reader labels, slots, areas, and roles.
+  registry:
+    title: Registry
+    purpose: >-
+      Shows a registry's records, promises, drift and evidence exactly as measured; what is not measured stays marked unmeasured.
+    classification: core
+    owner:
+      team: atlas
+    capabilities:
+      records:
+        title: Records
+        purpose: Read records, promises, drift, evidence, and source while keeping unmeasured values visible.
+      catalogue:
+        title: Catalogue
+        purpose: Browse registry content and find referenced material.
+      coverage:
+        title: Coverage
+        purpose: Explore product structure and see where source anchors cover it.
+      perspectives:
+        title: Perspectives
+        purpose: Explore registry accountability and evidence through role views and workbenches.
+  assistance:
+    title: Assistance
+    purpose: >-
+      Helps the reader actively, above all by answering questions about the project with sources the reader can check.
+    classification: supporting
+    owner:
+      team: atlas
+    capabilities:
+      conversations:
+        title: Conversations
+        purpose: Ask project questions, check the sources, and manage the resulting conversation.
+      briefings:
+        title: Briefings
+        purpose: Offer generated guidance in the overview and other reader surfaces.
+      preferences:
+        title: Preferences
+        purpose: Control agent permissions and how AI notes appear in the reader.
+  customization:
+    title: Customization
+    purpose: >-
+      Adapt Atlas without changing its source code.
+    classification: supporting
+    owner:
+      team: atlas
+    capabilities:
+      plugins:
+        title: Plugins
+        purpose: Package, install, verify, authorize, and load Atlas extensions.
+      execution:
+        title: Execution
+        purpose: Run extension requests, tools, sidecars, and events through the plugin runtime.
+      contributions:
+        title: Contributions
+        purpose: Use installed extensions to add places, commands, settings, and other reader features.
+      documents:
+        title: Documents
+        purpose: Use bundled extensions to explore project decisions and processes and find their contribution paths.
+      themes:
+        title: Themes
+        purpose: Contribute validated palettes and choose the appearance of the reader.
+      languages:
+        title: Languages
+        purpose: Choose the reader language and see translated labels.
+
+

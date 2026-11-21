@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: customization/documents/bpmn-plugin
+lifecycle: active
+intent:
+  summary: Turn a BPMN diagram into a drawing Atlas can display.
+contract:
+  scenarios:
+    - id: bpmn-plugin
+      statement: |
+        Given a supported BPMN document containing diagram geometry
+        When the bundled sidecar receives a diagram request
+        Then it returns a drawing model using the document's geometry
+    - id: refuse-unsupported-input
+      statement: |
+        Given a diagram request containing a named file without a BPMN document
+        When the sidecar handles the request
+        Then it returns a refusal identifying the file
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: plugins/bpmn/sidecar/bpmn/main_test.go::TestTheHostGetsADrawingModelFromTheRealProcess
+      proves:
+        - refuse-unsupported-input
+
+

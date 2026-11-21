@@ -1,0 +1,41 @@
+schema_version: '0.1'
+id: registry/perspectives/role-views
+lifecycle: active
+intent:
+  summary: See an overview tailored to the selected reader role.
+contract:
+  scenarios:
+    - id: role-views
+      statement: |
+        Given a loaded registry with role views
+        When the reader changes role
+        Then the overview presents the sections for that role
+    - id: agent-gate-follows-lint-results
+      statement: |
+        Given lint reports an orphan anchor
+        When a reader opens the Agent overview
+        Then the commit gate is closed
+        And the anchor check is failed
+    - id: agent-gate-can-be-unmeasured
+      statement: |
+        Given lint input was not measured
+        When a reader opens the Agent overview
+        Then the commit gate and checks are shown as unmeasured
+verification:
+  unit_tests:
+    - id: frontend/src/reader/reader-role.spec.tsx::rearranges the Overview on a choice, closes the
+        menu and names the role in the bar
+      proves:
+        - role-views
+    - id: frontend/src/reader/role-views.spec.tsx::closes the agent gate for an orphan anchor
+      proves:
+        - agent-gate-follows-lint-results
+    - id: frontend/src/reader/role-views.spec.tsx::leaves agent checks unmeasured when lint input is absent
+      proves:
+        - agent-gate-can-be-unmeasured
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GOFLAGS: -mod=readonly -p=2
+      GOPROXY: https://proxy.golang.org
+      GOWORK: off
+      FACET_REQUIRE_UI: "1"
+      CGO_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - name: Install pnpm
+        run: npm install --global pnpm@10.33.0
+      - name: Install browser dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        working-directory: frontend
+        run: pnpm typecheck
+      - name: Lint
+        working-directory: frontend
+        run: pnpm lint
+      - name: Check formatting
+        working-directory: frontend
+        run: pnpm format:check
+      - name: Test with coverage thresholds
+        working-directory: frontend
+        run: pnpm test:coverage --runInBand
+      - name: Build browser
+        working-directory: frontend
+        run: pnpm build
+      - name: Synchronize reader assets
+        run: |
+          mkdir -p backend/server/assets
+          cp frontend/dist/index.html frontend/dist/atlas.js frontend/dist/atlas.css frontend/dist/theme-init.js backend/server/assets/
+      - name: Build, vet and test Go modules
+        run: sh scripts/check-go.sh
+      - name: Check release tooling and workflows
+        run: sh scripts/check-release.sh
+      - name: Package and smoke check Linux archive
+        run: |
+          version=$(node -p "require('./frontend/package.json').version")
+          sh scripts/release-package.sh "$version" linux_amd64 dist/release
+          sh scripts/release-smoke.sh dist/release linux_amd64
+
+  facet-lint:
+    name: facet lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Validate every registry file
+        shell: bash
+        run: |
+          test -f .facetrc.yaml
+          test -d docs/facets
+          npx --yes facet-framework@0.1.0-rc.2 lint 2>&1 | tee "$RUNNER_TEMP/facet-lint.log"
+          want=$(find docs/facets -type f -name '*.yaml' ! -name taxonomy.yaml | wc -l)
+          got=$(sed -nE 's/^([0-9]+) record\(s\), [0-9]+ anchor\(s\) checked.*/\1/p' "$RUNNER_TEMP/facet-lint.log")
+          test -n "$got"
+          echo "Validated $got of $want record files"
+          test "$want" -gt 0
+          test "$got" -eq "$want"

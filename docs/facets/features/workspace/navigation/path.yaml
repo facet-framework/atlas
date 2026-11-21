@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: workspace/navigation/path
+lifecycle: active
+intent:
+  summary: Navigate from a page through the links in its path.
+contract:
+  scenarios:
+    - id: path
+      statement: |
+        Given a contents detail page with a parent link
+        When the reader selects the parent segment
+        Then the catalogue opens
+    - id: open-a-sibling
+      statement: |
+        Given the reader is on a record page with sibling capabilities in its domain
+        When the reader opens the capability's sibling menu and chooses an entry
+        Then Atlas opens the chosen capability
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/pages.spec.tsx::offers the record's siblings from the path
+      proves:
+        - open-a-sibling
+
+

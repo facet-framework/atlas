@@ -1,0 +1,9 @@
+#!/bin/sh
+# Build, vet and test the Atlas Go module: sh scripts/check-go.sh.
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+export GOWORK=off GOPROXY=https://proxy.golang.org
+sh "$root/scripts/build-sidecars.sh"
+go -C "$root" build -mod=readonly ./...
+go -C "$root" vet -mod=readonly ./...
+go -C "$root" test -mod=readonly ./...

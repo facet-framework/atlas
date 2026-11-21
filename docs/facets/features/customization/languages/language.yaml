@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/languages/language
+lifecycle: active
+intent:
+  summary: Use the selected language throughout the reader.
+contract:
+  scenarios:
+    - id: language
+      statement: |
+        Given the reader has selected a supported language
+        When the active language changes
+        Then the reader refreshes the visible labels
+    - id: update-mounted-labels
+      statement: |
+        Given the Contents page and reader shell are mounted
+        When the active language changes
+        Then the mounted navigation, role and contents labels reflect the selected language
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: 'frontend/src/reader/settings-language.spec.tsx::moves the mounted surface with the switch
+        and back: deep labels, the role, the chat'
+      proves:
+        - update-mounted-labels
+
+

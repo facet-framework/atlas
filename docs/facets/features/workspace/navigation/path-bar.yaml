@@ -1,0 +1,44 @@
+schema_version: '0.1'
+id: workspace/navigation/path-bar
+lifecycle: active
+intent:
+  summary: See where the current record sits within the product and repository revision.
+contract:
+  scenarios:
+    - id: path-bar
+      statement: |
+        Given a feature inside a domain and capability
+        When the reader opens its record
+        Then the path shows the feature's position in the product
+    - id: open-a-record-domain
+      statement: |
+        Given the reader is on a record page
+        When the reader selects the domain in its path
+        Then the domain page opens
+    - id: show-the-repository-revision
+      statement: |
+        Given repository state includes a name, branch and commit
+        When the reader opens the Overview
+        Then the repository state line shows that repository revision
+    - id: show-read-repository-history
+      statement: |
+        Given repository history was read
+        When the reader opens recent changes or a record history
+        Then the matching commits are shown
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/pages.spec.tsx::walks the record's breadcrumbs back to the domain
+      proves:
+        - open-a-record-domain
+    - id: frontend/src/reader/top-bar.spec.tsx::shows the repository name, branch and abbreviated commit
+      proves:
+        - show-the-repository-revision
+    - id: frontend/src/reader/top-bar.spec.tsx::shows one read commit in Recently changed and the matching record History
+      proves:
+        - show-read-repository-history
+
+

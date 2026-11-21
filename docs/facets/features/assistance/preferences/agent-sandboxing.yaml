@@ -1,0 +1,28 @@
+schema_version: '0.1'
+id: assistance/preferences/agent-sandboxing
+lifecycle: active
+intent:
+  summary: Run repository questions with the Atlas profile and a restricted tool set.
+contract:
+  scenarios:
+    - id: agent-sandboxing
+      statement: |
+        Given an available companion
+        When the host launches an answer run
+        Then the agent receives the Atlas profile and repository settings are excluded
+    - id: exclude-repository-settings
+      statement: |
+        Given an available Companion and a repository
+        When the host starts the agent
+        Then the agent is started with an empty settings-source list and strict MCP configuration
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: backend/server/companion_test.go::TestTheCompanionLoadsNoneOfTheRepositorysConfiguration
+      proves:
+        - exclude-repository-settings
+
+

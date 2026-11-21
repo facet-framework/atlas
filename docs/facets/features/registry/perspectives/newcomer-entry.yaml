@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/perspectives/newcomer-entry
+lifecycle: active
+intent:
+  summary: Start exploring a project through the newcomer overview.
+contract:
+  scenarios:
+    - id: newcomer-entry
+      statement: |
+        Given a loaded registry and the newcomer role
+        When the reader opens Overview
+        Then the page presents entry points for readers new to the project
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

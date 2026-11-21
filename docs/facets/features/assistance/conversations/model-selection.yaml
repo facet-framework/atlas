@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/model-selection
+lifecycle: active
+intent:
+  summary: Choose an available model for a Companion question.
+contract:
+  scenarios:
+    - id: model-selection
+      statement: |
+        Given a question with an accepted model choice
+        When the host starts the agent
+        Then the agent receives that model choice
+    - id: submit-selected-model
+      statement: |
+        Given the Companion composer offers a choice of models
+        When the reader chooses a model and asks a question
+        Then the browser request includes the selected model
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat.spec.tsx::opens the model menu, sends the picked model, and closes
+        on Esc
+      proves:
+        - submit-selected-model
+
+

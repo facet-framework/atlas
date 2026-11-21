@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/catalogue/reference-lookup
+lifecycle: active
+intent:
+  summary: Look up project terms and follow their references.
+contract:
+  scenarios:
+    - id: reference-lookup
+      statement: |
+        Given a glossary term with a reference to an existing feature
+        When the reader opens the term
+        Then its details offer a link to the feature
+    - id: retain-the-current-record
+      statement: |
+        Given a record with a linked glossary term in its prose
+        When the reader opens the term
+        Then the definition and referenced record link appear beside the current record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::opens a term from the record's prose
+        beside the page, and the record stays
+      proves:
+        - retain-the-current-record
+
+

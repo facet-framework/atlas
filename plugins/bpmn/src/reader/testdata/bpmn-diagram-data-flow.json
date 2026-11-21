@@ -1,0 +1,650 @@
+{
+  "id": "Defs_BpmnPlugin",
+  "name": "BPMN plugin data flow",
+  "diagrams": [
+    {
+      "id": "D_Datenweg",
+      "name": "Datenweg",
+      "bounds": {
+        "x": 80,
+        "y": 20,
+        "w": 1020,
+        "h": 650
+      },
+      "shapes": [
+        {
+          "id": "P_Leser_di",
+          "element": "P_Leser",
+          "kind": "participant",
+          "name": "Atlas (Browser)",
+          "form": "pool",
+          "x": 100,
+          "y": 40,
+          "w": 980,
+          "h": 230,
+          "border": "single",
+          "label": {
+            "x": 100,
+            "y": 40,
+            "w": 30,
+            "h": 230,
+            "lines": ["Atlas (Browser)"],
+            "vertical": true
+          }
+        },
+        {
+          "id": "P_Host_di",
+          "element": "P_Host",
+          "kind": "participant",
+          "name": "facet ui (Host)",
+          "form": "pool",
+          "x": 100,
+          "y": 310,
+          "w": 980,
+          "h": 150,
+          "border": "single",
+          "label": {
+            "x": 100,
+            "y": 310,
+            "w": 30,
+            "h": 150,
+            "lines": ["facet ui (Host)"],
+            "vertical": true
+          }
+        },
+        {
+          "id": "P_Sidecar_di",
+          "element": "P_Sidecar",
+          "kind": "participant",
+          "name": "bpmn (Sidecar)",
+          "form": "pool",
+          "x": 100,
+          "y": 500,
+          "w": 980,
+          "h": 150,
+          "border": "single",
+          "label": {
+            "x": 100,
+            "y": 500,
+            "w": 30,
+            "h": 150,
+            "lines": ["bpmn (Sidecar)"],
+            "vertical": true
+          }
+        },
+        {
+          "id": "S_Wahl_di",
+          "element": "S_Wahl",
+          "kind": "startEvent",
+          "name": "File selected",
+          "form": "circle",
+          "x": 162,
+          "y": 102,
+          "w": 36,
+          "h": 36,
+          "border": "single",
+          "label": {
+            "x": 135,
+            "y": 143,
+            "w": 90,
+            "h": 13,
+            "lines": ["File selected"]
+          }
+        },
+        {
+          "id": "T_Lesen_di",
+          "element": "T_Lesen",
+          "kind": "userTask",
+          "name": "Request file reading",
+          "form": "roundrect",
+          "x": 240,
+          "y": 80,
+          "w": 110,
+          "h": 80,
+          "border": "single",
+          "symbol": "user",
+          "label": {
+            "x": 245,
+            "y": 105,
+            "w": 100,
+            "h": 50,
+            "lines": ["Request file", "reading"]
+          }
+        },
+        {
+          "id": "T_Uebergeben_di",
+          "element": "T_Uebergeben",
+          "kind": "task",
+          "name": "Send text to the sidecar",
+          "form": "roundrect",
+          "x": 460,
+          "y": 80,
+          "w": 110,
+          "h": 80,
+          "border": "single",
+          "label": {
+            "x": 465,
+            "y": 85,
+            "w": 100,
+            "h": 70,
+            "lines": ["Send text to", "the sidecar"]
+          }
+        },
+        {
+          "id": "G_Ok_di",
+          "element": "G_Ok",
+          "kind": "exclusiveGateway",
+          "name": "drawn?",
+          "form": "diamond",
+          "x": 625,
+          "y": 95,
+          "w": 50,
+          "h": 50,
+          "border": "single",
+          "symbol": "exclusive",
+          "label": {
+            "x": 605,
+            "y": 150,
+            "w": 90,
+            "h": 13,
+            "lines": ["drawn?"]
+          }
+        },
+        {
+          "id": "T_Zeichnen_di",
+          "element": "T_Zeichnen",
+          "kind": "task",
+          "name": "Draw SVG, list warnings",
+          "form": "roundrect",
+          "x": 740,
+          "y": 60,
+          "w": 120,
+          "h": 70,
+          "border": "single",
+          "label": {
+            "x": 745,
+            "y": 65,
+            "w": 110,
+            "h": 60,
+            "lines": ["Draw SVG,", "list warnings"]
+          }
+        },
+        {
+          "id": "T_Fehler_di",
+          "element": "T_Fehler",
+          "kind": "task",
+          "name": "Show this file error",
+          "form": "roundrect",
+          "x": 740,
+          "y": 170,
+          "w": 120,
+          "h": 70,
+          "border": "single",
+          "label": {
+            "x": 745,
+            "y": 175,
+            "w": 110,
+            "h": 60,
+            "lines": ["Show this", "file error"]
+          }
+        },
+        {
+          "id": "E_Fertig_di",
+          "element": "E_Fertig",
+          "kind": "endEvent",
+          "name": "visible",
+          "form": "circle",
+          "x": 952,
+          "y": 117,
+          "w": 36,
+          "h": 36,
+          "border": "thick",
+          "filled": true,
+          "label": {
+            "x": 925,
+            "y": 158,
+            "w": 90,
+            "h": 13,
+            "lines": ["visible"]
+          }
+        },
+        {
+          "id": "T_Pruefen_di",
+          "element": "T_Pruefen",
+          "kind": "serviceTask",
+          "name": "Check path and extension against the manifest",
+          "form": "roundrect",
+          "x": 240,
+          "y": 345,
+          "w": 110,
+          "h": 80,
+          "border": "single",
+          "symbol": "service",
+          "label": {
+            "x": 245,
+            "y": 370,
+            "w": 100,
+            "h": 50,
+            "lines": ["Path and extension", "against the", "manifest"]
+          }
+        },
+        {
+          "id": "T_Vermitteln_di",
+          "element": "T_Vermitteln",
+          "kind": "serviceTask",
+          "name": "Check checksum, forward call",
+          "form": "roundrect",
+          "x": 460,
+          "y": 345,
+          "w": 110,
+          "h": 80,
+          "border": "single",
+          "symbol": "service",
+          "label": {
+            "x": 465,
+            "y": 370,
+            "w": 100,
+            "h": 50,
+            "lines": ["Check checksum", "and forward", "call"]
+          }
+        },
+        {
+          "id": "TA_Host_di",
+          "element": "TA_Host",
+          "kind": "textAnnotation",
+          "name": "docs/bpmn, .bpmn only",
+          "form": "bracket",
+          "x": 620,
+          "y": 360,
+          "w": 160,
+          "h": 40,
+          "border": "single",
+          "label": {
+            "x": 625,
+            "y": 360,
+            "w": 150,
+            "h": 40,
+            "lines": ["docs/bpmn, .bpmn only"],
+            "align": "left"
+          }
+        },
+        {
+          "id": "T_Parsen_di",
+          "element": "T_Parsen",
+          "kind": "scriptTask",
+          "name": "XML to drawing model",
+          "form": "roundrect",
+          "x": 460,
+          "y": 535,
+          "w": 110,
+          "h": 80,
+          "border": "single",
+          "symbol": "script",
+          "label": {
+            "x": 465,
+            "y": 560,
+            "w": 100,
+            "h": 50,
+            "lines": ["XML to", "drawing model"]
+          }
+        },
+        {
+          "id": "TA_Sidecar_di",
+          "element": "TA_Sidecar",
+          "kind": "textAnnotation",
+          "name": "no environment, file or network",
+          "form": "bracket",
+          "x": 620,
+          "y": 550,
+          "w": 220,
+          "h": 40,
+          "border": "single",
+          "label": {
+            "x": 625,
+            "y": 550,
+            "w": 210,
+            "h": 40,
+            "lines": ["no environment, file or", "network"],
+            "align": "left"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "F1_di",
+          "element": "F1",
+          "kind": "sequenceFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 198,
+              "y": 120
+            },
+            {
+              "x": 240,
+              "y": 120
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow"
+        },
+        {
+          "id": "F2_di",
+          "element": "F2",
+          "kind": "sequenceFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 350,
+              "y": 120
+            },
+            {
+              "x": 460,
+              "y": 120
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow"
+        },
+        {
+          "id": "F3_di",
+          "element": "F3",
+          "kind": "sequenceFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 570,
+              "y": 120
+            },
+            {
+              "x": 625,
+              "y": 120
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow"
+        },
+        {
+          "id": "F_Ja_di",
+          "element": "F_Ja",
+          "kind": "sequenceFlow",
+          "name": "yes",
+          "points": [
+            {
+              "x": 650,
+              "y": 95
+            },
+            {
+              "x": 650,
+              "y": 95
+            },
+            {
+              "x": 740,
+              "y": 95
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow",
+          "label": {
+            "x": 680,
+            "y": 78,
+            "w": 30,
+            "h": 14,
+            "lines": ["yes"]
+          }
+        },
+        {
+          "id": "F_Fehler_di",
+          "element": "F_Fehler",
+          "kind": "sequenceFlow",
+          "name": "no",
+          "points": [
+            {
+              "x": 650,
+              "y": 145
+            },
+            {
+              "x": 650,
+              "y": 205
+            },
+            {
+              "x": 740,
+              "y": 205
+            }
+          ],
+          "stroke": "solid",
+          "start": "slash",
+          "end": "arrow",
+          "label": {
+            "x": 655,
+            "y": 188,
+            "w": 30,
+            "h": 14,
+            "lines": ["no"]
+          }
+        },
+        {
+          "id": "F4_di",
+          "element": "F4",
+          "kind": "sequenceFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 860,
+              "y": 95
+            },
+            {
+              "x": 970,
+              "y": 95
+            },
+            {
+              "x": 970,
+              "y": 117
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow"
+        },
+        {
+          "id": "F5_di",
+          "element": "F5",
+          "kind": "sequenceFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 860,
+              "y": 205
+            },
+            {
+              "x": 970,
+              "y": 205
+            },
+            {
+              "x": 970,
+              "y": 153
+            }
+          ],
+          "stroke": "solid",
+          "end": "arrow"
+        },
+        {
+          "id": "MF_Read_di",
+          "element": "MF_Read",
+          "kind": "messageFlow",
+          "name": "repo.read",
+          "points": [
+            {
+              "x": 275,
+              "y": 160
+            },
+            {
+              "x": 275,
+              "y": 345
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow",
+          "label": {
+            "x": 215,
+            "y": 245,
+            "w": 55,
+            "h": 14,
+            "lines": ["repo.read"]
+          }
+        },
+        {
+          "id": "MF_Body_di",
+          "element": "MF_Body",
+          "kind": "messageFlow",
+          "name": "Text",
+          "points": [
+            {
+              "x": 315,
+              "y": 345
+            },
+            {
+              "x": 315,
+              "y": 160
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow",
+          "label": {
+            "x": 320,
+            "y": 245,
+            "w": 40,
+            "h": 14,
+            "lines": ["Text"]
+          }
+        },
+        {
+          "id": "MF_Diagram_di",
+          "element": "MF_Diagram",
+          "kind": "messageFlow",
+          "name": "bpmn.diagram",
+          "points": [
+            {
+              "x": 495,
+              "y": 160
+            },
+            {
+              "x": 495,
+              "y": 345
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow",
+          "label": {
+            "x": 410,
+            "y": 245,
+            "w": 80,
+            "h": 14,
+            "lines": ["bpmn.diagram"]
+          }
+        },
+        {
+          "id": "MF_Reply_di",
+          "element": "MF_Reply",
+          "kind": "messageFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 535,
+              "y": 345
+            },
+            {
+              "x": 535,
+              "y": 160
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow"
+        },
+        {
+          "id": "MF_Call_di",
+          "element": "MF_Call",
+          "kind": "messageFlow",
+          "name": "",
+          "points": [
+            {
+              "x": 495,
+              "y": 425
+            },
+            {
+              "x": 495,
+              "y": 535
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow"
+        },
+        {
+          "id": "MF_Model_di",
+          "element": "MF_Model",
+          "kind": "messageFlow",
+          "name": "drawing model",
+          "points": [
+            {
+              "x": 535,
+              "y": 535
+            },
+            {
+              "x": 535,
+              "y": 425
+            }
+          ],
+          "stroke": "dashed",
+          "start": "circle",
+          "end": "open-arrow",
+          "label": {
+            "x": 540,
+            "y": 470,
+            "w": 90,
+            "h": 14,
+            "lines": ["drawing model"]
+          }
+        },
+        {
+          "id": "A_Host_di",
+          "element": "A_Host",
+          "kind": "association",
+          "name": "",
+          "points": [
+            {
+              "x": 620,
+              "y": 380
+            },
+            {
+              "x": 350,
+              "y": 385
+            }
+          ],
+          "stroke": "dotted"
+        },
+        {
+          "id": "A_Sidecar_di",
+          "element": "A_Sidecar",
+          "kind": "association",
+          "name": "",
+          "points": [
+            {
+              "x": 620,
+              "y": 570
+            },
+            {
+              "x": 570,
+              "y": 575
+            }
+          ],
+          "stroke": "dotted"
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

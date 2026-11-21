@@ -1,0 +1,37 @@
+schema_version: '0.1'
+id: registry/perspectives/author-knowledge
+lifecycle: active
+intent:
+  summary: See which records have missing authoring fields.
+contract:
+  scenarios:
+    - id: author-knowledge
+      statement: |
+        Given a registry containing gaps in authored fields
+        When a reader opens the author overview
+        Then the page shows a record-by-field coverage table
+    - id: distinguish-missing-fields
+      statement: |
+        Given records with missing scenario, owner or intent fields
+        When the reader opens the Record Author overview
+        Then the table identifies which field is missing for each record
+    - id: undeclared-knowledge-is-unmeasured
+      statement: |
+        Given no record declares a Knowledge block
+        When a reader opens the Record Author overview
+        Then Knowledge is shown as unmeasured
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/overview-workbench.spec.tsx::measures intent, scenarios and owner on
+        the record's own fields
+      proves:
+        - distinguish-missing-fields
+    - id: frontend/src/reader/unmeasured.spec.tsx::shows undeclared Knowledge as unmeasured on the author, Records and Contents surfaces
+      proves:
+        - undeclared-knowledge-is-unmeasured
+
+

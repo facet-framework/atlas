@@ -1,0 +1,66 @@
+{
+  "name": "@facet-tools/atlas",
+  "version": "0.1.0-rc.1",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "description": "FACET Atlas: a browser application for FACET registries.",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "tsup --config tsup.standalone.config.ts",
+    "lint": "eslint --max-warnings 0 . && (cd ../plugins && eslint --config shared/eslint.config.mjs --max-warnings 0 .) && pnpm i18n:lint",
+    "i18n:lint": "node --test scripts/i18n-source.test.mjs scripts/i18n-keys.test.mjs && node scripts/i18n-lint.mjs && node scripts/i18n-keys.mjs --check",
+    "i18n:sync": "node scripts/i18n-lint.mjs --write && node scripts/i18n-keys.mjs --check",
+    "format": "prettier --write . && (cd ../plugins && prettier --write .)",
+    "format:check": "prettier --check . && (cd ../plugins && prettier --check .)",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "postinstall": "node scripts/link-plugin-dependencies.mjs"
+  },
+  "dependencies": {
+    "@joplin/turndown-plugin-gfm": "1.0.68",
+    "i18next": "^26.4.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-i18next": "^17.0.14",
+    "turndown": "7.2.4",
+    "@facet-tools/ui": "0.1.0-rc.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@types/turndown": "5.0.6",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jest": "^29.16.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.8.0",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.65.0",
+    "ts-jest": "29.4.12"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.23"
+    }
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facet-framework/atlas.git"
+  },
+  "homepage": "https://github.com/facet-framework/atlas#readme"
+}

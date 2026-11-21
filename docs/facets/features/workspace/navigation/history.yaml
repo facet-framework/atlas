@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: workspace/navigation/history
+lifecycle: active
+intent:
+  summary: Return to previous places visited in Atlas.
+contract:
+  scenarios:
+    - id: history
+      statement: |
+        Given the reader has opened two distinct places
+        When the reader uses Back
+        Then Atlas restores the previous place
+    - id: skip-filter-changes
+      statement: |
+        Given the reader has navigated to the Records page
+        When the reader types a filter and then uses Back
+        Then the filter creates no history entry and Back returns to the preceding page
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/history-keys.spec.tsx::leaves no step for a typed filter, so back leaves
+        the page
+      proves:
+        - skip-filter-changes
+
+

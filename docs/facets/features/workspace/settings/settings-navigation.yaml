@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: workspace/settings/settings-navigation
+lifecycle: active
+intent:
+  summary: Browse settings grouped by purpose.
+contract:
+  scenarios:
+    - id: settings-navigation
+      statement: |
+        Given the reader opens Settings
+        When the reader selects a settings section
+        Then the corresponding section opens
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

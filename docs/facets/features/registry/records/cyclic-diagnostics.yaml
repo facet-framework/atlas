@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/records/cyclic-diagnostics
+lifecycle: active
+intent:
+  summary: Inspect cyclic relationships reported in the registry.
+contract:
+  scenarios:
+    - id: cyclic-diagnostics
+      statement: |
+        Given a corpus that reports a cycle
+        When the reader opens the cycle diagnostics
+        Then the page shows the records involved
+    - id: mark-an-affected-record
+      statement: |
+        Given the host reports a record in its cycle diagnostics
+        When the reader opens the record
+        Then the record shows a dependency cycle warning
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/record-declarations.spec.tsx::warns exactly when the host reports this
+        record's node
+      proves:
+        - mark-an-affected-record
+
+

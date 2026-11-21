@@ -1,0 +1,4 @@
+# Test registries contain synthetic anchors that are not Atlas features.
+**/testdata/**
+**/fixtures/**
+

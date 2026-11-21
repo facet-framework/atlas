@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/records/record-browser
+lifecycle: active
+intent:
+  summary: Browse the records in the loaded registry and open individual entries.
+contract:
+  scenarios:
+    - id: records
+      statement: |
+        Given a loaded registry with records
+        When the reader selects a record from the collection
+        Then its details open
+    - id: keep-a-collection-filter
+      statement: |
+        Given the records collection contains features in different lifecycle states
+        When the reader filters it by lifecycle, leaves and returns
+        Then the selection still limits the collection to matching records
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/pages.spec.tsx::filters the collection through a facet held in the
+        container
+      proves:
+        - keep-a-collection-filter
+
+

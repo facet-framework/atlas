@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-host
+lifecycle: active
+intent:
+  summary: Activate plugins and connect their contributions to the reader.
+contract:
+  scenarios:
+    - id: plugin-host
+      statement: |
+        Given a registered plugin entry point
+        When the host activates it
+        Then the entry point receives the Atlas plugin API
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

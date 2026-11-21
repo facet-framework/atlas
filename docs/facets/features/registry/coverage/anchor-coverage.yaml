@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/coverage/anchor-coverage
+lifecycle: active
+intent:
+  summary: Inspect how source files connect to the registry.
+contract:
+  scenarios:
+    - id: anchor-coverage
+      statement: |
+        Given a scan containing anchored and unanchored files
+        When the reader opens the coverage view
+        Then the view distinguishes anchored files from the scanned total
+    - id: identify-an-unresolved-anchor
+      statement: |
+        Given the corpus includes an anchor with no matching record
+        When the reader opens the developer coverage view
+        Then the orphan entry shows its file, line and claimed record identifier
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/anchor-coverage.spec.tsx::names an anchor pointing at no record with
+        its file, line and the id it claims
+      proves:
+        - identify-an-unresolved-anchor
+
+

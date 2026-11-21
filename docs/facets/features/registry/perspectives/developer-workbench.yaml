@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: registry/perspectives/developer-workbench
+lifecycle: active
+intent:
+  summary: Inspect drift across the registry from the developer overview.
+contract:
+  scenarios:
+    - id: developer-workbench
+      statement: |
+        Given a loaded registry with a drift comparison
+        When the developer opens the workbench
+        Then the view shows where implementation changed
+    - id: open-a-drifted-record
+      statement: |
+        Given the Developer overview has a drifted file
+        When the reader opens the record from its row
+        Then Atlas navigates to the affected record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/overview-workbench.spec.tsx::names a drifted file with its record,
+        and opens that record from the row
+      proves:
+        - open-a-drifted-record
+
+

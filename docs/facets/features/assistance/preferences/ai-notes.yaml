@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/preferences/ai-notes
+lifecycle: active
+intent:
+  summary: Check the Companion's connection and available AI options.
+contract:
+  scenarios:
+    - id: ai-notes
+      statement: |
+        Given a host reporting a signed-in Companion
+        When the reader opens the AI settings
+        Then the page reports that the Companion is signed in
+    - id: show-an-unavailable-companion
+      statement: |
+        Given the reader lacks a Companion status response
+        When the reader opens AI settings
+        Then Atlas leaves the signed-in state and account name undisplayed
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/settings-language.spec.tsx::names no account and no sign-in when the
+        companion did not answer
+      proves:
+        - show-an-unavailable-companion
+
+

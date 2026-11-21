@@ -1,0 +1,169 @@
+name: Release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
+env:
+  GOPROXY: https://proxy.golang.org
+  GOWORK: off
+  GOFLAGS: -mod=readonly -p=2
+  GOTOOLCHAIN: local
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Read source version
+        run: echo "VERSION=$(node -p \"require('./frontend/package.json').version\")" >> "$GITHUB_ENV"
+      - name: Check branch, source version and successful CI
+        env:
+          REF: ${{ github.ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$REF" = refs/heads/main
+          go run -mod=readonly ./backend/cmd/release version "$VERSION"
+          green=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push&status=success&per_page=1" --jq .total_count)
+          test "$green" -ge 1
+      - run: npm install --global pnpm@10.33.0
+      - run: sh scripts/build.sh reader
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reader
+          path: |
+            backend/server/assets/index.html
+            backend/server/assets/atlas.js
+            backend/server/assets/atlas.css
+            backend/server/assets/theme-init.js
+          if-no-files-found: error
+          retention-days: 7
+  native:
+    needs: browser
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, platform: linux_amd64 }
+          - { os: ubuntu-24.04-arm, platform: linux_arm64 }
+          - { os: macos-15-intel, platform: darwin_amd64 }
+          - { os: macos-15, platform: darwin_arm64 }
+          - { os: windows-2025, platform: windows_amd64 }
+          - { os: windows-11-arm, platform: windows_arm64 }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Read source version
+        run: echo "VERSION=$(node -p \"require('./frontend/package.json').version\")" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: reader
+          path: backend/server/assets
+      - name: Package native composition and smoke check extracted archive
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          sh scripts/release-package.sh "$VERSION" "$PLATFORM" dist/release
+          sh scripts/release-smoke.sh dist/release "$PLATFORM"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ matrix.platform }}
+          path: dist/release/
+          if-no-files-found: error
+          retention-days: 7
+  collect:
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-*
+          path: dist/platforms
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - run: sh scripts/release-collect.sh dist/platforms dist/release
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-dist
+          path: dist/release/
+          if-no-files-found: error
+          retention-days: 7
+  publish:
+    needs: collect
+    if: github.ref == 'refs/heads/main'
+    environment: release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-dist
+          path: dist/release
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Read source version
+        run: echo "VERSION=$(node -p \"require('./frontend/package.json').version\")" >> "$GITHUB_ENV"
+      - run: cd dist/release && sha256sum --check --strict checksums.txt
+      - name: Refuse an existing version tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/v$VERSION" --jq length)
+          test "$count" -eq 0
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-checksums: dist/release/checksums.txt
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - name: Publish the pre-release at this exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          go run -mod=readonly ./backend/cmd/release version "$VERSION"
+          gh release create "v$VERSION" dist/release/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "FACET Atlas $VERSION" --notes-file CHANGELOG.md

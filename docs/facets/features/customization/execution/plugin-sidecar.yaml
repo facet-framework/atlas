@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: customization/execution/plugin-sidecar
+lifecycle: active
+intent:
+  summary: Call a granted plugin tool implemented by a sidecar.
+contract:
+  scenarios:
+    - id: plugin-sidecar
+      statement: |
+        Given an installed plugin with a granted sidecar tool
+        When the reader calls the tool
+        Then the host returns the sidecar's reply
+    - id: return-a-sidecar-result
+      statement: |
+        Given an installed plugin has a granted sidecar tool
+        When the reader calls the tool through the host
+        Then the response includes the sidecar result for the requested tool
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: backend/server/plugincall_sidecar_test.go::TestAGrantedToolTravelsFromTheRouteToTheBinaryAndBack
+      proves:
+        - return-a-sidecar-result
+
+
+

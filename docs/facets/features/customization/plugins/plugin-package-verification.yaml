@@ -1,0 +1,23 @@
+schema_version: '0.1'
+id: customization/plugins/plugin-package-verification
+lifecycle: active
+intent:
+  summary: Show whether an installed plugin entry matches its recorded verification data.
+contract:
+  scenarios:
+    - id: plugin-package-verification
+      statement: |
+        Given a packaged install with a changed entry file
+        When the host lists installed plugins
+        Then the entry is reported as a mismatch
+verification:
+  unit_tests:
+    - id: backend/server/installedplugins_test.go::TestAnEntryChangedSinceInstallIsReportedAsAMismatch
+      proves:
+        - plugin-package-verification
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

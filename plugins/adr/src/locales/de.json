@@ -1,0 +1,10 @@
+{
+  "proposed": "vorgeschlagen",
+  "accepted": "angenommen",
+  "superseded": "abgelöst",
+  "rejected": "verworfen",
+  "date": "Datum",
+  "concerns": "Betrifft",
+  "measuredAgainst": "Gemessen an",
+  "sources": "Quellen"
+}

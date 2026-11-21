@@ -1,0 +1,21 @@
+{
+  "id": "adr",
+  "name": "Decisions",
+  "version": "0.1.0-rc.1",
+  "license": "AGPL-3.0-only",
+  "api": 0,
+  "entry": "src/entry.tsx",
+  "description": "Read architecture decisions from the configured ADR directory.",
+  "areas": ["decisions"],
+  "slots": [],
+  "tools": ["repo.list", "repo.read"],
+  "reads": [
+    {
+      "dir": "docs/adr"
+    }
+  ],
+  "events": {
+    "listens": [],
+    "emits": []
+  }
+}

@@ -1,0 +1,10 @@
+<definitions xmlns="https://www.omg.org/spec/DMN/20230324/MODEL/" id="prices" name="Prices" namespace="urn:pricing">
+  <decision id="discount" name="Discount">
+    <decisionTable id="discount-table" hitPolicy="UNIQUE">
+      <input><inputExpression typeRef="number"><text>amount</text></inputExpression><inputValues><text>[0..200]</text></inputValues></input>
+      <output name="discount" typeRef="number"/>
+      <rule id="small"><inputEntry><text>&lt; 100</text></inputEntry><outputEntry><text>5</text></outputEntry></rule>
+      <rule id="large"><inputEntry><text>&gt; 100</text></inputEntry><outputEntry><text>10</text></outputEntry></rule>
+    </decisionTable>
+  </decision>
+</definitions>

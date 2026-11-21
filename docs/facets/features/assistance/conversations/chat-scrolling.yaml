@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/chat-scrolling
+lifecycle: active
+intent:
+  summary: Keep the current question in view as its answer grows.
+contract:
+  scenarios:
+    - id: chat-scrolling
+      statement: |
+        Given the Companion starts answering a new question
+        When the answer area grows before the reader scrolls
+        Then the view stays pinned to the question
+    - id: respect-reader-scroll
+      statement: |
+        Given a new question is pinned while an answer is streaming
+        When the reader scrolls and more answer text arrives
+        Then the viewport stays at the position the reader chose
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/reader/chat-reading.spec.tsx::pins the new question to the top once the room
+        below it is drawn, and on every step until the reader scrolls
+      proves:
+        - respect-reader-scroll
+
+

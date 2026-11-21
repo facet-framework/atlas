@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FACET Atlas</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%231a2340' d='M3 4h10v24H3z'/%3E%3Cpath fill='%234765e8' d='M18 4h11v24H18z'/%3E%3C/svg%3E"
+    />
+    <!--
+      No fonts from the network. tokens.css names system fallbacks, so the page
+      reads without them — but asking at all is a request this reader makes on
+      a machine whose owner was promised it keeps to itself, and the strict CSP
+      below would refuse it anyway.
+    -->
+    <link rel="stylesheet" href="/atlas.css" />
+    <!--
+      The colour scheme must be settled before anything is drawn. See
+      theme-init.js for why it is a file rather than an inline script.
+    -->
+    <script src="/theme-init.js"></script>
+  </head>
+  <body>
+    <!-- `data-stream` is set by the host when the stream lives somewhere other than /api/corpus. -->
+    <div id="atlas"></div>
+    <script type="module" src="/atlas.js"></script>
+  </body>
+</html>

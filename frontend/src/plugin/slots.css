@@ -1,0 +1,23 @@
+/** The dot the host draws beside a plugin's slot the reader has not used yet
+ * It breathes out slowly and stands still under reduced motion. */
+
+.plugin-glow {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  align-self: center;
+  border-radius: 50%;
+  background: var(--t-signal);
+  box-shadow: 0 0 0 0 var(--t-signal-wash);
+  animation: plugin-glow 1.8s ease-in-out infinite;
+}
+@keyframes plugin-glow {
+  50% {
+    box-shadow: 0 0 0 5px var(--t-signal-wash);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plugin-glow {
+    animation: none;
+  }
+}

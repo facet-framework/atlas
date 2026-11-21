@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://facet-framework.com/schema/wiki.schema.json",
+  "title": "FACET Project Wiki",
+  "description": "Configuration for a registry wiki. Page content is stored in Markdown under the wiki directory.",
+  "type": "object",
+  "required": ["schema_version"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["1.0"],
+      "description": "The wiki configuration format version."
+    },
+    "areas": {
+      "type": "object",
+      "description": "Areas keyed by directory name, in display order.",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]*$": {
+          "$ref": "#/definitions/area"
+        }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "description": "Categories available to pages, in display order.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/category"
+      }
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8,
+      "description": "Maximum folder depth before the wiki reports a warning."
+    }
+  },
+  "definitions": {
+    "area": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What this area is called, in the project's own language — the heading a reader sees above its pages, rather than the folder name they would otherwise be shown. Required, because the alternative is a surface showing a slug to a person; an area nobody has named is simply an undeclared folder, which is already a state this file has an answer for.",
+          "maxLength": 120
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line: what belongs in this area, and by implication what does not. Optional, and worth writing anyway — it is the sentence somebody consults when deciding where a new page goes, and the same line the taxonomy asks for on a domain, for the same reason.",
+          "maxLength": 300
+        },
+        "domain": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Optional taxonomy domain associated with this area.",
+          "maxLength": 60
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "What a page names this category by, in its 'category' header key. A slug rather than the heading itself, so rewording the heading touches one line instead of every page that names it. The grammar is the segment grammar ids already use, so a project reading this file reads both the same way.",
+          "maxLength": 60
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The heading, in the project's own language — what a reader sees.",
+          "maxLength": 120
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line: which pages belong under this heading. Optional, and the sentence somebody consults when deciding what a new page is.",
+          "maxLength": 300
+        }
+      }
+    }
+  }
+}

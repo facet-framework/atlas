@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-verbs
+lifecycle: active
+intent:
+  summary: Provide plugins with reader actions through the Atlas API.
+contract:
+  scenarios:
+    - id: plugin-verbs
+      statement: |
+        Given a plugin page with permission to invoke a reader action
+        When it opens a record by identifier
+        Then the reader navigates to that record
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

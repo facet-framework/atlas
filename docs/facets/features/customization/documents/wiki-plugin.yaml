@@ -1,0 +1,55 @@
+schema_version: "0.1"
+id: customization/documents/wiki-plugin
+lifecycle: active
+intent:
+  summary: |
+    The bundled wiki plugin presents repository pages, supports page authoring,
+    and connects mapped content to Confluence.
+contract:
+  scenarios:
+    - id: the-plugin-is-available
+      statement: |
+        Given Atlas starts with bundled plugins
+        When the installed plugin catalogue is read
+        Then the wiki plugin is available
+    - id: wiki-pages-are-addressable
+      statement: |
+        Given a repository wiki page
+        When a reader opens its wiki address
+        Then Atlas presents the page and its navigation context
+    - id: page-authoring-uses-the-host-boundary
+      statement: |
+        Given a reader edits a wiki page
+        When the edit is saved
+        Then the plugin sends the write through the host tool boundary
+    - id: confluence-content-is-mapped-safely
+      statement: |
+        Given Confluence content is imported into the wiki
+        When a page title or body is converted
+        Then its path remains inside the wiki
+        And supported structured content remains readable
+verification:
+  unit_tests:
+    - id: frontend/src/plugin/official.spec.ts::bundles the selected reader plugins in navigation order
+      proves: [the-plugin-is-available]
+    - id: plugins/wiki/sidecar/confluence/adapter_test.go::TestAPageTitleCannotEscapeTheWiki
+      proves: [confluence-content-is-mapped-safely]
+    - id: plugins/wiki/sidecar/confluence/adapter_test.go::TestTheHardMarkupSurvivesTheConversion
+      proves: [confluence-content-is-mapped-safely]
+knowledge:
+  discoverability:
+    question: Where does the reader enter this feature?
+    answer: Open Wiki from the bundled plugin surfaces or choose a wiki page from contributed search and catalogue entries.
+  success_signal:
+    question: How does the reader know it worked?
+    answer: The requested page is visible with its wiki navigation, or the Confluence operation reports its result.
+lineage:
+  owner:
+    team: atlas
+  created_at: "2026-11-21"
+authorship:
+  initial:
+    author: codex
+    status: draft
+    note: Contract and Knowledge are derived from shipped entry points and tests; owner review is required.
+

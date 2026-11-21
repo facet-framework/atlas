@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-pages
+lifecycle: active
+intent:
+  summary: Open plugin pages as places in the reader.
+contract:
+  scenarios:
+    - id: plugin-pages
+      statement: |
+        Given the ADR plugin contributes its decisions page
+        When the reader visits the plugin area
+        Then Atlas renders the decisions page
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

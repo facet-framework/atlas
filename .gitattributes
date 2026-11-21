@@ -1,0 +1,7 @@
+# Keep release inputs stable across native runner checkouts.
+* text=auto eol=lf
+# Third-party notice hashes describe the upstream bytes verbatim.
+THIRD_PARTY_LICENSES/** -text
+*.png -text
+*.jpg -text
+*.woff2 -text

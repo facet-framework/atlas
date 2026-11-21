@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FACET reader not built</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/placeholder.css">
+</head>
+<body>
+<h1>This facet binary was built without the reader</h1>
+<p>The Atlas reader is generated, not committed. The binary you are talking to
+was compiled from a checkout that never built it, so only this page is
+embedded.</p>
+<p>Build the reader, then rebuild the binary:</p>
+<pre>sh scripts/build.sh</pre>
+<p>To rebuild only the browser assets, use <code>go generate ./backend/server</code>.
+A released binary never shows this page; if you installed one and see it,
+that release is broken &mdash; please report it.</p>
+</body>
+</html>

@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: registry/records/drift-mark
+lifecycle: active
+intent:
+  summary: See the drift reported for a record.
+contract:
+  scenarios:
+    - id: drift-mark
+      statement: |
+        Given a record with measured drift
+        When the reader inspects its details
+        Then the displayed drift uses the measured record state
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

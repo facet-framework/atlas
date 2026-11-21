@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: customization/contributions/plugin-slot-glow
+lifecycle: active
+intent:
+  summary: Identify plugin entries with an unseen contribution.
+contract:
+  scenarios:
+    - id: plugin-slot-glow
+      statement: |
+        Given an enabled plugin with a fresh contribution
+        When the reader opens the navigation containing it
+        Then the entry is marked as new
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

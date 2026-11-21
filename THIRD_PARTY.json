@@ -1,0 +1,624 @@
+{
+  "dependencies": [
+    {
+      "ecosystem": "npm",
+      "name": "@babel/runtime",
+      "version": "7.29.14",
+      "license": "MIT",
+      "role": "resolved dependency; not in browser bundle",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@babel%2Fruntime@7.29.14/LICENSE",
+          "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@joplin/turndown-plugin-gfm",
+      "version": "1.0.68",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@joplin%2Fturndown-plugin-gfm@1.0.68/LICENSE",
+          "sha256": "a055e3a15db4b4cbb5af381230eba085603126d7d5d8c4dae45ee85b877a9729"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "html-parse-stringify",
+      "version": "4.0.1",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/html-parse-stringify@4.0.1/LICENSE",
+          "sha256": "3eb2802a4d0ea79f80977817451b056571dccd8373c9bf4e9be4b05f86afbf90"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "i18next",
+      "version": "26.7.2",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/i18next@26.7.2/LICENSE",
+          "sha256": "1cd0a2b02a6cc40ef8ee16310d13eeffdd7b5de4a562fd3ee7c921d8eb54f60a"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react",
+      "version": "19.3.1",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/react@19.3.1/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react-dom",
+      "version": "19.3.1",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/react-dom@19.3.1/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react-i18next",
+      "version": "17.1.13",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/react-i18next@17.1.13/LICENSE",
+          "sha256": "29b8ae456ef442e53a98df183ad088cf98c2ece73aa84c462330c43e665b8ab2"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "scheduler",
+      "version": "0.28.0",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/scheduler@0.28.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "turndown",
+      "version": "7.2.4",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/turndown@7.2.4/LICENSE",
+          "sha256": "a055e3a15db4b4cbb5af381230eba085603126d7d5d8c4dae45ee85b877a9729"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "use-sync-external-store",
+      "version": "1.7.0",
+      "license": "MIT",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/use-sync-external-store@1.7.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@facet-tools/ui",
+      "version": "0.1.0-rc.2",
+      "license": "Apache-2.0",
+      "role": "bundled-browser",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.2/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.2/NOTICE",
+          "sha256": "099d690869bc8cf111df6a0dcd72dd30967703f5ce9b197dd8ff3b762e6c0103"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "typescript",
+      "version": "5.9.3",
+      "license": "Apache-2.0",
+      "role": "resolved dependency; not in browser bundle",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/typescript@5.9.3/LICENSE.txt",
+          "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@mixmark-io/domino",
+      "version": "2.2.0",
+      "license": "BSD-2-Clause",
+      "role": "resolved dependency; not in browser bundle",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@mixmark-io%2Fdomino@2.2.0/LICENSE",
+          "sha256": "9672b5ea831c360425e95b806b302e502582dd9718b056f29c40cf241daecb68"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/boyter/gocodewalker",
+      "version": "v1.5.1",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fboyter%2Fgocodewalker@v1.5.1/LICENSE",
+          "sha256": "cdf5b8d50383e4d9e56bc147d98110fd984d687d98588b599509452684c95b59"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/cucumber/gherkin/go/v41",
+      "version": "v41.0.0",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fcucumber%2Fgherkin%2Fgo%2Fv41@v41.0.0/LICENSE",
+          "sha256": "042bda2882d793c42fcd5f4d272579a432d1d52a0e5436202e5e823eae4771b6"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/cucumber/messages/go/v33",
+      "version": "v33.0.2",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fcucumber%2Fmessages%2Fgo%2Fv33@v33.0.2/LICENSE",
+          "sha256": "9df17a49cfe72bb0d3137dceb1c252be34bc61ba276dd2801d31036d5f5a51ce"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/dlclark/regexp2",
+      "version": "v1.11.0",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fdlclark%2Fregexp2@v1.11.0/LICENSE",
+          "sha256": "9be5d04bb4d706914d5bf943710da4afeb42048f7c529902fb57c82762a991a9"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/goccy/go-yaml",
+      "version": "v1.19.2",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fgoccy%2Fgo-yaml@v1.19.2/LICENSE",
+          "sha256": "43fe703ea9ebe27f0a6e5d2a1f6dd094fbe324251c743498f3ec19986d7349cd"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/golang-jwt/jwt/v5",
+      "version": "v5.3.1",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fgolang-jwt%2Fjwt%2Fv5@v5.3.1/LICENSE",
+          "sha256": "fe26ca41577b9b2b4448050a24b25e5753af66b5d5945d5d36094e7790bfcb2f"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/google/jsonschema-go",
+      "version": "v0.4.3",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fgoogle%2Fjsonschema-go@v0.4.3/LICENSE",
+          "sha256": "2d56c53449691d85d9aea245eb8dac12713e9075d70d5557b82ae1e94805b357"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/modelcontextprotocol/go-sdk",
+      "version": "v1.8.0",
+      "license": "Apache-2.0",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fmodelcontextprotocol%2Fgo-sdk@v1.8.0/LICENSE",
+          "sha256": "af679003d933f045393a6a029f43da113f9ae364eac651d9ae268392985580f5"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/santhosh-tekuri/jsonschema/v6",
+      "version": "v6.0.2",
+      "license": "Apache-2.0",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fsanthosh-tekuri%2Fjsonschema%2Fv6@v6.0.2/LICENSE",
+          "sha256": "c8858a5a76440bbca484e134cf7df46385d090dd18b2c58e650f939258802e5b"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/spf13/cobra",
+      "version": "v1.10.2",
+      "license": "Apache-2.0",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fspf13%2Fcobra@v1.10.2/LICENSE.txt",
+          "sha256": "5e3400b93bbb099e83e52bab885e7441750673c21f97988ca3f1240639b63283"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/spf13/pflag",
+      "version": "v1.0.9",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fspf13%2Fpflag@v1.0.9/LICENSE",
+          "sha256": "b8514c577c1c4b46cee454d5a882b15fa411e72c5bd7f801f241591789fce61a"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/net",
+      "version": "v0.63.0",
+      "license": "BSD-3-Clause",
+      "role": "declared dependency for tests or other target platforms; not linked in Linux executable",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fnet@v0.63.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/sys",
+      "version": "v0.50.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fsys@v0.50.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/term",
+      "version": "v0.48.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fterm@v0.48.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/text",
+      "version": "v0.44.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Ftext@v0.44.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "gopkg.in/yaml.v3",
+      "version": "v3.0.1",
+      "license": "Apache-2.0",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/gopkg.in%2Fyaml.v3@v3.0.1/NOTICE",
+          "sha256": "f6c2dd3a67b576eafb89b80200b8b1627230bf3821a0c14cb99a22ac19107d00"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/go/gopkg.in%2Fyaml.v3@v3.0.1/LICENSE",
+          "sha256": "d18f6323b71b0b768bb5e9616e36da390fbd39369a81807cca352de4e4e6aa0b"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/danwakefield/fnmatch",
+      "version": "v0.0.0-20160403171240-cbb64ac3d964",
+      "license": "BSD-2-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fdanwakefield%2Ffnmatch@v0.0.0-20160403171240-cbb64ac3d964/LICENSE",
+          "sha256": "3edd142d1087e367f47d27d4201dd99e5c4b606b164c1237041068461480a001"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/google/uuid",
+      "version": "v1.6.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fgoogle%2Fuuid@v1.6.0/LICENSE",
+          "sha256": "0a8d61ed3cbfd5312326e8126c31ce9c627a283adc99131b56896d29ada04b2d"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/inconshreveable/mousetrap",
+      "version": "v1.1.0",
+      "license": "Apache-2.0",
+      "role": "declared dependency for tests or other target platforms; not linked in Linux executable",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Finconshreveable%2Fmousetrap@v1.1.0/LICENSE",
+          "sha256": "4819582701f150b28a563a6cd8ed0bf5a754e3c67b90ad38d78ba4131bf77795"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/segmentio/asm",
+      "version": "v1.1.3",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fsegmentio%2Fasm@v1.1.3/LICENSE",
+          "sha256": "e2a78de21d6d8ded2dff0f3189cd32e011630d785da127ebfbc8949012c0947b"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/segmentio/encoding",
+      "version": "v0.5.4",
+      "license": "MIT",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fsegmentio%2Fencoding@v0.5.4/LICENSE",
+          "sha256": "d6d71a1f7dc6539e371120cc7af6e3257e55ca79634d473211f217b8965b0f16"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/yosida95/uritemplate/v3",
+      "version": "v3.0.2",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fyosida95%2Furitemplate%2Fv3@v3.0.2/LICENSE",
+          "sha256": "0761aadfb1921103752869ee942d4a71bdd54494697684d4b13dc17ad9781191"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/oauth2",
+      "version": "v0.35.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Foauth2@v0.35.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/sync",
+      "version": "v0.25.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fsync@v0.25.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "golang.org/x/time",
+      "version": "v0.15.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Ftime@v0.15.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/facet-framework/core",
+      "version": "v0.1.0-rc.2",
+      "license": "Apache-2.0",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.2/NOTICE",
+          "sha256": "916a6e5d9b7aaa7887d10f3f9df79c45ec8c66932af2f3d35dd74366aedc86bd"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.2/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "ecosystem": "GoToolchain",
+      "name": "Go standard library",
+      "version": "go1.26.8",
+      "license": "BSD-3-Clause",
+      "role": "native-runtime",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/crypto/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/net/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/sys/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/text/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/crypto/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/net/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/sys/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/GoToolchain/go1.26.8/src/vendor/golang.org/x/text/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Plugin",
+      "name": "DMN",
+      "version": "0.1.0-dev.1",
+      "license": "Apache-2.0",
+      "role": "bundled plugin and sidecar",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/plugins/dmn/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/JohannesKaufmann/dom",
+      "version": "v0.3.1",
+      "license": "MIT",
+      "role": "compiled in the Confluence sidecar",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2FJohannesKaufmann%2Fdom@v0.3.1/LICENSE",
+          "sha256": "329c3caefdc1531b97d4d4356bfe1d1a889055d9b917fd52a68ac29187fe2303"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/JohannesKaufmann/html-to-markdown/v2",
+      "version": "v2.5.2",
+      "license": "MIT",
+      "role": "compiled in the Confluence sidecar",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2FJohannesKaufmann%2Fhtml-to-markdown%2Fv2@v2.5.2/LICENSE",
+          "sha256": "fc004fdf94e3bce84695bb866e13f840017161c52d0dd8038fe0c6e2d15e15a8"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
+      "name": "github.com/yuin/goldmark",
+      "version": "v1.8.7",
+      "license": "MIT",
+      "role": "compiled in the Confluence sidecar",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Fyuin%2Fgoldmark@v1.8.7/LICENSE",
+          "sha256": "c1d6f653c38c80294dc7994647ba0dcc508ce64a86996303c804efa2f7982bff"
+        }
+      ]
+    }
+  ]
+}

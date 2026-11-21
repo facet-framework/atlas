@@ -1,0 +1,5 @@
+# Binary name and Go package relative to the Atlas repository root.
+# scripts/build-sidecars.sh measures these bytes for the distribution.
+bpmn plugins/bpmn/sidecar/bpmn
+dmn plugins/dmn/sidecar/dmn
+confluence plugins/wiki/sidecar/confluence

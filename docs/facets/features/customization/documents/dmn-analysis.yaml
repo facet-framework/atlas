@@ -1,0 +1,70 @@
+schema_version: "0.1"
+id: customization/documents/dmn-analysis
+lifecycle: active
+intent:
+  summary: |
+    The bundled DMN plugin presents decision tables and analyzes concrete rule
+    gaps, conflicts, and scenario candidates.
+contract:
+  scenarios:
+    - id: a-reader-inspects-a-table-and-its-candidates
+      statement: |
+        Given a DMN model and linked structured scenarios
+        When a reader opens the model and requests candidates
+        Then its decision table is rendered
+        And concrete analysis candidates are shown
+    - id: unsupported-analysis-stays-unmeasured
+      statement: |
+        Given a model contains unsupported analysis input
+        When analysis is requested
+        Then the report identifies the model as not analyzed
+        And it gives a reason instead of measured cells
+    - id: the-sidecar-recovers-after-a-tool-error
+      statement: |
+        Given an unknown tool call is followed by a valid inspection
+        When both calls use one framed connection
+        Then the first call reports an error
+        And the second call returns the model digest
+    - id: no-models-use-the-empty-state
+      statement: |
+        Given the project contains no DMN models
+        When a reader opens the DMN plugin
+        Then the page header is shown
+        And no model picker is shown
+        And the page shows the empty state
+verification:
+  unit_tests:
+    - id: plugins/dmn/src/plugin.spec.tsx::opens a model, renders its table and requests concrete candidates
+      proves: [a-reader-inspects-a-table-and-its-candidates]
+    - id: plugins/dmn/sidecar/engine/analyze_test.go::TestUnsupportedNeverPasses
+      proves: [unsupported-analysis-stays-unmeasured]
+    - id: plugins/dmn/sidecar/transport/service_test.go::TestFramingRecoveryAndLimits
+      proves: [the-sidecar-recovers-after-a-tool-error]
+    - id: plugins/dmn/src/plugin.spec.tsx::renders the shared empty state when no models exist
+      proves: [no-models-use-the-empty-state]
+knowledge:
+  prerequisite_knowledge:
+    question: What setup and concepts are required?
+    answer: Place a DMN model in the rules collection and use typed inputs for scenario analysis.
+  not_for:
+    question: What does this capability not establish?
+    answer: It does not establish complete DMN conformance or prove that implementation tests passed.
+  discoverability:
+    question: Where can a reader use it?
+    answer: Open the bundled DMN plugin and select a model from its contributed area.
+  common_pitfalls:
+    question: What can lead to misleading coverage?
+    answer: Unstructured scenario prose supplies no typed inputs, and a covered rule does not prove every input combination.
+  success_signal:
+    question: What confirms a completed analysis?
+    answer: The report shows the model digest, analyzed cells, and findings, or identifies the reason analysis was unavailable.
+lineage:
+  owner:
+    team: atlas
+  created_at: "2026-11-21"
+authorship:
+  initial:
+    author: codex
+    status: draft
+    note: Contract and Knowledge are derived from shipped entry points and tests; owner review is required.
+

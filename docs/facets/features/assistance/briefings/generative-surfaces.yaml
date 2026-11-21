@@ -1,0 +1,18 @@
+schema_version: '0.1'
+id: assistance/briefings/generative-surfaces
+lifecycle: active
+intent:
+  summary: View generated answers alongside measured overview values.
+contract:
+  scenarios:
+    - id: generative-surfaces
+      statement: |
+        Given an enabled generated section with measured and generative tiles
+        When the section renders
+        Then it shows the measurements and offers the available generation actions
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+

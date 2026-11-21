@@ -1,0 +1,29 @@
+schema_version: '0.1'
+id: assistance/conversations/companion-answer
+lifecycle: active
+intent:
+  summary: Read formatted Companion answers as they arrive.
+contract:
+  scenarios:
+    - id: companion-answer
+      statement: |
+        Given a running answer with inline code
+        When the answer is rendered
+        Then the code is formatted and a caret marks the end of the answer
+    - id: format-inline-code
+      statement: |
+        Given an answer containing inline code
+        When the answer is rendered
+        Then the code is displayed without its markup delimiters
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+verification:
+  unit_tests:
+    - id: frontend/src/ask/Answer.spec.tsx::renders bold, italic and code instead of showing their
+        characters
+      proves:
+        - format-inline-code
+
+

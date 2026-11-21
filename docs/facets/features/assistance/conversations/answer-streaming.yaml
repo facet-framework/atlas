@@ -1,0 +1,23 @@
+schema_version: '0.1'
+id: assistance/conversations/answer-streaming
+lifecycle: active
+intent:
+  summary: Follow a Companion answer while it is being produced.
+contract:
+  scenarios:
+    - id: answer-streaming
+      statement: |
+        Given an accepted Companion request
+        When the agent emits answer steps
+        Then the host streams the steps as events
+verification:
+  unit_tests:
+    - id: backend/server/server_test.go::TestCompanionStreamsItsStepsAsEvents
+      proves:
+        - answer-streaming
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-20'
+
+
