@@ -62,3 +62,17 @@ func TestReleaseRequiresCleanCheckoutAndEmbeddedAssets(t *testing.T) {
 	}
 	check("missing embedded browser asset")
 }
+
+func TestOutputKeepsDiagnosticsOutOfTheResult(t *testing.T) {
+	got, err := output(nil, "sh", "-c", "echo 'go: downloading example.com/module v1.0.0' >&2; echo 'example.com/module v1.0.0'")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "example.com/module v1.0.0" {
+		t.Fatalf("output = %q, want only standard output", got)
+	}
+	_, err = output(nil, "sh", "-c", "echo 'go: module not found' >&2; exit 3")
+	if err == nil || !strings.Contains(err.Error(), "go: module not found") {
+		t.Fatalf("error = %v, want the standard error text", err)
+	}
+}
