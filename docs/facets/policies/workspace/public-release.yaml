@@ -1,0 +1,26 @@
+schema_version: '0.1'
+id: policy/workspace/public-release
+intent:
+  summary: Publish Atlas artifacts from a reviewed release pull request on the public repository.
+contract:
+  clauses:
+    - id: release-source
+      requirement: The release pull request must target main from the same repository's release branch for the source version. The squash commit must have the reviewed head's tree and sole parent.
+    - id: current-approval
+      requirement: A repository owner, member or collaborator other than the pull request author must have an effective approval on the reviewed head by merge time.
+    - id: publication
+      requirement: The release workflow must wait for successful CI on the squash commit and approval in the main-only release environment before tagging that commit and publishing its artifacts.
+    - id: protection
+      requirement: Publication must stop when the workflow cannot verify the repository's release settings with read-only access. The release environment must disallow administrator bypass, and the main and version-tag rulesets must have empty bypass lists. The version-tag ruleset must allow creation and restrict updates and deletions. Published releases must be immutable.
+verification:
+  compliance_checks:
+    - id: scripts/release-pr-check.test.sh
+      cadence: continuous integration
+    - id: scripts/check-release.sh
+      cadence: continuous integration
+    - id: scripts/release-publish.test.sh
+      cadence: continuous integration
+lineage:
+  owner:
+    team: atlas
+  created_at: '2026-11-23'

@@ -8,11 +8,13 @@ import {
   Pagination,
   type SortDir,
   Icon,
+  BarChart,
+  Pyramid,
+  ShareBar,
 } from "@facet-tools/ui";
 import { DriftMark } from "@/chrome";
 import { useText, type FacetText } from "../text";
 import type { TextKey } from "../text";
-import { BarList, Pyramid, ShareBar } from "./charts";
 import { DetailCard, originOf, type CardOrigin } from "./detail";
 import { KindFrame, MiniStat, PathRef, RecordRef, short } from "./frame";
 import { sharePercent } from "../../share";
@@ -796,10 +798,10 @@ export function FixedPage(p: FixedPageProps) {
       ) : (
         <div className="t-c-split t-c-split--narrow" data-testid="fixed-by-domain">
           <div className="t-surface t-pad">
-            <BarList
+            <BarChart
               label={t("ui.screens-contents.evidence-fixes-per-area")}
               onPick={p.onDomain}
-              items={byDomain.map((b) => ({
+              bars={byDomain.map((b) => ({
                 key: b.d,
                 label: <span className="t-mono">{b.d}</span>,
                 value: b.n,

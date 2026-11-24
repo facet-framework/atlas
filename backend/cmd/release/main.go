@@ -48,7 +48,7 @@ func main() {
 func run(args []string) error {
 	switch {
 	case len(args) == 2 && args[0] == "version":
-		_, err := candidate(args[1])
+		_, err := releaseVersion(args[1])
 		return err
 	case len(args) == 4 && args[0] == "package":
 		return packageRelease(args[1], args[2], args[3])
@@ -61,9 +61,9 @@ func run(args []string) error {
 	}
 }
 
-var candidatePattern = regexp.MustCompile(`^[0-9]+\.[0-9]+\.[0-9]+-rc\.[1-9][0-9]*$`)
+var versionPattern = regexp.MustCompile(`^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[1-9][0-9]*)?$`)
 
-func candidate(version string) (string, error) {
+func releaseVersion(version string) (string, error) {
 	var source struct {
 		Version      string
 		Dependencies map[string]string
@@ -71,8 +71,8 @@ func candidate(version string) (string, error) {
 	if err := readJSON("frontend/package.json", &source); err != nil {
 		return "", err
 	}
-	if version != source.Version || !candidatePattern.MatchString(version) {
-		return "", errors.New("version must equal the source release candidate version")
+	if version != source.Version || !versionPattern.MatchString(version) {
+		return "", errors.New("version must equal the source release version (X.Y.Z or X.Y.Z-rc.N)")
 	}
 	return source.Dependencies["@facet-tools/ui"], nil
 }

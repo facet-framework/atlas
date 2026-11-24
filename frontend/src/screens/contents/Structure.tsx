@@ -1,8 +1,16 @@
-import { Button, Tabs, Meter, DataTable, Icon } from "@facet-tools/ui";
+import {
+  Button,
+  Tabs,
+  Meter,
+  DataTable,
+  Icon,
+  BandChart,
+  categoryColor,
+  Sunburst,
+} from "@facet-tools/ui";
 
 import { useText } from "../text";
 import type { TextKey } from "../text";
-import { BandChart, Sunburst, sunColor } from "./charts";
 import { KeyValues, KindFrame, MiniStat } from "./frame";
 import type { CalibrationMetric, Outlier, TaxDomain, ViewDef } from "./model";
 
@@ -168,6 +176,7 @@ export function TaxonomyPage(p: TaxonomyPageProps) {
             label={t("ui.screens-contents.structure-taxonomy-sunburst")}
             size={p.mobile ? 340 : 520}
             selected={p.selected}
+            legend={false}
             nodes={p.domains.map((d) => ({
               key: d.id,
               label: d.title,
@@ -181,7 +190,7 @@ export function TaxonomyPage(p: TaxonomyPageProps) {
             }))}
             center={
               <>
-                <span className="t-c-sun__n">
+                <span className="t-c-taxonomy-count">
                   {sel
                     ? number(
                         "capabilities" in sel
@@ -211,9 +220,9 @@ export function TaxonomyPage(p: TaxonomyPageProps) {
                     onClick={() => p.onSelect?.(d.id)}
                   >
                     <span
-                      className="t-c-legend__sw"
+                      className="t-c-explanation__sw"
                       style={{
-                        background: sunColor(i),
+                        background: categoryColor(i),
                       }}
                     />
                     <span style={{ flex: 1 }}>{d.title}</span>
@@ -347,16 +356,16 @@ export function CalibrationPage(p: CalibrationPageProps) {
     >
       {p.view === "bands" ? (
         <div className="t-stack" style={{ gap: 14 }} data-testid="calibration-bands">
-          <div className="t-c-legend">
+          <div className="t-c-explanation">
             <span
-              className="t-c-legend__sw"
+              className="t-c-explanation__sw"
               style={{ background: "var(--t-ok-wash)", outline: "1px solid var(--t-ok)" }}
             />{" "}
             {t("ui.screens-contents.structure-band")}
-            <span className="t-c-legend__bar" /> {t("ui.screens-contents.structure-median")}
-            <span className="t-c-legend__whisk" /> {t("ui.screens-contents.structure-range")}
+            <span className="t-c-explanation__bar" /> {t("ui.screens-contents.structure-median")}
+            <span className="t-c-explanation__whisk" /> {t("ui.screens-contents.structure-range")}
             <span
-              className="t-c-legend__sw t-c-legend__sw--round"
+              className="t-c-explanation__sw t-c-explanation__sw--round"
               style={{ background: "var(--t-warn)" }}
             />{" "}
             {t("ui.screens-contents.structure-outside")}

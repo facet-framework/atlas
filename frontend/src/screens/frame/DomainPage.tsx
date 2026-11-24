@@ -8,7 +8,7 @@ import {
   ListRow,
   Meter,
   Section,
-  Stat,
+  Metric,
 } from "@facet-tools/ui";
 
 import { Mosaic, Ring, pct, pctText, shareTone } from "./charts";
@@ -108,27 +108,28 @@ export function DomainPage(p: DomainPageProps) {
           }
         />
         <div className="t-a-over__stats t-stagger">
-          <Stat value={nf(fs.length)} label="Records" />
-          <Stat
-            value={nf(d.capabilities.length)}
+          <Metric value={fs.length} label="Records" />
+          <Metric
+            value={d.capabilities.length}
             label={t("ui.screens-frame.domainpage-capabilities")}
           />
-          <Stat
-            value={empty ? "—" : `${nf(proven)} / ${nf(scen)}`}
+          <Metric
+            value={empty ? null : proven}
+            of={empty ? undefined : scen}
             label={
               empty
                 ? t("ui.screens-frame.domainpage-scenarios-not-measured")
                 : t("ui.screens-frame.domainpage-scenarios-named-test")
             }
           />
-          <Stat value={nf(anchors)} label={t("ui.screens-frame.domainpage-anchors")} />
-          <Stat
-            value={nf(p.drift.length)}
+          <Metric value={anchors} label={t("ui.screens-frame.domainpage-anchors")} />
+          <Metric
+            value={p.drift.length}
             tone={p.drift.length ? "warn" : "ok"}
             label={t("ui.screens-frame.domainpage-files-drift")}
           />
-          <Stat
-            value={nf(know)}
+          <Metric
+            value={know}
             tone={know ? "warn" : undefined}
             label={t("ui.screens-frame.domainpage-knowledge-slots-open")}
           />

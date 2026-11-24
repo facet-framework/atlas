@@ -62,7 +62,9 @@ describe("Atlas on a phone", () => {
   it("marks the top and tab bars for the compact mobile layout", () => {
     expect(window.matchMedia("(max-height: 500px)").matches).toBe(true);
     const { container } = mount("/");
-    expect(container.querySelector(".t-top")).toHaveAttribute("data-compact");
+    expect(within(screen.getByTestId("shell-head")).getByRole("banner")).toHaveAttribute(
+      "data-compact",
+    );
     expect(container.querySelector(".t-tabbar")).toBeInTheDocument();
   });
 
@@ -92,7 +94,8 @@ describe("Atlas on a phone", () => {
     ] as const;
     for (const [key, path] of rest) {
       await userEvent.click(within(tabbar()).getByRole("button", { name: tt("shell.tab.more") }));
-      await userEvent.click(within(more()).getByRole("button", { name: tt(key) }));
+      const name = path.startsWith("/p/") ? `${tt(key)} · ${tt("shell.nav.plugin")}` : tt(key);
+      await userEvent.click(within(more()).getByRole("button", { name }));
       expect(where()).toBe(path);
       expect(screen.queryByRole("dialog", { name: tt("shell.more.title") })).toBeNull();
     }
@@ -102,7 +105,7 @@ describe("Atlas on a phone", () => {
     const { container } = mount("/");
     const app = container.querySelector("[data-t-mode]") as HTMLElement;
     const before = app.dataset.tMode;
-    await userEvent.click(screen.getByRole("button", { name: tt("shell.top.menu") }));
+    await userEvent.click(screen.getByRole("button", { name: "Menu" }));
     const sheet = more();
     // A text button that names the other scheme.
     const other = before === "light" ? tt("shell.theme.dark") : tt("shell.theme.light");

@@ -29,7 +29,7 @@ One Go module contains the server, composed command and sidecars. The module use
 `frontend` contains editable browser sources, styles, translations and tests.
 `backend` contains the Go HTTP server, composed command and release tooling.
 `plugins` contains the bundled plugins and their sidecars.
-The browser consumes `@facet-tools/ui@0.1.0-rc.2` under Apache-2.0.
+The browser consumes `@facet-tools/ui@0.1.0-rc.3` under Apache-2.0.
 The registry engine is the Apache-2.0 Core module.
 
 `sh scripts/build.sh reader` rebuilds the browser, checks its declared outputs
@@ -40,10 +40,11 @@ Run `sh scripts/check-release.sh` to validate workflows and release tooling. Aft
 embedding the browser, set `version=$(node -p "require('./frontend/package.json').version")`
 and run `sh scripts/release-package.sh "$version" linux_amd64 dist/release` from a clean commit, then
 `sh scripts/release-smoke.sh dist/release linux_amd64`. Packaging requires
-Go 1.26.8. The manual release workflow checks successful CI on
-main, builds the browser once and runs packaging and smoke checks on six native
-platforms. Publishing waits for the `release` environment; maintainers must
-configure its required reviewers and main-only deployment policy before use.
+Go 1.26.8. The release workflow verifies the approved release pull request and
+successful CI on its squash commit. It builds the browser once and runs
+packaging and smoke checks on six native platforms. Publication requires
+approval in the `release` environment. A manual dispatch builds and checks the
+same archives without publishing.
 
 Jest enforces coverage floors for global code, derivation and screens.
 Preserve license notices and use synthetic fixtures in regression tests.

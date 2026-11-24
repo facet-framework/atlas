@@ -360,9 +360,8 @@ describe("the developer's comparison", () => {
       "Drift could not be determined — no state to compare with.",
     );
     // The finding and the drift figure say "not measured", not 0.
-    expect(
-      within(screen.getByTestId("overview-kpis")).getByTitle("not measured"),
-    ).toHaveTextContent("—");
+    const unmeasured = within(screen.getByTestId("overview-kpis")).getByText("not measured");
+    expect(unmeasured.closest('[data-testid="metric-value"]')).toHaveTextContent("—");
   });
 
   it("lists lost references, deleted files included, and opens their record", async () => {
@@ -447,7 +446,7 @@ describe("the agent's register and excerpt", () => {
     const model = taskflowModel();
     const states = recordStates(derive(model).M);
     await asRole(/Agent/, model);
-    const table = within(screen.getByTestId("overview-agent-register")).getByRole("table");
+    const table = within(screen.getByTestId("overview-agent-register")).getByRole("grid");
     const firstCell = () => within(table).getAllByRole("row")[1].querySelector("td")!.textContent;
     expect(firstCell()).toBe(states[0].id);
     const drift = within(table).getByRole("columnheader", { name: /drift/ });

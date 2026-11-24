@@ -912,17 +912,27 @@ export function windowColour(p: Palette, state: ScenarioState): [number, number,
 
 /** Labels -------------------------------------------------------------------------------------- */
 
+/** Where a name hangs: `x` is the middle of its foundation on the screen, `y`
+ * the foundation's lowest edge there, where the name's top edge is fixed. */
+
 export type Spot = { index: number; x: number; y: number };
 
-/** Where the names stand on the screen. Districts are named at their front
- * edge until the camera is close; then only the chosen one keeps its name.
- * At the level of capabilities every building is named, at the level of
- * records the ones near the middle of the view. Buildings are placed first,
- * the chosen one and those nearest the middle ahead of the rest; a building
- * name that would cover one already placed is left out until zooming in makes
- * room. A district name always stands, moved down a line or two when a
- * building name is in its way. */
+/** Where the names hang on the screen. Every name is fixed to the foot of what
+ * it names, under the lowest edge of its foundation as the camera sees it, so
+ * it moves with the city and never stands over a building. A name is never
+ * moved aside to make room: where it would cover another name or the map's
+ * controls, or where its building's foot is hidden behind another building,
+ * it is left out.
+ *
+ * Which names show depends on the camera's distance and turn, never on where
+ * the view is centred, so panning neither adds nor removes a name inside the
+ * picture. A building is named once its foundation is about as wide on the
+ * screen as its title, so zooming in names more; the chosen building is
+ * always named, and so is the chosen district. Districts are named at every
+ * level and placed first, then buildings, each front to back. */
 
+// @facet: registry/coverage/product-city
+// @facet-role: related
 export function labelsOf(
   world: World,
   c: Camera,
@@ -933,102 +943,125 @@ export function labelsOf(
 ): { districts: Spot[]; buildings: Spot[] } {
   const m = viewProjection(c, w / h);
   const level = levelOf(c.dist, farAt);
+  const { back, right: side, eye } = axesOf(c);
+  /** Pixels per world unit at the distance of the camera's target. */
+  const scale = h / (2 * c.dist * Math.tan(VIEW.half));
   const controls: Box[] = [
     { x0: Math.max(0, w - 190), x1: w, y0: Math.max(0, h - 170), y1: h },
     { x0: Math.max(0, w - 340), x1: w, y0: 0, y1: 64 },
   ];
-  const on = (p: [number, number] | null, chars: number, drop: number) => {
-    if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) return null;
-    if (p[0] < 0 || p[0] > w || p[1] < 0 || p[1] > h) return null;
-    const width = Math.min(200, chars * 7 + 18);
-    return [
-      Math.round(Math.max(width / 2 + 6, Math.min(p[0], w - width / 2 - 6))),
-      Math.round(Math.max(NAME_LINE + 6 - drop, Math.min(p[1], h - 74 - drop))),
-    ] as [number, number];
+  const foot = (x0: number, z0: number, x1: number, z1: number, yAt: number) => {
+    const corners: Vec3[] = [
+      [x0, yAt, z0],
+      [x1, yAt, z0],
+      [x0, yAt, z1],
+      [x1, yAt, z1],
+    ];
+    const ps = corners.map((p) => project(m, p, w, h));
+    if (ps.some((p) => !p || !Number.isFinite(p[0]) || !Number.isFinite(p[1]))) return null;
+    const xs = ps.map((p) => p![0]);
+    const ys = ps.map((p) => p![1]);
+    const lowest = Math.max(...ys);
+    // The middle of the outline and its lowest point both move smoothly while
+    // the city turns; the lowest corner itself would jump from one to the next.
+    const x = Math.round((Math.min(...xs) + Math.max(...xs)) / 2);
+    const y = Math.round(lowest);
+    if (x < 0 || x > w || y < 0 || y > h) return null;
+    return { x, y, front: corners[ys.indexOf(lowest)] };
   };
   const taken: Box[] = [];
+  // A name that would reach past the canvas is left out rather than cut.
+  const fits = (box: Box) =>
+    box.x0 >= 0 &&
+    box.x1 <= w &&
+    box.y1 <= h - 6 &&
+    !controls.some((control) => overlaps(control, box)) &&
+    !taken.some((t) => overlaps(t, box));
+  // Front to back. The depth along the view does not change when the camera
+  // pans or zooms, so neither does which of two covering names stays.
+  const depth = (x: number, z: number) => -(x * back[0] + z * back[2]);
   const districts: Spot[] = [];
-  for (const d of world.districts) {
-    const z = level === "far" ? d.z1 - 0.5 : d.z1 + 1.4;
-    const chars = d.title.length + 4;
-    const p = on(project(m, [(d.x0 + d.x1) / 2, 0.2, z], w, h), chars, DISTRICT_NAME_DROP);
-    if (!p) continue;
-    const width = Math.min(200, chars * 7 + 18);
-    const offsets = [0, NAME_LINE, -NAME_LINE, NAME_LINE * 2, -NAME_LINE * 2, NAME_LINE * 3];
-    const candidates = [0, -width, width].flatMap((x) =>
-      offsets.map((y) => ({ x: p[0] + x, y: p[1] + y })),
-    );
-    const placed = candidates.find((candidate) => {
-      const box = nameBox(candidate.x, candidate.y + DISTRICT_NAME_DROP, chars);
-      return (
-        box.x0 >= 6 &&
-        box.x1 <= w - 6 &&
-        box.y0 >= 6 &&
-        box.y1 <= h - 6 &&
-        !controls.some((control) => overlaps(control, box)) &&
-        !taken.some((t) => overlaps(t, box))
-      );
+  [...world.districts]
+    .sort(
+      (a, b) =>
+        Number(b.index === chosen.district) - Number(a.index === chosen.district) ||
+        depth((a.x0 + a.x1) / 2, (a.z0 + a.z1) / 2) - depth((b.x0 + b.x1) / 2, (b.z0 + b.z1) / 2) ||
+        a.index - b.index,
+    )
+    .forEach((d) => {
+      const f = foot(d.x0, d.z0, d.x1, d.z1, 0);
+      if (!f) return;
+      const box = nameBox(f.x, f.y, d.title.length + 4);
+      if (d.index !== chosen.district && !fits(box)) return;
+      taken.push(box);
+      districts.push({ index: d.index, x: f.x, y: f.y });
     });
-    if (!placed) continue;
-    const box = nameBox(placed.x, placed.y + DISTRICT_NAME_DROP, chars);
-    taken.push(box);
-    districts.push({ index: d.index, x: placed.x, y: placed.y });
-  }
+  districts.sort((a, b) => a.index - b.index);
+  /** Whether another building stands between the eye and this front foot. */
+  const hidden = (b: Building3D, front: Vec3) => {
+    const to: Vec3 = [front[0] - eye[0], PLATE + 0.2 - eye[1], front[2] - eye[2]];
+    const far = Math.hypot(to[0], to[1], to[2]);
+    const ray = { origin: eye, dir: unit(to) };
+    return world.buildings.some((o) => {
+      if (o.index === b.index || !o.floors.length) return false;
+      const t = hitBox(ray, [o.x0, PLATE, o.z0], [o.x1, o.top, o.z1]);
+      return t !== null && t < far - 1e-6;
+    });
+  };
   const buildings: Spot[] = [];
   if (level !== "far") {
     world.buildings
       .filter((b) => b.floors.length)
-      .map((b) => ({ b, away: Math.hypot(b.cx - c.tx, b.cz - c.tz) }))
-      .filter((o) => level === "mid" || o.away < 30 || o.b.index === chosen.building)
       .sort(
         (a, b) =>
-          Number(b.b.index === chosen.building) - Number(a.b.index === chosen.building) ||
-          a.away - b.away,
+          Number(b.index === chosen.building) - Number(a.index === chosen.building) ||
+          depth(a.cx, a.cz) - depth(b.cx, b.cz) ||
+          a.index - b.index,
       )
-      .forEach(({ b }) => {
-        const p = on(
-          project(m, [b.cx, 0.2, b.z1 + 0.3], w, h),
-          b.title.length + 10,
-          BUILDING_NAME_DROP,
-        );
-        if (!p) return;
-        const chars = b.title.length + 10;
-        const offsets = [0, NAME_LINE, -NAME_LINE, NAME_LINE * 2, -NAME_LINE * 2];
-        const offset = offsets.find((candidate) => {
-          const candidateBox = nameBox(p[0], p[1] + BUILDING_NAME_DROP + candidate, chars);
-          return (
-            candidateBox.y0 >= 6 &&
-            candidateBox.y1 <= h - 6 &&
-            !controls.some((control) => overlaps(control, candidateBox)) &&
-            !taken.some((t) => overlaps(t, candidateBox))
-          );
-        });
-        if (offset == null) return;
-        const box = nameBox(p[0], p[1] + BUILDING_NAME_DROP + offset, chars);
+      .forEach((b) => {
+        const mine = b.index === chosen.building;
+        // The foundation's width as seen at the distance of the camera's
+        // target, not where it happens to stand: in perspective a building
+        // grows towards the front of the view, and panning would then name it.
+        const across =
+          ((b.x1 - b.x0) * Math.abs(side[0]) + (b.z1 - b.z0) * Math.abs(side[2])) * scale;
+        if (!mine && across < titleWidth(b.title) * NAME_FITS) return;
+        const f = foot(b.x0, b.z0, b.x1, b.z1, PLATE);
+        if (!f) return;
+        const box = nameBox(f.x, f.y, b.title.length + 10);
+        if (!mine && (!fits(box) || hidden(b, f.front))) return;
         taken.push(box);
-        buildings.push({ index: b.index, x: p[0], y: p[1] + offset });
+        buildings.push({ index: b.index, x: f.x, y: f.y });
       });
   }
   return { districts, buildings };
 }
 
-/** The height a name takes on the screen, in pixels. */
-const NAME_LINE = 28;
-/** How far below its spot a name's bottom edge stands, in pixels. A building's
- * name hangs under its foot on the lot, so it never covers the building. */
+/** The height of one line of a name on the screen, in pixels. */
+const NAME_LINE = 24;
+/** The widest a name is drawn, in pixels; a longer one wraps to a second line. */
+const NAME_WIDTH = 200;
+/** How wide a foundation must be on the screen, as a share of its title's
+ * width, before its building is named. */
 
-export const DISTRICT_NAME_DROP = 26;
-export const BUILDING_NAME_DROP = NAME_LINE + 4;
+export const NAME_FITS = 1;
+
+/** The width a title takes on the screen, about 7 px per character plus padding. */
+function titleWidth(title: string) {
+  return Math.min(NAME_WIDTH, title.length * 7 + 18);
+}
 
 type Box = { x0: number; x1: number; y0: number; y1: number };
 
-/** The room a name takes on the screen: centred on its spot and standing on
- * its bottom edge, about 7 px per character plus padding, at most 200 px wide
- * as the label is drawn. */
+/** The room a name takes on the screen: centred on its spot and hanging from
+ * it below a short stem, about 7 px per character plus padding, at most
+ * 200 px wide and then two lines high, as the label is drawn. */
 
-function nameBox(x: number, bottom: number, chars: number): Box {
-  const width = Math.min(200, chars * 7 + 18);
-  return { x0: x - width / 2, x1: x + width / 2, y0: bottom - NAME_LINE, y1: bottom };
+export function nameBox(x: number, top: number, chars: number): Box {
+  const want = chars * 7 + 18;
+  const width = Math.min(NAME_WIDTH, want);
+  const lines = want > NAME_WIDTH ? 2 : 1;
+  return { x0: x - width / 2, x1: x + width / 2, y0: top, y1: top + NAME_LINE * lines + 6 };
 }
 
 const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;

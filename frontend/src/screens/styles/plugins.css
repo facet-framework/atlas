@@ -1593,7 +1593,7 @@
   display: flex;
   gap: 22px;
 }
-.t-d-proc__stats .t-stat__value {
+.t-d-proc__stats .t-metric__value {
   font-size: var(--t-fs-20);
 }
 .t-d-proc__body {
@@ -2946,7 +2946,7 @@
     flex-direction: column;
     gap: 8px;
   }
-  .t-d-proc[data-mobile] .t-sheet--bottom {
+  .t-sheet--bottom:has(> .t-sheet__body > .t-d-proc__sheet) {
     max-height: 58vh;
   }
   .t-d-board {
@@ -3212,7 +3212,7 @@
     grid-row: 2;
     border-top: 1px solid var(--t-line);
   }
-  .t-d-proc:not([data-mobile]) .t-d-proc__stats .t-stat:nth-child(n + 4) {
+  .t-d-proc:not([data-mobile]) .t-d-proc__stats .t-metric:nth-child(n + 4) {
     display: none;
   }
 }

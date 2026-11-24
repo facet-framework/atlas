@@ -27,8 +27,6 @@ import {
   VIEW,
   between,
   buildWorld,
-  BUILDING_NAME_DROP,
-  DISTRICT_NAME_DROP,
   farDistance,
   countStates,
   homeDistance,
@@ -114,6 +112,8 @@ function chosenOf(world: World, place: Place | null, selected: string | null) {
   return { district: f.district, building: f.building, floor: f.index };
 }
 
+// @facet: registry/coverage/product-city
+// @facet-role: related
 export function City3D(props: City3DProps) {
   const { domains, features, selected, fallback } = props;
   const { t, plural } = useText();
@@ -128,6 +128,8 @@ export function City3D(props: City3DProps) {
   const keysId = useId();
 
   const scene = useRef<HTMLDivElement>(null);
+  const map = useRef<HTMLDivElement>(null);
+  const [full, setFull] = useState(false);
   const canvas = useRef<HTMLCanvasElement | null>(null);
   const renderer = useRef<Renderer | null>(null);
   const camera = useRef<Camera | null>(null);
@@ -347,6 +349,44 @@ export function City3D(props: City3DProps) {
     };
   }, [request]);
 
+  // Full screen: the browser's own where it has one, so Escape and the
+  // browser's controls leave it; otherwise the map covers the window.
+  useEffect(() => {
+    const onChange = () => setFull(!!map.current && document.fullscreenElement === map.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  useEffect(() => {
+    if (!full || document.fullscreenElement) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") setFull(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+  useEffect(() => {
+    request();
+  }, [full, request]);
+  const toggleFull = () => {
+    const el = map.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      void document.exitFullscreen?.();
+      return;
+    }
+    if (full) {
+      setFull(false);
+      return;
+    }
+    // A browser that refuses its full screen still gets the covering map.
+    if (typeof el.requestFullscreen === "function")
+      el.requestFullscreen().then(
+        () => setFull(true),
+        () => setFull(true),
+      );
+    else setFull(true);
+  };
+
   /** Camera moves ------------------------------------------------------------------------- */
 
   const current = () => camera.current ?? homeCamera(home.current);
@@ -521,7 +561,12 @@ export function City3D(props: City3DProps) {
   const hovered = hover && placeExists(world, hover.place) ? hover : null;
   return (
     <>
-      <div className="t-a-citymap t-a-city3d" data-testid="city-map">
+      <div
+        ref={map}
+        className="t-a-citymap t-a-city3d"
+        data-testid="city-map"
+        data-full={full || undefined}
+      >
         {/** The scene is one focusable group that takes the pointer and the keys
          * itself: a canvas has no parts a reader could tab to. What it draws is
          * in the list below, and its names are buttons of their own. */}
@@ -565,7 +610,7 @@ export function City3D(props: City3DProps) {
                 className="t-a-city3d__label t-a-city3d__label--district"
                 data-chosen={chosen.district === index || undefined}
                 data-testid={`city-area-${d.id}`}
-                style={{ left: x, top: y + DISTRICT_NAME_DROP }}
+                style={{ left: x, top: y }}
                 onClick={() => props.onOpenDomain?.(d.id)}
               >
                 <span className="t-wrap">{d.title}</span>
@@ -583,7 +628,7 @@ export function City3D(props: City3DProps) {
                 className="t-a-city3d__label"
                 data-chosen={chosen.building === index || undefined}
                 data-testid={`city-cap-${b.key}`}
-                style={{ left: x, top: y + BUILDING_NAME_DROP }}
+                style={{ left: x, top: y }}
                 onClick={() => props.onOpenCapability?.(b.domain, b.capability)}
               >
                 <span className="t-wrap">{b.title}</span>
@@ -663,6 +708,17 @@ export function City3D(props: City3DProps) {
               size="small"
               data-testid="city-turn-right"
               onClick={() => fly({ yaw: current().yaw - TURN })}
+            />
+            <IconButton
+              icon={full ? "collapse" : "expand"}
+              label={t(
+                full
+                  ? "ui.screens-frame.city3d-leave-full-screen"
+                  : "ui.screens-frame.city3d-full-screen",
+              )}
+              size="small"
+              data-testid="city-full-screen"
+              onClick={toggleFull}
             />
           </div>
           <Button size="small" icon="fit" data-testid="city-fit" onClick={goHome}>

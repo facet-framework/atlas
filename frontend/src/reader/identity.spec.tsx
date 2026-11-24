@@ -57,20 +57,25 @@ describe("the drift mark in Atlas", () => {
     expect(logo()).toHaveAttribute("data-state", "drift");
     expect(Number(logo().getAttribute("data-offset"))).toBeGreaterThanOrEqual(6);
     expect(Number(logo().getAttribute("data-offset"))).toBeLessThan(22);
-    expect(brand().getAttribute("title")).toMatch(/^Drift: \d+% of records$/);
+    expect(within(brand()).getByTestId("top-brand").getAttribute("title")).toMatch(
+      /^Drift: \d+% of records$/,
+    );
     const desktop = logo().getAttribute("data-offset");
     cleanup();
     // The compact phone bar draws the same logo at the same offset.
     phone();
     mount("/");
-    expect(screen.getByRole("button", { name: tt("shell.top.menu") })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Menu" })).toBeInTheDocument();
     expect(logo()).toHaveAttribute("data-offset", desktop);
   });
 
   it("shows no drift comparison as not measured: resting logo, dash in the figures and the finding", () => {
     mount("/", { model: withoutDrift() });
     expect(logo()).toHaveAttribute("data-state", "unmeasured");
-    expect(brand()).toHaveAttribute("title", tt("shell.mark.unmeasured"));
+    expect(within(brand()).getByTestId("top-brand")).toHaveAttribute(
+      "title",
+      tt("shell.mark.unmeasured"),
+    );
     const top = brand().closest("header")!;
     const figures = within(top).getByText(tt("shell.top.drift")).parentElement!;
     expect(within(figures).getByText("—")).toBeInTheDocument();

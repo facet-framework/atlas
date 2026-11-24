@@ -94,10 +94,11 @@ describe("figures the reader does not carry", () => {
         `^${escapeRegExp(tt("ui.screens-frame.overviewpage-files-anchored-anchored-files", { anchored: "#", files: "—" })).replace("#", "\\d+")}$`,
       ),
     );
-    const kpiValue = within(kpiLabel.parentElement!).getByTitle(
-      tt("ui.screens-frame.overviewpage-not-measured"),
-    );
-    expect(kpiValue).toHaveTextContent(/^—$/);
+    const kpiValue = within(kpiLabel.parentElement!).getByTestId("metric-value");
+    expect(
+      within(kpiValue).getByText(tt("ui.screens-frame.overviewpage-not-measured")),
+    ).toBeInTheDocument();
+    expect(within(kpiValue).getByText("—")).toBeInTheDocument();
   });
 
   it("keeps a measured line count on the Overview", () => {

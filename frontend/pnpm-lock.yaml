@@ -15,8 +15,8 @@ importers:
   .:
     dependencies:
       '@facet-tools/ui':
-        specifier: 0.1.0-rc.2
-        version: 0.1.0-rc.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-rc.3
+        version: 0.1.0-rc.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@joplin/turndown-plugin-gfm':
         specifier: 1.0.68
         version: 1.0.68
@@ -502,8 +502,8 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@facet-tools/ui@0.1.0-rc.2':
-    resolution: {integrity: sha512-6daeP7kr/9sC8zpphbMtqos9fp0j29mYhQwwNUXqKxZVWyU+51L+y4nn8OEZHrb795ga60sfYqDgqTFJClaOfg==}
+  '@facet-tools/ui@0.1.0-rc.3':
+    resolution: {integrity: sha512-O3vNx9OgUcY0rRdrEBI+bf1Tzksl9iVn5SNkgdW/wenPs8z75pDUCPQ4ruIAc6/wldSnRLBX6J5Ptd4eoFgUGw==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
       react: '>=18'
@@ -3439,7 +3439,7 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@facet-tools/ui@0.1.0-rc.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@facet-tools/ui@0.1.0-rc.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)

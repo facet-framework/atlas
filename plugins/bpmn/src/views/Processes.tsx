@@ -8,7 +8,7 @@ import {
   SearchField,
   Tabs,
   EmptyState,
-  Stat,
+  Metric,
   Collection,
   CollectionToolbar,
   DataTable,
@@ -1200,24 +1200,24 @@ export function ProcessWorkspace({
         <span className="t-spacer" />
         {mobile ? null : (
           <div className="t-d-proc__stats">
-            <Stat
+            <Metric
               value={metrics.elements}
               label={t("ui.bpmn-src-views.processes-elements")}
             />
-            <Stat
+            <Metric
               value={metrics.flows}
               label={t("ui.bpmn-src-views.processes-flows")}
             />
-            <Stat
+            <Metric
               value={metrics.lanes}
               label={t("ui.bpmn-src-views.processes-lanes")}
             />
-            <Stat
-              value={metrics.paths ?? "—"}
+            <Metric
+              value={metrics.paths ?? null}
               label={t("ui.bpmn-src-views.processes-paths-start-end")}
             />
-            <Stat
-              value={metrics.longest ?? "—"}
+            <Metric
+              value={metrics.longest ?? null}
               label={t("ui.bpmn-src-views.processes-longest-path")}
             />
           </div>
@@ -1309,7 +1309,7 @@ export function ProcessWorkspace({
             title={t("ui.bpmn-src-views.processes-outline")}
             onClose={onOutline}
           >
-            {outline}
+            <div className="t-d-proc__sheet">{outline}</div>
           </Sheet>
           <Sheet
             open={!!selected || !!walk}
@@ -1320,7 +1320,7 @@ export function ProcessWorkspace({
             onClose={() => (walk ? onWalk("stop") : onSelect(null))}
             modal={false}
           >
-            {side}
+            <div className="t-d-proc__sheet">{side}</div>
           </Sheet>
         </>
       ) : null}

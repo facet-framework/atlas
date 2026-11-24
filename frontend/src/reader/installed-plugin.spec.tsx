@@ -215,12 +215,12 @@ it("renames the current place when the area names it anew: no new step, and the 
   expect(window.location.pathname).toBe("/p/sample/second");
   // The place under the cursor is renamed; nothing was added.
   expect(stored()).toEqual(["/records", "/p/sample/second"]);
-  fireEvent.click(screen.getByRole("button", { name: "Visited places" }));
-  const list = screen.getByRole("menu", { name: "Visited places" });
+  fireEvent.click(screen.getByRole("button", { name: "History" }));
+  const list = screen.getByRole("menu", { name: "History" });
   const current = list.querySelector('[aria-current="true"]');
   expect(current).toHaveTextContent("second");
-  expect(screen.getByText("Visited places · 2")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Visited places" }));
+  expect(screen.getByText("History · 2")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "History" }));
 
   // Back leaves the area for the records, not for the address it had before.
   fireEvent.click(screen.getByRole("button", { name: /^Back/ }));

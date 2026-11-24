@@ -141,7 +141,7 @@ it("opens a capability record from its scenario mosaic and table with count-only
   rerender(<CapabilityPage {...props} view="table" />);
   fireEvent.click(
     within(
-      screen.getByRole("table", { name: t("ui.screens-frame.capabilitypage-records-capability") }),
+      screen.getByRole("grid", { name: t("ui.screens-frame.capabilitypage-records-capability") }),
     ).getAllByRole("row")[1],
   );
   expect(onOpenRecord).toHaveBeenLastCalledWith(feature.id);

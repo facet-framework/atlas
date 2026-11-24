@@ -3,7 +3,7 @@
  * evidence and readership through all three levels, and the three kinds of
  * gap kept apart. */
 
-import { Badge, Chip, ListRow, Pagination, Section, Stat } from "@facet-tools/ui";
+import { Badge, Chip, ListRow, Pagination, Section, Metric } from "@facet-tools/ui";
 import { useText } from "@/chrome";
 import type { ScenarioAudience } from "@/model";
 import { keepAud, keepScen, short, type DerivedFeature, type DerivedScenario } from "@/derive";
@@ -133,7 +133,6 @@ const REASONS = new Set([
 
 function FailingTests({ ctx }: { ctx: PageContext }) {
   const { t } = ctx;
-  const { number: nf } = useText();
   const reader = ctx.readTestReport ?? null;
   const report = useTestReport(reader);
   const failing = failedCount(report);
@@ -141,20 +140,8 @@ function FailingTests({ ctx }: { ctx: PageContext }) {
   const state = reader ? (report?.state ?? "pending") : "unasked";
   return (
     <div data-testid="bench-test-report" data-test-report-state={state}>
-      <Stat
-        value={
-          failing === null ? (
-            <span
-              role="img"
-              aria-label={t("ui.reader-pages.bench-not-measured")}
-              data-testid="bench-test-report-n"
-            >
-              —
-            </span>
-          ) : (
-            <span data-testid="bench-test-report-n">{nf(failing)}</span>
-          )
-        }
+      <Metric
+        value={failing}
         tone={failing ? "bad" : failing === 0 ? "ok" : undefined}
         label={
           <span className="t-stack" style={{ gap: 2 }}>
@@ -323,26 +310,23 @@ export function Bench({ ctx }: { ctx: PageContext }) {
           style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
           data-testid="bench-counts"
         >
-          <Stat
-            value={nf(v.TOT.open)}
+          <Metric
+            value={v.TOT.open}
             tone={v.TOT.open ? "bad" : "ok"}
             label={t("ui.reader-pages.bench-promises-without-test-link")}
           />
-          <Stat
-            value={nf(noTests.length)}
+          <Metric
+            value={noTests.length}
             tone={noTests.length ? "bad" : "ok"}
             label={t("ui.reader-pages.bench-records-without-any-test")}
           />
-          <Stat
-            value={nf(noDocs.length)}
+          <Metric
+            value={noDocs.length}
             tone={noDocs.length ? "warn" : "ok"}
             label={t("ui.reader-pages.bench-features-without-documentation")}
           />
-          <Stat
-            value={nf(v.TOT.unbacked)}
-            label={t("ui.reader-pages.bench-deliberately-unbacked")}
-          />
-          <Stat value={nf(v.TOT.devs)} label={t("ui.reader-pages.bench-declared-deviations")} />
+          <Metric value={v.TOT.unbacked} label={t("ui.reader-pages.bench-deliberately-unbacked")} />
+          <Metric value={v.TOT.devs} label={t("ui.reader-pages.bench-declared-deviations")} />
           <FailingTests ctx={ctx} />
         </div>
         <div className="t-stack" style={{ gap: 8 }}>

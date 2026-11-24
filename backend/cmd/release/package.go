@@ -55,7 +55,7 @@ func sidecars() ([]sidecar, error) {
 func releaseInputs(version, platform string) (manifest, inventory, error) {
 	var info manifest
 	var licenses inventory
-	ui, err := candidate(version)
+	ui, err := releaseVersion(version)
 	if err != nil {
 		return info, licenses, err
 	}
@@ -105,7 +105,11 @@ func releaseInputs(version, platform string) (manifest, inventory, error) {
 		return info, licenses, err
 	}
 	stamp, err := output(nil, "git", "log", "-1", "--format=%cI")
-	return manifest{1, "atlas", version, core, ui, commit, stamp, "rc", nil}, licenses, err
+	channel := "stable"
+	if strings.Contains(version, "-rc.") {
+		channel = "rc"
+	}
+	return manifest{1, "atlas", version, core, ui, commit, stamp, channel, nil}, licenses, err
 }
 
 func packageRelease(version, platform, out string) (err error) {

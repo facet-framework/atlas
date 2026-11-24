@@ -16,11 +16,6 @@
   overflow-x: auto;
   max-width: 100%;
 }
-.t-c-svgtext {
-  font-family: var(--t-mono);
-  font-size: 10px;
-  fill: var(--t-muted);
-}
 .t-c-linkish {
   appearance: none;
   background: none;
@@ -81,7 +76,7 @@
 .t-c-code.t-wrap {
   white-space: pre-wrap;
 }
-.t-c-legend {
+.t-c-explanation {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -89,25 +84,25 @@
   font-size: var(--t-fs-12);
   color: var(--t-muted);
 }
-.t-c-legend__sw {
+.t-c-explanation__sw {
   display: inline-block;
   width: 12px;
   height: 12px;
   border-radius: 3px;
 }
-.t-c-legend__sw--round {
+.t-c-explanation__sw--round {
   border-radius: 50%;
   width: 8px;
   height: 8px;
 }
-.t-c-legend__bar {
+.t-c-explanation__bar {
   display: inline-block;
   width: 3px;
   height: 14px;
   background: var(--t-ink);
   border-radius: 2px;
 }
-.t-c-legend__whisk {
+.t-c-explanation__whisk {
   display: inline-block;
   width: 18px;
   height: 8px;
@@ -383,66 +378,8 @@
 }
 
 /** Bars -------------------------------------------------------------------- */
-.t-c-bars {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.t-c-bars__row {
-  appearance: none;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  width: 100%;
-  display: grid;
-  grid-template-columns: minmax(80px, 34%) minmax(0, 1fr) 44px auto;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 6px;
-  border-radius: var(--t-r-ctl);
-  font-size: var(--t-fs-13);
-  text-align: left;
-}
-button.t-c-bars__row {
-  cursor: pointer;
-}
-button.t-c-bars__row:hover {
-  background: var(--t-signal-wash);
-}
-.t-c-bars__track {
-  height: 8px;
-  border-radius: var(--t-r-pill);
-  background: var(--t-sunken);
-  overflow: hidden;
-}
-.t-c-bars__fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  transition: width var(--t-dur-sheet) var(--t-ease-out);
-}
-.t-c-bars__value {
-  text-align: right;
-}
-.t-c-spark {
-  display: block;
-}
 
 /** Share bar --------------------------------------------------------------- */
-.t-c-share {
-  display: inline-flex;
-  width: 72px;
-  height: 6px;
-  border-radius: var(--t-r-pill);
-  overflow: hidden;
-  background: var(--t-sunken);
-  gap: 1px;
-  flex: none;
-}
 
 /** Promises ------------------------------------------------------------------ */
 .t-c-state {
@@ -771,16 +708,6 @@ li + li > .t-c-openrow {
   gap: var(--t-s-4);
   align-items: start;
 }
-.t-c-cal {
-  display: flex;
-  flex-direction: column;
-  gap: var(--t-s-3);
-}
-.t-c-cal__days {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
 
 /** Taxonomy -------------------------------------------------------------------- */
 .t-c-tree {
@@ -972,39 +899,7 @@ button.t-c-tree__name {
   gap: var(--t-s-6);
   align-items: start;
 }
-.t-c-sun {
-  position: relative;
-}
-.t-c-sun svg {
-  display: block;
-}
-.t-c-sun path {
-  transition: opacity var(--t-dur-enter) var(--t-ease-out);
-}
-.t-c-sun__label {
-  font-size: 11px;
-  fill: var(--t-ink);
-  stroke: var(--t-surface);
-  stroke-width: 3px;
-  stroke-linejoin: round;
-  paint-order: stroke;
-  pointer-events: none;
-}
-.t-c-sun__label--domain {
-  font-size: 12px;
-  font-weight: 600;
-}
-.t-c-sun__center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  text-align: center;
-}
-.t-c-sun__n {
+.t-c-taxonomy-count {
   font-size: var(--t-fs-40);
   font-weight: 300;
   line-height: 1;
@@ -1035,10 +930,6 @@ button.t-c-tree__name {
   flex-direction: column;
   gap: var(--t-s-2);
 }
-.t-c-band {
-  display: block;
-  height: 82px;
-}
 .t-c-outbar {
   display: block;
   width: 160px;
@@ -1062,51 +953,6 @@ button.t-c-tree__name {
 }
 .t-c-split--narrow {
   grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.4fr);
-}
-.t-c-pyr {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: var(--t-s-4) 0;
-}
-.t-c-pyr__layer {
-  appearance: none;
-  border: 0;
-  font: inherit;
-  color: inherit;
-  width: var(--t-c-w);
-  min-width: min(100%, 260px);
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
-  column-gap: var(--t-s-3);
-  align-items: baseline;
-  padding: 14px 20px;
-  background: color-mix(in srgb, var(--t-signal) 18%, var(--t-raised));
-  border-radius: var(--t-r-ctl);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--t-signal) 30%, transparent);
-  cursor: pointer;
-  text-align: left;
-  transition:
-    background var(--t-dur-hit) var(--t-ease-out),
-    width var(--t-dur-sheet) var(--t-ease-out);
-}
-.t-c-pyr__layer:hover {
-  background: color-mix(in srgb, var(--t-signal) 30%, var(--t-raised));
-}
-.t-c-pyr__layer[aria-pressed="true"] {
-  background: color-mix(in srgb, var(--t-signal) 46%, var(--t-raised));
-}
-.t-c-pyr__name {
-  font-weight: 500;
-}
-.t-c-pyr__value {
-  font-size: var(--t-fs-28);
-  font-weight: 300;
-  font-variant-numeric: tabular-nums;
-  grid-row: span 2;
 }
 .t-c-runner {
   display: flex;
@@ -1252,58 +1098,8 @@ button.t-c-tree__name {
 }
 
 /** Treemap --------------------------------------------------------------------- */
-.t-c-tree-map {
-  position: relative;
-  width: 100%;
-  border-radius: var(--t-r-panel);
-  overflow: hidden;
-  background: var(--t-sunken);
-}
-.t-c-tree-map__cell {
-  appearance: none;
-  position: absolute;
-  border: 0;
-  margin: 0;
-  box-shadow: inset 0 0 0 1px var(--t-ground);
-  color: var(--t-ink);
-  font: inherit;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 2px;
-  padding: 8px 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: filter var(--t-dur-hit) var(--t-ease-out);
-}
-.t-c-tree-map__cell:hover {
-  filter: brightness(1.12);
-}
-.t-c-tree-map__cell[aria-pressed="true"] {
-  box-shadow:
-    inset 0 0 0 2px var(--t-ink),
-    inset 0 0 0 3px var(--t-ground);
-  z-index: 1;
-}
 /** Cells have a fixed size: labels wrap and the cell clips whatever does not
  *    fits below, instead of cutting the name sideways. */
-.t-c-tree-map__label {
-  font-size: var(--t-fs-12);
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-.t-c-tree-map__value {
-  font-size: var(--t-fs-20);
-  font-weight: 300;
-  font-variant-numeric: tabular-nums;
-}
-.t-c-tree-map__sub {
-  font-size: var(--t-fs-11);
-  color: var(--t-ink-2);
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
 
 /** Files ------------------------------------------------------------------------- */
 .t-c-gap {
@@ -2078,15 +1874,6 @@ button.t-c-tree__name {
   .t-c-ttree .t-c-tree__row {
     grid-template-columns: 14px 14px minmax(0, 1fr) 72px 36px;
   }
-  .t-c-band {
-    height: 64px;
-  }
-  .t-c-pyr__layer {
-    padding: 12px 16px;
-  }
-  .t-c-pyr__value {
-    font-size: var(--t-fs-20);
-  }
   .t-c-dev {
     grid-template-columns: 36px minmax(0, 1fr);
   }
@@ -2189,12 +1976,6 @@ button.t-c-tree__name {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .t-c-bars__fill,
-  .t-c-pyr__layer,
-  .t-c-mosaic__rec,
-  .t-c-sun path {
-    transition: none;
-  }
 }
 
 /** A lead of two statements: each on its own line. */

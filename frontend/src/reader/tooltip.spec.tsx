@@ -31,12 +31,12 @@ describe("the tooltip in the Atlas shell", () => {
   it("explains an icon button to the keyboard at once, and goes away on Escape", async () => {
     const user = userEvent.setup();
     mount();
-    const history = screen.getByRole("button", { name: tt("shell.history.label") });
+    const history = screen.getByRole("button", { name: "History" });
     // Tab until the history button has the focus; it sits in the top bar's first group.
     for (let i = 0; i < 10 && document.activeElement !== history; i++) await user.tab();
     expect(history).toHaveFocus();
     const tip = await screen.findByRole("tooltip");
-    expect(tip).toHaveTextContent(tt("shell.history.label"));
+    expect(tip).toHaveTextContent("History");
     expect(tip).toHaveAttribute("data-ready", "yes");
     // The browser's own tooltip is suppressed: the title moved to data-tip.
     expect(history).not.toHaveAttribute("title");

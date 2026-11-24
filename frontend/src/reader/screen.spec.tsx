@@ -101,7 +101,7 @@ describe("screen export", () => {
   it("turns the record table into a GFM table with the headers it shows", async () => {
     await mount("/records");
     await userEvent.click(screen.getByText("Table"));
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("grid");
     const headers = within(table)
       .getAllByRole("columnheader")
       .map((h) => texts(h).join(" "));

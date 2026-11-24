@@ -54,7 +54,7 @@ import {
   type WithClauseSheetProps,
   type WithCompanionProps,
   type WithCounterProps,
-  type WithCoverageRingProps,
+  type CoverageRingProps,
   type WithDependencyFanProps,
   type WithDepthLadderProps,
   type WithDotProps,
@@ -93,7 +93,7 @@ import {
   type WithSurfaceProps,
   type WithTestPyramidProps,
   type WithTextProps,
-  type WithTimelineProps,
+  type TimelineProps,
   type WithTrailProps,
 } from "./components";
 import { defineFacetElement } from "./defineFacetElement";
@@ -214,7 +214,7 @@ export function defineFacetElements(): void {
     defaults: { anchors: [] },
   });
 
-  defineFacetElement<WithCoverageRingProps>({
+  defineFacetElement<CoverageRingProps>({
     tag: "facet-coverage-ring",
     component: CoverageRing,
     attributes: {
@@ -664,7 +664,7 @@ export function defineFacetElements(): void {
     defaults: { groups: [] },
   });
 
-  defineFacetElement<WithTimelineProps>({
+  defineFacetElement<TimelineProps>({
     tag: "facet-timeline",
     component: Timeline,
     attributes: {
@@ -672,7 +672,7 @@ export function defineFacetElements(): void {
       unit: { prop: "unit", kind: "string" },
       bucket: { prop: "bucket", kind: "string" },
       height: { prop: "height", kind: "number" },
-      "empty-text": { prop: "emptyText", kind: "string" },
+      "empty-text": { prop: "empty", kind: "string" },
     },
     defaults: { events: [] },
   });

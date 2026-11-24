@@ -168,6 +168,8 @@ describe("completeness", () => {
     const dir = join(__dirname, "..", "components", "ui");
     const components = readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory());
 
-    expect(FACET_ELEMENT_TAGS).toHaveLength(components.length + 18);
+    const chartElements = ["facet-coverage-ring", "facet-timeline"] as const;
+    expect(FACET_ELEMENT_TAGS).toEqual(expect.arrayContaining(chartElements));
+    expect(FACET_ELEMENT_TAGS).toHaveLength(components.length + 18 + chartElements.length);
   });
 });

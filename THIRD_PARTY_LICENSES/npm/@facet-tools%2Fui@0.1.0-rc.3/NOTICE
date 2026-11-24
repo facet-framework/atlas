@@ -3,5 +3,4 @@ Copyright 2026 Pascal Malbranche
 
 Licensed under the Apache License, Version 2.0; see LICENSE.
 The package contains no bundled third-party runtime dependencies.
-Dependency metadata is listed in THIRD_PARTY.json and license texts are supplied
-under THIRD_PARTY_LICENSES/.
+See THIRD_PARTY.md.

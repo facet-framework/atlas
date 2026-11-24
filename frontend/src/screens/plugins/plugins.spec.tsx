@@ -200,7 +200,7 @@ describe("Decisions", () => {
       />,
     );
     expect(screen.getByText("61–120 of 480")).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Decisions" })).toBeInTheDocument();
+    expect(screen.getByRole("grid", { name: "Decisions" })).toBeInTheDocument();
     await user().click(screen.getAllByRole("row")[1]);
     expect(on.onOpen).toHaveBeenCalledWith(data.adrs480[60].number, data.adrs480[60].file);
     await user().click(screen.getByRole("button", { name: "Page 3" }));
@@ -343,7 +343,7 @@ describe("Decisions", () => {
         onOpen={onOpen}
       />,
     );
-    expect(screen.queryByRole("table", { name: "Decisions" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("grid", { name: "Decisions" })).not.toBeInTheDocument();
     await user().click(screen.getAllByRole("button", { name: /ADR 0/ })[0]);
     rerender(<AdrCollection state="loading" view="board" items={[]} {...base} />);
     expect(screen.getByText("Reading decisions …")).toBeInTheDocument();

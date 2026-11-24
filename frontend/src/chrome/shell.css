@@ -1,90 +1,13 @@
-/* Top bar ---------------------------------------------------------------- */
-
-.t-top {
+.t-atlas-brand,
+.t-atlas-plugin-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
-  height: var(--t-head-h);
-  padding: 0 20px;
-}
-/* Only the command field and the plugins' actions give way on a narrow bar.
-   At 768 px the theme and settings buttons were squeezed to their 16 px icon
-   and the last one ran over the bar's padding (measured in Chromium). */
-.t-top > :not(.t-top__command):not(.t-top__actions) {
-  flex-shrink: 0;
-}
-.t-top[data-compact] {
-  gap: 6px;
-  height: 56px;
-  padding: 0 8px;
-}
-.t-top__history {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--t-line);
-  border-radius: var(--t-r-ctl);
-  background: var(--t-surface);
-}
-.t-top[data-compact] .t-top__history {
-  border: 0;
-  background: none;
-}
-.t-top__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 6px;
-  border: 0;
-  border-radius: var(--t-r-ctl);
-  background: none;
-  color: var(--t-ink);
-  font: inherit;
-  cursor: pointer;
-}
-.t-top__brand:hover {
-  background: var(--t-signal-wash);
-}
-.t-top__name {
-  font-weight: 600;
-  font-size: var(--t-fs-15);
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-.t-top__stats {
-  display: flex;
-  gap: 18px;
-  margin: 0 0 0 8px;
-  padding-left: 18px;
-  border-left: 1px solid var(--t-line);
-}
-.t-top__stats div {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.t-top__stats dt {
-  color: var(--t-muted);
-  font-size: var(--t-fs-11);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.t-top__stats dd {
-  margin: 0;
-  font-size: var(--t-fs-14);
-  font-weight: 600;
-}
-.t-top__actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-.t-more-actions {
   gap: 8px;
-  margin-bottom: 16px;
 }
+.t-atlas-plugin-actions {
+  flex-wrap: wrap;
+}
+
 /* Plugin doors in the bar: each plugin gets its own block holder from the
    host, so without a row of their own two doors stack into a column. Scoped
    to the shell so the older reader's own rule (and its bar gap) stays its own;
@@ -108,40 +31,7 @@
 .t-shell[data-motion="reduced"] .pluginslot > .glow {
   animation: none;
 }
-.t-top__command {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 120px;
-  width: min(420px, 34vw);
-  height: 36px;
-  padding: 0 8px 0 12px;
-  border: 1px solid var(--t-line);
-  border-radius: var(--t-r-ctl);
-  background: var(--t-sunken);
-  color: var(--t-muted);
-  font: inherit;
-  font-size: var(--t-fs-13);
-  text-align: left;
-  cursor: text;
-  transition: border-color var(--t-dur-hit);
-}
-.t-top__command:hover {
-  border-color: var(--t-line-strong);
-  color: var(--t-ink-2);
-}
-.t-top__command > span:nth-child(2) {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-@media (max-width: 1279px) {
-  .t-top__stats {
-    display: none;
-  }
-}
-/* The offset follows the measured drift; a change slides, never blocks, and
-   reduced motion jumps straight to the new offset. */
+
 .t-logo-mark {
   flex: none;
 }
@@ -150,92 +40,8 @@
     transform var(--t-dur-enter) var(--t-ease-out),
     fill var(--t-dur-enter);
 }
-.t-top__alpha {
-  color: var(--t-muted);
-  font-family: var(--t-mono);
-  font-size: var(--t-fs-11);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.t-history .t-menu-item[aria-current="true"] {
-  background: var(--t-signal-wash);
-  box-shadow: inset 2px 0 0 var(--t-signal);
-}
-
-/* Area bar ---------------------------------------------------------------- */
-
-.t-nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: var(--t-nav-h);
-  padding: 0 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-@media (max-width: 900px) {
-  .t-nav {
-    padding-right: 44px;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
-  }
-}
-.t-nav__item {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: var(--t-r-ctl);
-  background: none;
-  color: var(--t-muted);
-  font: inherit;
-  font-size: var(--t-fs-13);
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    color var(--t-dur-hit),
-    background var(--t-dur-hit);
-}
-.t-nav__item:hover {
-  color: var(--t-ink);
-  background: var(--t-signal-wash);
-}
-.t-nav__item[aria-current="page"] {
-  color: var(--t-ink);
-}
-.t-nav__item[aria-current="page"]::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -8px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--t-signal);
-  animation: t-fade var(--t-dur-enter) var(--t-ease-out) both;
-}
-.t-nav__badge {
-  min-width: 18px;
-  padding: 0 5px;
-  border-radius: var(--t-r-pill);
-  background: var(--t-warn-wash);
-  color: var(--t-warn);
-  font-family: var(--t-mono);
-  font-size: var(--t-fs-11);
-  line-height: 18px;
-  text-align: center;
-}
-.t-nav__divider {
-  width: 1px;
-  height: 20px;
-  margin: 0 8px;
-  background: var(--t-line);
-}
 .t-plugin-mark {
+  display: block;
   width: 8px;
   height: 8px;
   margin: 0 4px;
@@ -243,99 +49,10 @@
   border: 1.5px solid currentColor;
   border-radius: 1px;
 }
-.t-nav__item[aria-current="page"] .t-plugin-mark {
+.t-shell [aria-current="page"] .t-plugin-mark {
   background: var(--t-signal);
   border-color: var(--t-signal);
 }
-
-@media (max-height: 500px) {
-  .t-top,
-  .t-top[data-compact] {
-    height: 44px;
-  }
-  .t-nav {
-    height: 40px;
-  }
-  .t-nav__item {
-    height: 32px;
-  }
-  .t-tabbar {
-    height: calc(44px + env(safe-area-inset-bottom, 0px));
-  }
-  .t-tabbar__item {
-    gap: 0;
-    font-size: 10px;
-  }
-}
-
-/* Mobile tab bar ------------------------------------------------------------ */
-
-.t-tabbar {
-  position: fixed;
-  z-index: 40;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  height: calc(var(--t-tab-h) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  border-top: 1px solid var(--t-line);
-  background: color-mix(in srgb, var(--t-ground-2) 92%, transparent);
-  backdrop-filter: blur(16px);
-}
-.t-shell[data-layout="mobile"] .t-tabbar {
-  position: sticky;
-}
-.t-tabbar__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  border: 0;
-  background: none;
-  color: var(--t-muted);
-  font: inherit;
-  font-size: var(--t-fs-11);
-  cursor: pointer;
-}
-.t-tabbar__item[aria-current="page"] {
-  color: var(--t-signal);
-}
-.t-tabbar__item[aria-current="page"] svg {
-  animation: t-pop var(--t-dur-enter) var(--t-ease-spring);
-}
-.t-tabbar__dot {
-  position: absolute;
-  top: -2px;
-  right: -4px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--t-warn);
-  box-shadow: 0 0 0 2px var(--t-ground-2);
-}
-.t-more-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.t-more-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 8px;
-  border: 1px solid var(--t-line);
-  color: var(--t-ink-2);
-  font: inherit;
-  font-size: var(--t-fs-12);
-  cursor: pointer;
-}
-
-/* Boot ------------------------------------------------------------------------ */
 
 .t-boot {
   position: fixed;

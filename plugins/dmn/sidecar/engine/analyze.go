@@ -7,7 +7,7 @@ import (
 
 const MaxCells = 50000
 const MaxFindings = 500
-const Version = "0.1.0-rc.1"
+const Version = "0.1.0-rc.2"
 
 type Case struct {
 	ID     string         `json:"id"`

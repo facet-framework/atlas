@@ -12,18 +12,70 @@ contract:
         Then the product view offers navigation to the domains
     - id: responsive-label-layout
       statement: |
-        Given the product city is shown in a narrow canvas
+        Given the product city is shown in a narrow or a wide canvas
         When Atlas lays out its labels
-        Then every area label remains inside the canvas
-        And lower-priority capability labels do not cover the controls
+        Then every label shown stands whole inside the canvas; a name that
+        would reach past its edge is left out rather than cut
+        And no label covers another label or the map's controls
+    - id: names-hang-from-the-foundation
+      statement: |
+        Given the product city with named areas and capabilities
+        When the reader pans, zooms or turns it
+        Then each name hangs below the lowest edge of its foundation as the
+        camera sees it and moves with it, never standing over a building
+        And a name is never moved aside for room; where it would cover
+        another name or the controls it is left out
+        And panning neither adds nor removes a name inside the picture
+    - id: names-follow-the-zoom
+      statement: |
+        Given the product city opened whole
+        When the reader zooms in step by step
+        Then the areas are named from the start, and a capability is named
+        once its foundation is about as wide on the screen as its name
+        And a capability whose foot stands behind a taller building is not
+        named, while the chosen area and capability are always named
+    - id: the-city-opens-full-screen
+      statement: |
+        Given the product city
+        When the reader presses "Full screen", and later "Leave full screen"
+        or Escape
+        Then the city with its names and controls fills the screen, through
+        the browser's own full screen where it has one and over the window
+        where it has none, and returns to its place in the page
 verification:
   unit_tests:
     - id: frontend/src/screens/frame/city3d.spec.tsx::keeps labels apart from each other and the controls at narrow and wide sizes
       proves:
         - responsive-label-layout
+    - id: frontend/src/screens/frame/city3d.spec.tsx::never stands two names on each other
+      proves:
+        - responsive-label-layout
+    - id: frontend/src/screens/frame/city3d.spec.tsx::leaves a name out rather than cut it at the edge of the canvas
+      proves:
+        - responsive-label-layout
+    - id: frontend/src/screens/frame/city3d.spec.tsx::hangs each name from the lowest point of its foundation
+      proves:
+        - names-hang-from-the-foundation
+    - id: frontend/src/screens/frame/city3d.spec.tsx::keeps the same names while the camera pans, and names more as it comes closer
+      proves:
+        - names-hang-from-the-foundation
+        - names-follow-the-zoom
+    - id: frontend/src/screens/frame/city3d.spec.tsx::names the districts of the whole city, its buildings as zooming in makes room, and the chosen ones always
+      proves:
+        - names-follow-the-zoom
+    - id: frontend/src/screens/frame/city3d.spec.tsx::leaves out a building whose foot stands behind a taller one
+      proves:
+        - names-follow-the-zoom
+    - id: frontend/src/reader/product-city.spec.tsx::names the areas of the whole city, and the capabilities once zooming in makes room
+      proves:
+        - names-follow-the-zoom
+    - id: frontend/src/screens/frame/city3d.spec.tsx::opens the city in the browser's full screen, and leaves it again
+      proves:
+        - the-city-opens-full-screen
+    - id: frontend/src/screens/frame/city3d.spec.tsx::covers the window where the browser has no full screen, until Escape
+      proves:
+        - the-city-opens-full-screen
 lineage:
   owner:
     team: atlas
   created_at: '2026-11-20'
-
-

@@ -373,7 +373,7 @@ describe("processes : one file", () => {
     await userEvent.click(
       within(gallery).getByRole("radio", { name: label("ui.bpmn-src-views.processes-table") }),
     );
-    const table = within(gallery).getByRole("table");
+    const table = within(gallery).getByRole("grid");
     const headers = within(table).getAllByRole("columnheader");
     const changed = headers.findIndex((h) =>
       [en("ui.bpmn-src-views.processes-changed"), de("ui.bpmn-src-views.processes-changed")].some(
@@ -476,7 +476,7 @@ describe("processes : one file", () => {
     await userEvent.click(
       within(ws).getByRole("button", { name: label("ui.bpmn-src-views.processes-walkthrough") }),
     );
-    const walk = await within(ws).findByTestId("process-walk");
+    const walk = await screen.findByTestId("process-walk");
     expect(within(walk).getAllByRole("listitem")).toHaveLength(1);
     await userEvent.click(
       within(walk).getByRole("button", { name: label("ui.bpmn-src-views.processes-next-step") }),
@@ -618,7 +618,7 @@ describe("processes on a phone", () => {
     await userEvent.click(
       within(ws).getByRole("button", { name: label("ui.bpmn-src-views.processes-outline") }),
     );
-    const sheet = within(ws).getByRole("dialog", {
+    const sheet = screen.getByRole("dialog", {
       name: label("ui.bpmn-src-views.processes-outline"),
     });
     const outline = within(sheet).getByRole("navigation", {
@@ -627,13 +627,13 @@ describe("processes on a phone", () => {
     const first = within(outline).getAllByRole("button")[0];
     await userEvent.click(first);
     expect(
-      within(ws).queryByRole("dialog", { name: label("ui.bpmn-src-views.processes-outline") }),
+      screen.queryByRole("dialog", { name: label("ui.bpmn-src-views.processes-outline") }),
     ).toBeNull();
-    expect(within(ws).getByRole("complementary", { name: "Element" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Element" })).toBeInTheDocument();
     await userEvent.click(
       within(ws).getByRole("button", { name: label("ui.bpmn-src-views.processes-walkthrough") }),
     );
-    const walk = await within(ws).findByTestId("process-walk");
+    const walk = await screen.findByTestId("process-walk");
     expect(within(walk).getAllByRole("listitem")).toHaveLength(1);
   });
 });
