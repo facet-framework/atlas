@@ -2370,13 +2370,26 @@ export function licenseIdentifier(hit, source = "") {
   );
 }
 
+// LANGUAGE_CHECK_IGNORE is a comma-separated list of path prefixes to skip.
+function ignored(file) {
+  return (process.env.LANGUAGE_CHECK_IGNORE ?? "")
+    .split(",")
+    .some((prefix) => prefix !== "" && file.startsWith(prefix));
+}
+
 export function scanTracked(root = process.cwd()) {
   const files = execFileSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" })
     .split("\0")
-    .filter((file) => file && !file.startsWith("docs/facets/schema/"));
+    .filter((file) => file && !file.startsWith("docs/facets/schema/") && !ignored(file));
   return files.flatMap((file) => {
-    const source = readFileSync(resolve(root, file), "utf8");
-    return scan(file, source).filter((hit) => !licenseIdentifier(hit, source));
+    try {
+      const source = readFileSync(resolve(root, file), "utf8");
+      return scan(file, source).filter((hit) => !licenseIdentifier(hit, source));
+    } catch (error) {
+      // A working-tree deletion may still be in the index before staging.
+      if (error.code === "ENOENT") return [];
+      throw error;
+    }
   });
 }
 

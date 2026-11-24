@@ -450,7 +450,7 @@ describe("the bench's failing tests", () => {
     installed: () => Promise.resolve([]),
     testReport,
   });
-  const figure = () => screen.getByTestId("bench-test-report-n");
+  const figure = () => within(screen.getByTestId("bench-test-report")).getByTestId("metric-value");
   const note = () => screen.getByTestId("bench-test-report-note");
 
   it("draws a fresh report's nought as 0 with the commit it was measured on", async () => {
@@ -500,7 +500,7 @@ describe("the bench's failing tests", () => {
         ),
       );
       expect(figure()).toHaveTextContent("—");
-      expect(figure()).toHaveAccessibleName("not measured");
+      expect(figure()).toHaveTextContent("not measured");
       expect(note()).toHaveTextContent(words);
       expect(note()).not.toHaveTextContent(/\/|EACCES|3/);
     }

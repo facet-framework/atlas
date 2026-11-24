@@ -15,6 +15,11 @@ contract:
         Given a plugin attempts to contribute a palette containing an unknown token
         When the reader opens plugin settings
         Then the palette refusal identifies the token
+    - id: override-chart-series-colours
+      statement: |
+        Given a plugin palette sets valid colours for the four chart series in light and dark mode
+        When the host generates the palette styles
+        Then the styles use the plugin's chart series colours in both modes
 lineage:
   owner:
     team: atlas
@@ -25,5 +30,6 @@ verification:
         the plugin
       proves:
         - report-an-unknown-token
-
-
+    - id: frontend/src/plugin/themes.spec.ts::applies plugin chart series colours in both palette modes
+      proves:
+        - override-chart-series-colours

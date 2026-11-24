@@ -97,7 +97,7 @@ func readArtifact(dir string) (manifest, artifact, error) {
 		return info, entry, errors.New("expected one platform in each manifest")
 	}
 	entry = info.Platforms[0]
-	if !slices.Contains(platforms, entry.Platform) || !candidatePattern.MatchString(info.Version) {
+	if !slices.Contains(platforms, entry.Platform) || !versionPattern.MatchString(info.Version) {
 		return info, entry, errors.New("invalid artifact version or platform")
 	}
 	suffix := ".tar.gz"

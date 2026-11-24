@@ -1,3 +1,4 @@
+import { de as uiDe } from "@facet-tools/ui";
 import { germanLabel } from "@/i18n/testing-labels.spec-support";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -325,7 +326,7 @@ describe("settings", () => {
       expect(screen.queryByRole("menuitem", { name: item })).not.toBeInTheDocument();
     };
     try {
-      await placeList("Visited places", /^Settings/);
+      await placeList("History", /^Settings/);
       // The interface language is a Atlas segment of radios, never a native drop-down.
       const segment = screen.getByRole("radiogroup", { name: "Interface language" });
       expect(within(segment).getAllByRole("radio").length).toBeGreaterThanOrEqual(2);
@@ -345,7 +346,7 @@ describe("settings", () => {
         within(nav()).getByRole("button", { name: germanLabel("Product") }),
       ).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: germanLabel("Language") })).toBeInTheDocument();
-      await placeList(germanLabel("Visited places"), new RegExp(`^${germanLabel("Settings")}`));
+      await placeList(uiDe["primitives.history.label"], new RegExp(`^${germanLabel("Settings")}`));
       await userEvent.click(
         within(
           screen.getByRole("radiogroup", { name: germanLabel("Interface language") }),
@@ -361,7 +362,7 @@ describe("settings", () => {
       expect(
         screen.queryByRole("heading", { name: germanLabel("Language") }),
       ).not.toBeInTheDocument();
-      await placeList("Visited places", /^Settings/);
+      await placeList("History", /^Settings/);
     } finally {
       await act(async () => {
         await i18n.changeLanguage("en");

@@ -946,7 +946,7 @@ describe("ProductPage", () => {
         onSelect={onSelect}
       />,
     );
-    const table = screen.getByRole("table", { name: "Records in the product" });
+    const table = screen.getByRole("grid", { name: "Records in the product" });
     expect(within(table).getAllByRole("row")).toHaveLength(26);
     expect(within(table).getAllByRole("row")[1]).toHaveTextContent("0%");
     expect(screen.getByRole("columnheader", { name: /Test named/ })).toHaveAttribute(
@@ -975,7 +975,7 @@ describe("ProductPage", () => {
         sort={{ key, dir }}
       />,
     );
-    const table = screen.getByRole("table", { name: "Records in the product" });
+    const table = screen.getByRole("grid", { name: "Records in the product" });
     const rank = { active: 0, planned: 1, deprecated: 2 } as Record<string, number>;
     const figure = (f: (typeof FEATURES)[number]): number | string =>
       ({
@@ -1004,7 +1004,7 @@ describe("ProductPage", () => {
 
   it("names lifecycles in English and counts the headline like the summary", () => {
     render(<ProductPage domains={DOMAINS} features={FEATURES} view="list" pageSize={300} />);
-    const table = screen.getByRole("table", { name: "Records in the product" });
+    const table = screen.getByRole("grid", { name: "Records in the product" });
     expect(within(table).queryByText(germanLabel("active"))).not.toBeInTheDocument();
     expect(within(table).getAllByText("active").length).toBe(SUMMARY.activeFeatures);
     expect(within(table).getByText("planned")).toBeInTheDocument();
@@ -1323,7 +1323,7 @@ describe("CapabilityPage", () => {
       />,
     );
     expect(
-      within(screen.getByRole("table", { name: "Records of the capability" })).getAllByRole("row"),
+      within(screen.getByRole("grid", { name: "Records of the capability" })).getAllByRole("row"),
     ).toHaveLength(82);
     await userEvent.click(screen.getByRole("button", { name: /Scenarios/ }));
     expect(onSort).toHaveBeenCalledWith("scenarios");
@@ -1352,7 +1352,7 @@ describe("CapabilityPage", () => {
       tests: f.tests + (i % 5),
     }));
     render(<CapabilityPage {...data} features={features} view="table" sort={{ key, dir }} />);
-    const table = screen.getByRole("table", { name: "Records of the capability" });
+    const table = screen.getByRole("grid", { name: "Records of the capability" });
     const shown = within(table)
       .getAllByRole("row")
       .slice(1)
@@ -1527,9 +1527,7 @@ describe("frame and status pages", () => {
     const { unmount } = render(
       <PlacesOverlay entries={places} filter="board" onFilter={onFilter} />,
     );
-    expect(screen.getByRole("menu", { name: "Visited places" })).toHaveTextContent(
-      "Visited places · 64",
-    );
+    expect(screen.getByRole("menu", { name: "History" })).toHaveTextContent("History · 64");
     expect(screen.getByRole("searchbox", { name: "Filter places" })).toHaveValue("board");
     unmount();
     render(<PlacesSheet entries={places} filter="board" onFilter={onFilter} onPick={onPick} />);
@@ -1585,7 +1583,7 @@ describe("English source text", () => {
 
   it("names lifecycles and counts the product headline in English", () => {
     renderEnglish(<ProductPage domains={DOMAINS} features={FEATURES} view="list" pageSize={300} />);
-    const table = screen.getByRole("table", { name: "Records in the product" });
+    const table = screen.getByRole("grid", { name: "Records in the product" });
     expect(within(table).getAllByText("active").length).toBe(SUMMARY.activeFeatures);
     expect(within(table).queryByText(germanLabel("active"))).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
@@ -1615,7 +1613,11 @@ describe("unmeasured scan figures and commit history", () => {
   it("shows an unmeasured file count and line count as dashes, never as zero", () => {
     renderEnglish(<OverviewPage reader="dev" model={unmeasuredScan} />);
     const kpis = screen.getByTestId("overview-kpis");
-    expect(within(kpis).getByTitle("not measured")).toHaveTextContent("—");
+    const unmeasured = within(kpis)
+      .getAllByTestId("metric-value")
+      .filter((value) => value.textContent?.includes("not measured"));
+    expect(unmeasured).toHaveLength(1);
+    for (const value of unmeasured) expect(value).toHaveTextContent("—");
     expect(kpis).toHaveTextContent(`Files anchored · ${M.totals.anchoredFiles} / —`);
     expect(kpis).not.toHaveTextContent("0%");
     const loc = screen.getByTestId("overview-loc");

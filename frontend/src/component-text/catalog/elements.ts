@@ -266,12 +266,6 @@ export const enElements = {
   "elements.testPyramid.tests.other": "{{count}} tests",
 
   /* timeline */
-  "elements.timeline.unit": "records",
-  "elements.timeline.empty": "Nothing is dated.",
-  "elements.timeline.nothingCreated": "nothing created",
-  "elements.timeline.range": "{{first}} to {{last}}",
-  "elements.timeline.peak": "densest period {{name}} with {{count}}",
-  "elements.timeline.undated": "{{count}} without a date, not drawn",
 
   /* trail */
   "elements.trail.label": "Track",
@@ -541,12 +535,6 @@ export const deElements: { readonly [K in keyof typeof enElements]: string } = {
   "elements.testPyramid.tests.other": "{{count}} Tests",
 
   /* timeline */
-  "elements.timeline.unit": "Records",
-  "elements.timeline.empty": "Nichts ist datiert.",
-  "elements.timeline.nothingCreated": "nichts angelegt",
-  "elements.timeline.range": "{{first}} bis {{last}}",
-  "elements.timeline.peak": "dichtester Abschnitt {{name}} mit {{count}}",
-  "elements.timeline.undated": "{{count}} ohne Datum, nicht gezeichnet",
 
   /* trail */
   "elements.trail.label": "Spur",

@@ -2,15 +2,21 @@ const ATLAS_NAME = "FACET Atlas";
 const PALETTE_SHORTCUT = "K";
 import { useRef, type ReactNode } from "react";
 import { useText, type FacetText } from "../component-text/TextProvider";
-import { Icon, type IconName } from "@facet-tools/ui";
-import { Button, IconButton, Kbd, SearchField } from "@facet-tools/ui";
 import {
-  Menu,
+  AppBar,
+  Button,
+  HistoryNav,
+  HistoryMenu as UiHistoryMenu,
+  IconButton,
   MenuFocusContext,
-  Sheet,
+  MobileTabBar as UiMobileTabBar,
+  MoreSheet as UiMoreSheet,
+  NavBar as UiNavBar,
   useMenuKeyboard,
   useMenuTrigger,
-  type MenuItem,
+  type IconName,
+  type TabBarItem,
+  type NavItem as UiNavItem,
 } from "@facet-tools/ui";
 import { ratioPercent } from "../share";
 
@@ -148,59 +154,19 @@ export type HistoryMenuProps = {
 
 /** The list behind `‹`: places of this session, newest first, the current one marked. */
 export function HistoryMenu({ entries, filter = "", onFilter, onPick, onClear }: HistoryMenuProps) {
-  const { t, plural } = useText();
-  const q = filter.trim().toLowerCase();
-  const shown = q
-    ? entries.filter((e) => (e.label + " " + (e.sub ?? "")).toLowerCase().includes(q))
-    : entries;
-  const items: MenuItem[] = shown.slice(0, 14).map((e) => ({
-    key: e.key,
-    label: e.label,
-    sub: `${t(`shell.history.kind.${e.kind}`)}${e.sub ? " · " + e.sub : ""}`,
-    icon: KIND_ICON[e.kind],
-    meta: e.time,
-    current: e.current,
-    onSelect: () => onPick?.(e.key),
-  }));
+  const { t } = useText();
   return (
-    <Menu
-      label={t("shell.history.label")}
-      className="t-history"
-      style={{ top: "calc(100% + 8px)", left: 0, width: 380 }}
-      header={
-        <div className="t-stack" style={{ gap: 8, padding: "8px 8px 4px" }}>
-          <div className="t-row t-row--between">
-            <span className="t-label">{t("shell.history.heading", { count: entries.length })}</span>
-            <span className="t-meta">{t("shell.history.scope")}</span>
-          </div>
-          {entries.length >= 20 ? (
-            <SearchField
-              label={t("shell.history.filter")}
-              value={filter}
-              placeholder={t("shell.history.filter")}
-              onChange={onFilter}
-            />
-          ) : null}
-        </div>
-      }
-      groups={[{ items }]}
-      footer={
-        <div
-          className="t-row t-row--between"
-          style={{ padding: "8px 8px 4px", borderTop: "1px solid var(--t-line)", marginTop: 6 }}
-        >
-          <span className="t-meta">
-            {shown.length > 14 ? (
-              plural("shell.history.older", shown.length - 14)
-            ) : (
-              <span>{"\u00a0"}</span>
-            )}
-          </span>
-          <Button size="small" variant="quiet" icon="trash" onClick={onClear}>
-            {t("shell.history.clear")}
-          </Button>
-        </div>
-      }
+    <UiHistoryMenu
+      entries={entries.map((entry) => ({
+        ...entry,
+        icon: KIND_ICON[entry.kind],
+        sub: `${t(`shell.history.kind.${entry.kind}`)}${entry.sub ? " · " + entry.sub : ""}`,
+      }))}
+      scope={t("shell.history.scope")}
+      filter={filter}
+      onFilter={onFilter}
+      onPick={onPick}
+      onClear={onClear}
     />
   );
 }
@@ -272,108 +238,81 @@ export function TopBar({
   onMenu,
   actions,
 }: TopBarProps) {
-  const { t, number } = useText();
-  // The logo carries the measured drift; unmeasured is its own state, never level.
+  const { t } = useText();
   const share = !stats ? undefined : stats.drift == null ? null : stats.driftShare;
-  const historyKeys = useMenuTrigger(!!historyOpen && !!history, onHistory);
   const roleKeys = useMenuTrigger(!!roleOpen && !!roleMenu, onRole);
   return (
-    <header className="t-top" data-compact={compact || undefined}>
-      <div className="t-top__history" style={{ position: "relative" }}>
-        <IconButton
-          icon="back"
-          label={canBack ? t("shell.top.back") : t("shell.top.backNone")}
-          size="small"
-          disabled={!canBack}
-          onClick={onBack}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            onHistory?.();
-          }}
+    <AppBar
+      compact={compact}
+      onMenu={onMenu}
+      lead={
+        <HistoryNav
+          canBack={canBack}
+          canForward={canForward}
+          onBack={onBack}
+          onForward={onForward}
+          compact={compact}
+          history={
+            onHistory || history
+              ? {
+                  open: !!historyOpen,
+                  onToggle: () => onHistory?.(),
+                  menu: history ? <HistoryMenu {...history} /> : null,
+                }
+              : undefined
+          }
         />
-        {!compact ? (
-          <IconButton
-            icon="forward"
-            label={canForward ? t("shell.top.forward") : t("shell.top.forwardNone")}
-            size="small"
-            disabled={!canForward}
-            onClick={onForward}
-          />
-        ) : null}
-        {!compact ? (
-          <IconButton
-            icon="history"
-            label={t("shell.history.label")}
-            size="small"
-            pressed={historyOpen}
-            aria-haspopup="menu"
-            aria-expanded={historyOpen}
-            onClick={historyKeys.onClick}
-            onKeyDown={historyKeys.onKeyDown}
-          />
-        ) : null}
-        {historyOpen && history ? (
-          <MenuFocusContext.Provider value={historyKeys.focus}>
-            <HistoryMenu {...history} />
-          </MenuFocusContext.Provider>
-        ) : null}
-      </div>
-      <button
-        type="button"
-        className="t-top__brand"
-        onClick={onHome}
-        aria-label={t("shell.top.home")}
-        title={share === undefined ? undefined : driftMarkLabel(share, t)}
-        data-testid="top-brand"
-      >
-        <Logo drift={share} />
-        <span className="t-top__name">{ATLAS_NAME}</span>
-      </button>
-      {stats && !compact ? (
-        <dl className="t-top__stats">
-          <div>
-            <dt>{t("shell.top.features")}</dt>
-            <dd className="t-num">{stats.features == null ? "—" : number(stats.features)}</dd>
-          </div>
-          <div>
-            <dt>{t("shell.top.proven")}</dt>
-            <dd className="t-num">
-              {stats.provenPct == null ? "—" : t("shell.percent", { value: stats.provenPct })}
-            </dd>
-          </div>
-          <div>
-            <dt>{t("shell.top.drift")}</dt>
-            <dd
-              className={
-                stats.drift == null ? "t-num" : stats.drift ? "t-num t-warn" : "t-num t-ok"
-              }
-            >
-              {stats.drift == null ? "—" : number(stats.drift)}
-            </dd>
-          </div>
-        </dl>
-      ) : null}
-      <span className="t-spacer" />
-      {actions && !compact ? (
-        <div className="t-top__actions" data-testid="top-actions">
-          {actions}
-        </div>
-      ) : null}
-      {compact ? (
+      }
+      brand={
+        <span
+          className="t-atlas-brand"
+          data-testid="top-brand"
+          title={share === undefined ? undefined : driftMarkLabel(share, t)}
+        >
+          <Logo drift={share} />
+          {ATLAS_NAME}
+        </span>
+      }
+      onHome={onHome}
+      homeLabel={t("shell.top.home")}
+      stats={
+        stats
+          ? [
+              { key: "features", label: t("shell.top.features"), value: stats.features },
+              {
+                key: "proven",
+                label: t("shell.top.proven"),
+                value: stats.provenPct,
+                display:
+                  stats.provenPct == null
+                    ? undefined
+                    : t("shell.percent", { value: stats.provenPct }),
+              },
+              {
+                key: "drift",
+                label: t("shell.top.drift"),
+                value: stats.drift,
+                tone: stats.drift == null ? undefined : stats.drift ? "warn" : "ok",
+              },
+            ]
+          : undefined
+      }
+      command={
+        onCommand
+          ? {
+              label: t(compact ? "shell.top.goTo" : "shell.top.command"),
+              onOpen: onCommand,
+              keys: [t("shell.top.ctrl"), PALETTE_SHORTCUT],
+            }
+          : undefined
+      }
+      actions={
         <>
-          <IconButton icon="search" label={t("shell.top.goTo")} onClick={onCommand} />
-          {onMenu ? <IconButton icon="menu" label={t("shell.top.menu")} onClick={onMenu} /> : null}
-        </>
-      ) : (
-        <>
-          <button type="button" className="t-top__command" onClick={onCommand}>
-            <Icon name="search" size={16} />
-            <span>{t("shell.top.command")}</span>
-            <span className="t-row" style={{ gap: 3, marginLeft: "auto" }}>
-              <Kbd>{t("shell.top.ctrl")}</Kbd>
-              <Kbd>{PALETTE_SHORTCUT}</Kbd>
-            </span>
-          </button>
+          {actions ? (
+            <div className="t-atlas-plugin-actions" data-testid="top-actions">
+              {actions}
+            </div>
+          ) : null}
           <div style={{ position: "relative" }}>
             <Button
               size="small"
@@ -395,8 +334,8 @@ export function TopBar({
           <IconButton icon={theme.icon} label={theme.label} onClick={onTheme} />
           <SettingsDoor fresh={settingsFresh} onSettings={onSettings} />
         </>
-      )}
-    </header>
+      }
+    />
   );
 }
 
@@ -480,34 +419,27 @@ export type NavItem = {
   badge?: number;
 };
 
+function navItems(items: NavItem[], pluginNote: string): UiNavItem[] {
+  return items.map(({ plugin, ...item }) =>
+    plugin
+      ? {
+          ...item,
+          secondary: true,
+          mark: <span className="t-plugin-mark" aria-hidden="true" />,
+          note: pluginNote,
+        }
+      : item,
+  );
+}
+
 export function NavBar({ items, onPick }: { items: NavItem[]; onPick?: (key: string) => void }) {
   const { t } = useText();
-  const core = items.filter((i) => !i.plugin);
-  const plugins = items.filter((i) => i.plugin);
-  const render = (i: NavItem) => (
-    <button
-      key={i.key}
-      type="button"
-      className="t-nav__item"
-      aria-current={i.current ? "page" : undefined}
-      onClick={() => onPick?.(i.key)}
-    >
-      {i.plugin ? (
-        <span className="t-plugin-mark" aria-hidden="true" />
-      ) : (
-        <Icon name={i.icon} size={16} />
-      )}
-      <span>{i.label}</span>
-      {i.plugin ? <span className="t-sr"> · {t("shell.nav.plugin")}</span> : null}
-      {i.badge ? <span className="t-nav__badge">{i.badge}</span> : null}
-    </button>
-  );
   return (
-    <nav className="t-nav" aria-label={t("shell.nav.label")}>
-      {core.map(render)}
-      {plugins.length ? <span className="t-nav__divider" aria-hidden="true" /> : null}
-      {plugins.map(render)}
-    </nav>
+    <UiNavBar
+      label={t("shell.nav.label")}
+      items={navItems(items, t("shell.nav.plugin"))}
+      onPick={onPick}
+    />
   );
 }
 
@@ -515,29 +447,11 @@ export function MobileTabBar({
   items,
   onPick,
 }: {
-  items: { key: string; label: string; icon: IconName; current?: boolean; badge?: boolean }[];
+  items: TabBarItem[];
   onPick?: (key: string) => void;
 }) {
   const { t } = useText();
-  return (
-    <nav className="t-tabbar" aria-label={t("shell.nav.label")}>
-      {items.map((i) => (
-        <button
-          key={i.key}
-          type="button"
-          className="t-tabbar__item"
-          aria-current={i.current ? "page" : undefined}
-          onClick={() => onPick?.(i.key)}
-        >
-          <span style={{ position: "relative" }}>
-            <Icon name={i.icon} size={22} />
-            {i.badge ? <span className="t-tabbar__dot" aria-label={t("shell.tabbar.new")} /> : null}
-          </span>
-          <span>{i.label}</span>
-        </button>
-      ))}
-    </nav>
-  );
+  return <UiMobileTabBar label={t("shell.nav.label")} items={items} onPick={onPick} />;
 }
 
 /**
@@ -577,12 +491,30 @@ export function MoreSheet({
 }) {
   const { t } = useText();
   return (
-    <Sheet
+    <UiMoreSheet
       open={open}
-      side="bottom"
       title={t("shell.more.title")}
       meta={t("shell.more.role", { name: roleName })}
+      items={navItems(items, t("shell.nav.plugin"))}
+      onPick={onPick}
       onClose={onClose}
+      choice={
+        roles
+          ? {
+              label: t("shell.role.label"),
+              options: roles.map(({ key, name }) => ({ key, label: name })),
+              current: currentRole,
+              onPick: onRole,
+            }
+          : undefined
+      }
+      actions={
+        actions ? (
+          <div className="t-atlas-plugin-actions" data-testid="more-actions">
+            {actions}
+          </div>
+        ) : undefined
+      }
       footer={
         onSettings || onTheme ? (
           <div className="t-row" style={{ width: "100%" }}>
@@ -610,49 +542,7 @@ export function MoreSheet({
           </div>
         ) : undefined
       }
-    >
-      {roles && roles.length ? (
-        <div className="t-stack" style={{ gap: 8, marginBottom: 16 }}>
-          <span className="t-label">{t("shell.role.who")}</span>
-          <div className="t-row t-row--wrap" role="radiogroup" aria-label={t("shell.role.label")}>
-            {roles.map((r) => (
-              <button
-                key={r.key}
-                type="button"
-                role="radio"
-                aria-checked={r.key === currentRole}
-                className="t-chip"
-                onClick={() => onRole?.(r.key)}
-              >
-                {r.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-      {actions ? (
-        <div className="t-row t-row--wrap t-more-actions" data-testid="more-actions">
-          {actions}
-        </div>
-      ) : null}
-      <div className="t-more-grid">
-        {items.map((i) => (
-          <button
-            key={i.key}
-            type="button"
-            className="t-more-tile t-surface"
-            onClick={() => onPick?.(i.key)}
-          >
-            {i.plugin ? (
-              <span className="t-plugin-mark" aria-hidden="true" />
-            ) : (
-              <Icon name={i.icon} size={22} />
-            )}
-            <span>{i.label}</span>
-          </button>
-        ))}
-      </div>
-    </Sheet>
+    />
   );
 }
 

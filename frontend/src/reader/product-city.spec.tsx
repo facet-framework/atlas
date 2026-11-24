@@ -171,8 +171,9 @@ describe("product city", () => {
     }
   });
 
-  it("names the capabilities at the level of capabilities, not only the areas", async () => {
+  it("names the areas of the whole city, and the capabilities once zooming in makes room", async () => {
     withWebGl();
+    reducedMotion();
     mount();
     const canvas = screen.getByTestId("city").querySelector("canvas")!;
     sized(canvas);
@@ -182,7 +183,14 @@ describe("product city", () => {
     // The precondition: the city opens whole, at the level of capabilities.
     expect(city).toHaveAttribute("data-level", "mid");
     expect(screen.getAllByTestId(/^city-area-/).length).toBeGreaterThan(0);
-    expect(screen.queryAllByTestId(/^city-cap-/).length).toBeGreaterThan(1);
+    const whole = screen.queryAllByTestId(/^city-cap-/).length;
+    for (let i = 0; i < 4; i += 1) {
+      fireEvent.click(screen.getByTestId("city-zoom-in"));
+      await frame();
+    }
+    const close = screen.queryAllByTestId(/^city-cap-/).length;
+    expect(close).toBeGreaterThan(1);
+    expect(close).toBeGreaterThan(whole);
   });
 
   it("keeps the storeys while zooming out until the tallest tower is in view", async () => {

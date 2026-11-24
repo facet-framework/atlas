@@ -284,6 +284,7 @@ export function GlossaryPage(p: GlossaryPageProps) {
       {p.proposal?.status === "sent" && p.proposal.result ? (
         <div className="t-c-toastwrap">
           <Toast
+            duration={null}
             tone="ok"
             action={
               <Button size="small" variant="quiet" icon="external">

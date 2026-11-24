@@ -11,11 +11,12 @@ import {
   sortRows,
   type SortDir,
   Icon,
+  Treemap,
 } from "@facet-tools/ui";
 
 import { useText } from "../text";
 import type { TextKey } from "../text";
-import { Treemap, usePct } from "./charts";
+import { usePct } from "./charts";
 import { KeyValues, KindFrame, MiniStat, PathRef, RecordRef } from "./frame";
 import type {
   AnchorDir,
@@ -151,14 +152,14 @@ export function AnchorsPage(p: AnchorsPageProps) {
               heat: d.anchors / Math.max(1, d.files) / maxDensity,
             }))}
           />
-          <div className="t-c-legend">
+          <div className="t-c-explanation">
             <span>{t("ui.screens-contents.code-area-anchors")}</span>
             <span
-              className="t-c-legend__sw"
+              className="t-c-explanation__sw"
               style={{ background: "color-mix(in srgb, var(--t-signal) 20%, var(--t-raised))" }}
             />
             <span
-              className="t-c-legend__sw"
+              className="t-c-explanation__sw"
               style={{ background: "color-mix(in srgb, var(--t-signal) 70%, var(--t-raised))" }}
             />
             <span>{t("ui.screens-contents.code-colour-anchors-per-file")}</span>

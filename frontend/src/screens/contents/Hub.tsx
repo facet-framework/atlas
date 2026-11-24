@@ -1,8 +1,7 @@
-import { Icon, Button, IconButton, Finding, Meter, Skeleton } from "@facet-tools/ui";
+import { Icon, Button, IconButton, Finding, Meter, Skeleton, Sparkline } from "@facet-tools/ui";
 
 import { useText } from "../text";
 import type { TextKey } from "../text";
-import { Sparkline } from "./charts";
 import type { ContentGroup, ContentKind, ContentKindKey } from "./model";
 
 export type ContentsHubProps = {

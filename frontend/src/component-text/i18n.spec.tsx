@@ -1,7 +1,7 @@
+import { de as uiDe, Pagination } from "@facet-tools/ui";
 import { createText as createGermanText } from "./text";
 import { render, screen } from "@testing-library/react";
 import { de, en, TextProvider, useText, type TextKey } from ".";
-import { Pagination } from "@facet-tools/ui";
 import { BootScreen, HistoryMenu, TopBar } from "../chrome/Shell";
 import { HISTORY } from "../fixtures/shell";
 
@@ -12,6 +12,8 @@ const germanText = createGermanText("de");
  * technical term or a product name that German keeps as it is.
  */
 const SAME_IN_GERMAN: ReadonlySet<TextKey> = new Set<TextKey>([
+  "primitives.nav.label", // "Navigation" in both languages
+  "primitives.toast.seconds", // the abbreviation s is shared
   "shell.nav.item.dmn",
   "shell.nav.item.wiki",
   "shell.history.kind.plugin", // "Plugin" — technical term
@@ -77,7 +79,7 @@ function Probe({ count }: { count: number }) {
     <div data-testid="probe">
       <span data-testid="locale">{locale}</span>
       <span data-testid="text">{t("shell.more.role", { name: "Agent" })}</span>
-      <span data-testid="plural">{plural("shell.history.older", count)}</span>
+      <span data-testid="plural">{plural("primitives.history.older", count)}</span>
       <span data-testid="number">{number(12345)}</span>
       <span data-testid="missing">{t("primitives.pager.range", { from: 1 })}</span>
     </div>
@@ -102,7 +104,7 @@ describe("useText", () => {
       germanText.t("shell.more.role", { name: germanText.t("shell.role.agent.name") }),
     );
     expect(screen.getByTestId("plural")).toHaveTextContent(
-      germanText.t("shell.history.older.one", { count: "1" }),
+      germanText.t("primitives.history.older.one", { count: "1" }),
     );
     expect(screen.getByTestId("number")).toHaveTextContent("12.345");
     rerender(
@@ -111,7 +113,7 @@ describe("useText", () => {
       </TextProvider>,
     );
     expect(screen.getByTestId("plural")).toHaveTextContent(
-      germanText.t("shell.history.older.other", { count: "1.234" }),
+      germanText.t("primitives.history.older.other", { count: "1.234" }),
     );
   });
 
@@ -152,8 +154,10 @@ describe("components reach the dictionary", () => {
         />
       </TextProvider>,
     );
-    expect(screen.getByRole("button", { name: germanText.t("shell.top.backNone") })).toBeDisabled();
-    expect(screen.getByRole("button", { name: germanText.t("shell.top.forward") })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: uiDe["primitives.history.backNone"] }),
+    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: uiDe["primitives.history.forward"] })).toBeEnabled();
     expect(screen.getByText(germanText.t("shell.top.features"))).toBeInTheDocument();
     expect(screen.getByText("1.234")).toBeInTheDocument();
     expect(screen.getByText("61 %")).toBeInTheDocument();

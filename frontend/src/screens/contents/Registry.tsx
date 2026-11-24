@@ -1,9 +1,18 @@
 import { useState } from "react";
-import { Button, Chip, Tabs, EmptyState, Meter, Pagination, Icon } from "@facet-tools/ui";
+import {
+  Button,
+  Chip,
+  Tabs,
+  EmptyState,
+  Meter,
+  Pagination,
+  Icon,
+  BarChart,
+  CalendarHeatmap,
+} from "@facet-tools/ui";
 
 import { useText } from "../text";
 import type { TextKey } from "../text";
-import { BarList, CalendarHeatmap } from "./charts";
 import { KeyValues, KindFrame, MiniStat, RecordRef, short } from "./frame";
 import { DetailCard, originOf, type CardOrigin } from "./detail";
 import type { DayCount, KnowledgeRow, OpsEntry, TeamProvenance, ViewDef } from "./model";
@@ -453,9 +462,9 @@ export function ProvenancePage(p: ProvenancePageProps) {
                 label={t("ui.screens-contents.registry-team-test-named", { team: team.name })}
                 thin
               />
-              <BarList
+              <BarChart
                 label={t("ui.screens-contents.registry-team-areas", { team: team.name })}
-                items={team.domains.map((d) => ({
+                bars={team.domains.map((d) => ({
                   key: d.id,
                   label: <span className="t-mono">{d.id}</span>,
                   value: d.records,
@@ -515,9 +524,9 @@ export function ProvenancePage(p: ProvenancePageProps) {
                 onPick={p.onPickDay}
               />
             </div>
-            <BarList
+            <BarChart
               label={t("ui.screens-contents.registry-new-records-per-month")}
-              items={p.months.map((m) => ({ key: m.key, label: m.label, value: m.count }))}
+              bars={p.months.map((m) => ({ key: m.key, label: m.label, value: m.count }))}
             />
           </div>
           <div className="t-raised t-pad t-stack" data-testid="provenance-day">

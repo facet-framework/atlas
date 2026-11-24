@@ -19,7 +19,7 @@ describe("plugin surfaces", () => {
     const { rerender } = render(<TopBar {...top} actions={<button type="button">Door</button>} />);
     const actions = screen.getByTestId("top-actions");
     expect(within(actions).getByRole("button", { name: "Door" })).toBeInTheDocument();
-    // The actions stand before the command field, inside the header.
+    // Plugin actions belong to the desktop app bar.
     expect(actions.closest("header")).not.toBeNull();
     rerender(<TopBar {...top} compact actions={<button type="button">Door</button>} />);
     expect(screen.queryByRole("button", { name: "Door" })).not.toBeInTheDocument();

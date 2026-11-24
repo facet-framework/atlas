@@ -1,6 +1,6 @@
 {
   "name": "@facet-tools/atlas",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "private": true,
   "license": "AGPL-3.0-only",
   "description": "FACET Atlas: a browser application for FACET registries.",
@@ -24,7 +24,7 @@
     "react-dom": "^19.2.8",
     "react-i18next": "^17.0.14",
     "turndown": "7.2.4",
-    "@facet-tools/ui": "0.1.0-rc.2"
+    "@facet-tools/ui": "0.1.0-rc.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

@@ -1,3 +1,4 @@
+import { nf, pct } from "./charts";
 import { germanLabel } from "@/i18n/testing-labels.spec-support";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -6,17 +7,14 @@ import { renderInEnglish as render, renderInEnglish } from "../testing";
 import { createText } from "../text";
 import {
   BandChart,
-  BarList,
+  BarChart,
   CalendarHeatmap,
   layoutTreemap,
-  nf,
-  pct,
   ShareBar,
   Sparkline,
   Sunburst,
-  toneVar,
   Treemap,
-} from "./charts";
+} from "@facet-tools/ui";
 import {
   capOf,
   Gwt,
@@ -39,7 +37,7 @@ import { GlossaryPage, validateProposal, type ProposalState } from "./Glossary";
 import { desk, mob, tab } from "./kit.spec-support";
 import { SUMMARY } from "../../fixtures/summary";
 import * as D from "./data.spec-support";
-import type { GlossaryTerm, Tone } from "./model";
+import type { GlossaryTerm } from "./model";
 
 const noop = () => undefined;
 
@@ -53,11 +51,6 @@ describe("charts", () => {
     expect(nf(4812)).toBe("4,812");
     expect(pct(null)).toBe("—");
     expect(pct(0.284)).toBe("28 %");
-    expect(
-      (["ok", "warn", "plan", "bad", "signal", "neutral", undefined] as (Tone | undefined)[]).map(
-        toneVar,
-      ),
-    ).toHaveLength(7);
   });
 
   it("lays out a treemap that fills the rectangle", () => {
@@ -78,12 +71,12 @@ describe("charts", () => {
     const pick = jest.fn();
     render(
       <>
-        <BarList
+        <BarChart
           label="Balken"
-          items={[{ key: "a", label: "A", value: 3, meta: "m" }]}
+          bars={[{ key: "a", label: "A", value: 3, meta: "m" }]}
           onPick={pick}
         />
-        <BarList label="Quiet" items={[{ key: "b", label: "B", value: 1 }]} />
+        <BarChart label="Quiet" bars={[{ key: "b", label: "B", value: 1 }]} />
         <CalendarHeatmap
           label="Calendar"
           days={[
@@ -112,13 +105,11 @@ describe("charts", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /A\s*3/ }));
     fireEvent.click(
-      within(screen.getByRole("group", { name: "Days with new records" })).getAllByRole(
-        "button",
-      )[0],
+      within(screen.getByRole("group", { name: "Busiest days" })).getAllByRole("button")[0],
     );
     fireEvent.click(screen.getByRole("button", { name: "internal/facet: 40" }));
     expect(pick.mock.calls.map((c) => c[0])).toEqual(["a", "2026-07-27", "x"]);
-    expect(screen.getByRole("img", { name: "Calendar" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /^Calendar/ })).toBeInTheDocument();
   });
 
   it("draws a sunburst and a band chart with their names", () => {
@@ -152,9 +143,9 @@ describe("charts", () => {
         />
       </>,
     );
-    expect(screen.getByRole("img", { name: "Sunburst" })).toBeInTheDocument();
+    expect(screen.getByRole("figure", { name: "Sunburst" })).toBeInTheDocument();
     expect(screen.getByText("Center")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Band" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /^Band/ })).toBeInTheDocument();
   });
 });
 
@@ -535,7 +526,7 @@ describe("TaxonomyPage and CalibrationPage", () => {
         onOpenRecord={onOpen}
       />,
     );
-    const table = screen.getByRole("table", { name: "Outliers" });
+    const table = screen.getByRole("grid", { name: "Outliers" });
     fireEvent.click(within(table).getAllByRole("row")[1]);
     expect(onOpen).toHaveBeenCalledWith(D.outliers[0].id);
     rerender(
@@ -1142,8 +1133,8 @@ describe("review fixes", () => {
     );
     const fills = [...container.querySelectorAll("path")].map((p) => p.getAttribute("fill"));
     expect(fills[0]).not.toBe(fills[2]);
-    expect(screen.getByText("Alpha")).toBeInTheDocument();
-    expect(screen.getByText("One")).toBeInTheDocument();
+    expect(screen.getByText("Alpha", { selector: "text" })).toBeInTheDocument();
+    expect(screen.getByText("One", { selector: "text" })).toBeInTheDocument();
   });
 
   it("never sets two month labels into the same weeks of the calendar", () => {

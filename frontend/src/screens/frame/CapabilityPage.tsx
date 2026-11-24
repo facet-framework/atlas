@@ -10,7 +10,7 @@ import {
   Finding,
   Meter,
   Section,
-  Stat,
+  Metric,
   DataTable,
   Pagination,
   type Column,
@@ -141,21 +141,22 @@ export function CapabilityPage(p: CapabilityPageProps) {
           }
         />
         <div className="t-a-over__stats t-stagger">
-          <Stat value={nf(fs.length)} label="Records" />
-          <Stat
-            value={empty ? "—" : `${nf(proven)} / ${nf(scen)}`}
+          <Metric value={fs.length} label="Records" />
+          <Metric
+            value={empty ? null : proven}
+            of={empty ? undefined : scen}
             label={
               empty
                 ? t("ui.screens-frame.capabilitypage-scenarios-not-measured")
                 : t("ui.screens-frame.capabilitypage-scenarios-named-test")
             }
           />
-          <Stat
-            value={nf(p.files.length)}
+          <Metric
+            value={p.files.length}
             label={t("ui.screens-frame.capabilitypage-anchor-files")}
           />
-          <Stat
-            value={nf(p.drift.length)}
+          <Metric
+            value={p.drift.length}
             tone={p.drift.length ? "warn" : "ok"}
             label={t("ui.screens-frame.capabilitypage-drift")}
           />

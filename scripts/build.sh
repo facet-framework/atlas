@@ -22,4 +22,4 @@ mkdir -p "$root/dist"
 sh "$root/scripts/build-sidecars.sh"
 case "${GOOS:-$(go env GOOS)}" in windows) executable=facet.exe ;; *) executable=facet ;; esac
 version=$(node -p "require('$root/frontend/package.json').version")
-CGO_ENABLED=0 GOWORK=off go -C "$root/backend" build -trimpath -buildvcs=false -ldflags="-X main.version=0.1.0-rc.2 -X main.atlasVersion=$version -X main.uiVersion=0.1.0-rc.2" -o "$root/dist/$executable" ./cmd/facet
+CGO_ENABLED=0 GOWORK=off go -C "$root/backend" build -trimpath -buildvcs=false -ldflags="-X main.version=0.1.0-rc.2 -X main.atlasVersion=$version -X main.uiVersion=0.1.0-rc.3" -o "$root/dist/$executable" ./cmd/facet

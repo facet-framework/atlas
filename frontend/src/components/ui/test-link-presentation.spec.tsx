@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { buildModel } from "../../model/model";
 import { companionAnswer } from "../../model/companion";
 import { probeOf } from "../../model/probes";
-import CoverageRing from "./CoverageRing";
+import { CoverageRing } from "../../elements/chart-elements";
 import ProofMatrix from "./ProofMatrix";
 import ScenarioLedger from "./ScenarioLedger";
 
@@ -119,7 +119,7 @@ it("presents reference-only verification as test links without claiming executio
     </>,
   );
   expect(
-    screen.getByRole("img", { name: "1 of 1 promises with a mapped test" }),
+    screen.getByRole("meter", { name: "1 of 1 promises with a mapped test" }),
   ).toBeInTheDocument();
   expect(screen.getByText("All 1 promises have a mapped test.")).toBeInTheDocument();
   expect(screen.getByText("Test mapped")).toBeInTheDocument();

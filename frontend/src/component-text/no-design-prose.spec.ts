@@ -1,3 +1,4 @@
+import { de as uiDe } from "@facet-tools/ui";
 import { de, en, type TextKey } from ".";
 
 /**
@@ -105,7 +106,7 @@ describe("no design prose in the FACET dictionaries", () => {
     expect(reasoning("Every promise is therefore open.")).toBeDefined();
     // And it lets ordinary labels and states through.
     expect(reasoning("Nothing open.")).toBeUndefined();
-    expect(reasoning(de["shell.top.backNone"])).toBeUndefined();
+    expect(reasoning(uiDe["primitives.history.backNone"])).toBeUndefined();
     expect(reasoning("Install and grant in the terminal.")).toBeUndefined();
   });
 

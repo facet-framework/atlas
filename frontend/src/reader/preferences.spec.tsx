@@ -175,8 +175,8 @@ describe("settings, history maximum", () => {
       "/settings/history",
     ]);
     // The place menu lists what the history holds.
-    await userEvent.click(screen.getByRole("button", { name: tt("shell.history.label") }));
-    const menu = screen.getByRole("menu", { name: tt("shell.history.label") });
+    await userEvent.click(screen.getByRole("button", { name: "History" }));
+    const menu = screen.getByRole("menu", { name: "History" });
     expect(within(menu).getAllByRole("menuitem")).toHaveLength(3);
     await userEvent.keyboard("{Escape}");
 

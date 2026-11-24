@@ -39,8 +39,6 @@ export { ButtonControl as Button, withButtonLogic } from "@facet-tools/ui/primit
 export type * from "@facet-tools/ui/primitives";
 export { StatValueControl as StatValue, withStatValueLogic } from "@facet-tools/ui/primitives";
 export type * from "@facet-tools/ui/primitives";
-export { default as CoverageRing, withCoverageRingLogic } from "../components/ui/CoverageRing";
-export type * from "../components/ui/CoverageRing";
 export { FieldRowControl as FieldRow, withFieldRowLogic } from "@facet-tools/ui/primitives";
 export type * from "@facet-tools/ui/primitives";
 
@@ -124,5 +122,6 @@ export { EntryCardsControl as EntryCards, withEntryCardsLogic } from "@facet-too
 export type * from "@facet-tools/ui/primitives";
 export { default as GroupTiles, withGroupTilesLogic } from "../components/ui/GroupTiles";
 export type * from "../components/ui/GroupTiles";
-export { default as Timeline, withTimelineLogic } from "../components/ui/Timeline";
-export type * from "../components/ui/Timeline";
+
+export { CoverageRing, Timeline } from "./chart-elements";
+export type { CoverageRingProps, TimelineProps } from "./chart-elements";

@@ -93,6 +93,19 @@ describe("what a theme turns into", () => {
     expect(block(css, "dark")["color-scheme"]).toBe("dark");
   });
 
+  it("applies plugin chart series colours in both palette modes", () => {
+    const series = {
+      "--t-series-1": "#112233",
+      "--t-series-2": "#223344",
+      "--t-series-3": "#334455",
+      "--t-series-4": "#445566",
+    };
+    const css = cssOf(themeSheetCSS("probe", "ocean", { light: series, dark: series }, BASE));
+
+    expect(block(css, "light")).toMatchObject(series);
+    expect(block(css, "dark")).toMatchObject(series);
+  });
+
   // A partial theme is the normal case: the rest is FACET's, measured, so a
   // card or the root carrying the value draws a whole palette.
   it("fills every token it does not set from the base of the same version", () => {

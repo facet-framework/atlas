@@ -133,17 +133,21 @@
     {
       "ecosystem": "npm",
       "name": "@facet-tools/ui",
-      "version": "0.1.0-rc.2",
+      "version": "0.1.0-rc.3",
       "license": "Apache-2.0",
       "role": "bundled-browser",
       "license_files": [
         {
-          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.2/LICENSE",
+          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.3/LICENSE",
           "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
         },
         {
-          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.2/NOTICE",
-          "sha256": "099d690869bc8cf111df6a0dcd72dd30967703f5ce9b197dd8ff3b762e6c0103"
+          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.3/NOTICE",
+          "sha256": "0f32c32a199e6b51f57c4fc812bb9e3691bc89653fbd6f4d6a411420f5458d15"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/npm/@facet-tools%2Fui@0.1.0-rc.3/THIRD_PARTY.md",
+          "sha256": "316054600f3eeea4a4e327236c2bce1e06c02d9bb369bfd91b204178559c0bf9"
         }
       ]
     },
@@ -571,7 +575,7 @@
     {
       "ecosystem": "Plugin",
       "name": "DMN",
-      "version": "0.1.0-dev.1",
+      "version": "0.1.0-rc.2",
       "license": "Apache-2.0",
       "role": "bundled plugin and sidecar",
       "license_files": [

@@ -61,7 +61,9 @@ describe("the mark", () => {
     async (from) => {
       await mount(from);
       expect(screen.queryByTestId("overview")).toBeNull();
-      await userEvent.click(within(head()).getByTestId("top-brand"));
+      await userEvent.click(
+        within(head()).getByRole("button", { name: "FACET Atlas, to the overview" }),
+      );
       expect(where()).toBe("/");
       expect(screen.getByTestId("overview")).toBeInTheDocument();
     },

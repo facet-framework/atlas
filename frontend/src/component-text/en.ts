@@ -5,7 +5,7 @@ import { enCore } from "./catalog/core";
 /**
  * The English dictionary — the source of truth for every visible text in FACET.
  *
- * Keys are flat and dotted by area (`shell.history.clear`). A key ending in
+ * Keys are flat and dotted by area (`shell.history.scope`). A key ending in
  * `.one` / `.other` is a plural pair, read through `plural()`. `{{name}}` marks
  * a parameter; numbers are formatted for the active locale.
  */
@@ -15,13 +15,7 @@ export const en = {
 
   /* Shell */
   "shell.percent": "{{value}}%",
-  "shell.history.label": "Visited places",
-  "shell.history.heading": "Visited places · {{count}}",
   "shell.history.scope": "up to 200 · this browser only",
-  "shell.history.filter": "Filter places",
-  "shell.history.older.one": "{{count}} older",
-  "shell.history.older.other": "{{count}} older",
-  "shell.history.clear": "Clear history",
   "shell.history.kind.overviewPage": "Overview",
   "shell.history.kind.area": "Area",
   "shell.history.kind.record": "Record",
@@ -29,10 +23,6 @@ export const en = {
   "shell.history.kind.overview": "Overview",
   "shell.history.kind.content": "Content",
   "shell.history.kind.settings": "Settings",
-  "shell.top.back": "Back",
-  "shell.top.backNone": "Back — no earlier place yet",
-  "shell.top.forward": "Forward",
-  "shell.top.forwardNone": "Forward — no later place",
   "shell.top.home": "FACET Atlas, to the overview",
   "shell.top.features": "Features",
   "shell.top.proven": "Test named",
@@ -41,7 +31,6 @@ export const en = {
   "shell.mark.level": "No drift",
   "shell.mark.unmeasured": "Drift not measured",
   "shell.top.goTo": "Go to",
-  "shell.top.menu": "Menu",
   "shell.top.command": "Go to a record, role or command",
   "shell.top.ctrl": "Ctrl",
   "shell.top.settings": "Settings",
@@ -77,7 +66,6 @@ export const en = {
   "shell.theme.light": "Light",
   "shell.nav.label": "Areas",
   "shell.nav.plugin": "Plugin",
-  "shell.tabbar.new": "new",
   "shell.more.title": "More",
   "shell.more.role": "Role: {{name}}",
   "shell.boot.mark": "Atlas is reading",

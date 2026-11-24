@@ -1,4 +1,4 @@
-import { AppShell } from "@facet-tools/ui";
+import { AppShell, de as uiDe, IconButton } from "@facet-tools/ui";
 import { useEffect, useState } from "react";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -18,7 +18,6 @@ import {
   TopBar,
 } from "./Shell";
 import { HISTORY, NAV, rolesFor } from "../fixtures/shell";
-import { IconButton } from "@facet-tools/ui";
 import { registry } from "../fixtures";
 import { renderInGerman } from "../component-text/testing";
 import { createText } from "../component-text/TextProvider";
@@ -42,9 +41,9 @@ describe("TopBar", () => {
         onHistory={onHistory}
       />,
     );
-    expect(screen.getByRole("button", { name: /Back — no earlier place yet/ })).toBeDisabled();
-    expect(screen.getByRole("menu", { name: "Visited places" })).toHaveTextContent("adr-plugin");
-    await userEvent.click(screen.getByRole("button", { name: "Visited places" }));
+    expect(screen.getByRole("button", { name: /Back — no earlier place/ })).toBeDisabled();
+    expect(screen.getByRole("menu", { name: "History" })).toHaveTextContent("adr-plugin");
+    await userEvent.click(screen.getByRole("button", { name: "History" }));
     expect(onHistory).toHaveBeenCalled();
   });
 });
@@ -159,7 +158,7 @@ describe("TopBar actions", () => {
     expect(screen.queryByRole("menu")).toBeNull();
     expect(role).toHaveFocus();
 
-    const places = screen.getByRole("button", { name: "Visited places" });
+    const places = screen.getByRole("button", { name: "History" });
     places.focus();
     await userEvent.keyboard("{ArrowUp}");
     const items = screen.getAllByRole("menuitem");
@@ -183,7 +182,7 @@ describe("TopBar actions", () => {
         stats={{ features: 1, provenPct: 1, drift: 1 }}
       />,
     );
-    expect(screen.queryByRole("button", { name: "Forward" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Forward/ })).toBeNull();
     expect(screen.queryByText("Features")).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: "Menu" }));
     await userEvent.click(screen.getByRole("button", { name: "Go to" }));
@@ -263,7 +262,7 @@ describe("navigation", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Records/ })[0]);
     expect(onPick).toHaveBeenCalledWith("records");
     expect(screen.getByRole("dialog", { name: "More" })).toHaveTextContent("Role: Agent");
-    await userEvent.click(screen.getByRole("button", { name: "Decisions" }));
+    await userEvent.click(screen.getByRole("button", { name: /Decisions/ }));
     expect(onPick).toHaveBeenCalledWith("adr");
   });
 });
@@ -403,6 +402,7 @@ describe("the drift mark", () => {
       roleName="x"
       theme={{ label: "Light", icon: "sun" }}
       stats={stats}
+      onHome={() => undefined}
     />
   );
   const blocks = (mark: Element) =>
@@ -415,7 +415,10 @@ describe("the drift mark", () => {
     expect(mark).toHaveAttribute("data-state", "drift");
     // Half the records drift: half the brand offset of 22, 11 → the even 12.
     expect(blocks(mark)).toEqual(["translateY(5px)", "translateY(17px)"]);
-    expect(brand).toHaveAttribute("title", expect.stringMatching(/^Drift: 50\s?% of records$/));
+    expect(screen.getByTestId("top-brand")).toHaveAttribute(
+      "title",
+      expect.stringMatching(/^Drift: 50\s?% of records$/),
+    );
 
     rerender(bar({ features: 10, provenPct: 50, drift: 0, driftShare: 0 }, true));
     mark = screen
@@ -432,7 +435,7 @@ describe("the drift mark", () => {
     expect(mark).toHaveAttribute("data-state", "unmeasured");
     expect(blocks(mark)).toEqual(["translateY(0px)", "translateY(22px)"]);
     expect(mark.querySelector("rect")!.style.fill).toBe("var(--t-faint)");
-    expect(brand).toHaveAttribute("title", "Drift not measured");
+    expect(screen.getByTestId("top-brand")).toHaveAttribute("title", "Drift not measured");
   });
 
   it("keeps the brand mark when no drift figures are given", () => {
@@ -590,9 +593,13 @@ describe("German locale", () => {
         />
       </>,
     );
-    expect(screen.getByRole("button", { name: de["shell.top.backNone"] })).toBeDisabled();
-    expect(screen.getByRole("menu", { name: de["shell.history.label"] })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: uiDe["primitives.history.backNone"] }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("menu", { name: uiDe["primitives.history.label"] }),
+    ).toBeInTheDocument();
     expect(screen.getByText(de["shell.boot.phase.records"])).toBeInTheDocument();
-    expect(screen.getByRole("menu", { name: germanText.t("shell.history.label") })).toBeVisible();
+    expect(screen.getByRole("menu", { name: uiDe["primitives.history.label"] })).toBeVisible();
   });
 });

@@ -15,7 +15,7 @@ import {
   Meter,
   Section,
   Skeleton,
-  Stat,
+  Metric,
   Pagination,
 } from "@facet-tools/ui";
 import { DriftMark } from "@/chrome";
@@ -558,41 +558,34 @@ function weakest(m: OverviewModel, t: FacetText["t"]) {
 }
 
 function Kpis({ m, proven }: { m: OverviewModel; proven: number | null }) {
-  const { t, plural, number: nf } = useText();
+  const { t, plural } = useText();
   return (
     <div className="t-a-kpis t-stagger" data-testid="overview-kpis">
-      <Stat
-        value={nf(m.totals.records)}
+      <Metric
+        value={m.totals.records}
         label={plural(
           "ui.screens-frame.overviewpage-records-count-assumptions",
           m.totals.assumptions,
         )}
       />
-      <Stat
-        value={pctText(proven, t)}
+      <Metric
+        value={proven}
+        format={(value) => pctText(value, t)}
         tone={shareTone(proven) === "plan" ? undefined : shareTone(proven)}
         label={t("ui.screens-frame.overviewpage-scenarios-named-test")}
       />
       {m.driftMeasured === false ? (
-        <Stat
-          value={<span title={t("ui.screens-frame.overviewpage-not-measured")}>—</span>}
-          label={t("ui.screens-frame.overviewpage-files-drift")}
-        />
+        <Metric value={null} label={t("ui.screens-frame.overviewpage-files-drift")} />
       ) : (
-        <Stat
-          value={nf(m.drift.length)}
+        <Metric
+          value={m.drift.length}
           tone={m.drift.length ? "warn" : "ok"}
           label={t("ui.screens-frame.overviewpage-files-drift")}
         />
       )}
-      <Stat
-        value={
-          m.totals.files == null ? (
-            <span title={t("ui.screens-frame.overviewpage-not-measured")}>—</span>
-          ) : (
-            pctText(pct(m.totals.anchoredFiles, m.totals.files), t)
-          )
-        }
+      <Metric
+        value={pct(m.totals.anchoredFiles, m.totals.files ?? 0)}
+        format={(value) => pctText(value, t)}
         label={t("ui.screens-frame.overviewpage-files-anchored-anchored-files", {
           anchored: m.totals.anchoredFiles,
           files: m.totals.files ?? "—",
@@ -604,30 +597,31 @@ function Kpis({ m, proven }: { m: OverviewModel; proven: number | null }) {
 
 /** The leadership's figures: promises, areas and teams; no file, record or anchor count. */
 function LeitungKpis({ m, proven }: { m: OverviewModel; proven: number | null }) {
-  const { t, number: nf } = useText();
+  const { t } = useText();
   const open = m.totals.scenarios - m.totals.proven;
   const rework = m.domains.filter((d) => d.drift > 0).length;
   return (
     <div className="t-a-kpis t-stagger" data-testid="overview-kpis">
-      <Stat
-        value={pctText(proven, t)}
+      <Metric
+        value={proven}
+        format={(value) => pctText(value, t)}
         tone={shareTone(proven) === "plan" ? undefined : shareTone(proven)}
         label={t("ui.screens-frame.overviewpage-promises-test-named")}
       />
-      <Stat
-        value={nf(open)}
+      <Metric
+        value={open}
         tone={open ? "warn" : "ok"}
         label={t("ui.screens-frame.overviewpage-promises-open")}
       />
-      <Stat
-        value={nf(rework)}
+      <Metric
+        value={rework}
         tone={rework ? "warn" : "ok"}
         label={t("ui.screens-frame.overviewpage-areas-rework-areas", {
           areas: m.domains.length,
         })}
       />
-      <Stat
-        value={nf(m.owners.length)}
+      <Metric
+        value={m.owners.length}
         label={t("ui.screens-frame.overviewpage-teams-holding-features")}
       />
     </div>
@@ -2444,17 +2438,17 @@ function OverviewEmpty({
         }
       />
       <div className="t-a-kpis t-a-kpis--empty">
-        <Stat value="0" label="Records" />
-        <Stat
-          value="—"
+        <Metric value={0} label="Records" />
+        <Metric
+          value={null}
           label={`${t("ui.screens-frame.overviewpage-scenarios-named-test")} · ${unmeasured}`}
         />
-        <Stat
-          value="—"
+        <Metric
+          value={null}
           label={`${t("ui.screens-frame.overviewpage-files-drift")} · ${unmeasured}`}
         />
-        <Stat
-          value="—"
+        <Metric
+          value={null}
           label={`${t("ui.screens-frame.overviewpage-files-anchored")} · ${unmeasured}`}
         />
       </div>

@@ -7,11 +7,11 @@ import {
   type Facet,
   Sheet,
   Icon,
+  ShareBar,
 } from "@facet-tools/ui";
 
 import { useText } from "../text";
 import type { TextKey } from "../text";
-import { ShareBar } from "./charts";
 import { Gwt, KindFrame, MiniStat, RecordRef, capOf, short, splitGwt, stripMd } from "./frame";
 import type { PromiseItem, PromiseRecord, PromiseState, ViewDef } from "./model";
 import { ratioPercent } from "../../share";
@@ -297,12 +297,12 @@ function Mosaic({
   const domains = [...new Set(records.map((r) => r.domain))];
   return (
     <div className="t-stack" style={{ gap: 20 }} data-testid="promise-mosaic">
-      <div className="t-c-legend">
-        <span className="t-c-legend__sw" style={{ background: "var(--t-ok)" }} />{" "}
+      <div className="t-c-explanation">
+        <span className="t-c-explanation__sw" style={{ background: "var(--t-ok)" }} />{" "}
         {t("ui.screens-contents.promises-test-named")}
-        <span className="t-c-legend__sw" style={{ background: "var(--t-warn)" }} />{" "}
+        <span className="t-c-explanation__sw" style={{ background: "var(--t-warn)" }} />{" "}
         {t("ui.screens-contents.promises-open")}
-        <span className="t-c-legend__sw" style={{ background: "var(--t-bad)" }} />{" "}
+        <span className="t-c-explanation__sw" style={{ background: "var(--t-bad)" }} />{" "}
         {t("ui.screens-contents.promises-deviation-mosaic")}
         <span className="t-meta">{t("ui.screens-contents.promises-one-cell-per-promise")}</span>
       </div>
