@@ -21,6 +21,7 @@ import {
   homeDistance,
   labelsOf,
   nameBox,
+  pinBox,
   levelOf,
   lotGrid,
   meshOf,
@@ -415,6 +416,37 @@ describe("the 3D city as data", () => {
         const q = box(b);
         return p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1 ? [[a.index, b.index]] : [];
       }),
+    );
+    expect(covering).toEqual([]);
+  });
+
+  it("stands a pin's name over the middle of its roof, above the foot, and never on another pin", () => {
+    const close = { ...homeCamera(homeDistance(W, 2)), dist: 18 };
+    const none = { district: -1, building: -1 };
+    const tags = labelsOf(W, close, farDistance(W, 2), 1280, 800, none);
+    const pins = labelsOf(W, close, farDistance(W, 2), 1280, 800, none, "pin");
+    // The precondition: close up, buildings are named in both styles.
+    expect(tags.buildings.length).toBeGreaterThan(0);
+    expect(pins.buildings.length).toBeGreaterThan(0);
+    const m = viewProjection(close, 1280 / 800);
+    for (const spot of pins.buildings) {
+      const b = W.buildings[spot.index];
+      const roof = project(m, [b.cx, b.top + 0.01, b.cz], 1280, 800)!;
+      expect([spot.x, spot.y]).toEqual([Math.round(roof[0]), Math.round(roof[1])]);
+    }
+    // Where both styles name a building, the pin stands higher than the tag.
+    const both = pins.buildings.flatMap((p) =>
+      tags.buildings.filter((t) => t.index === p.index).map((t) => [p.y, t.y]),
+    );
+    expect(both.length).toBeGreaterThan(0);
+    expect(both.filter(([pin, tag]) => pin >= tag)).toEqual([]);
+    // Areas keep their place at the foot in every style.
+    expect(pins.districts).toEqual(tags.districts);
+    const boxes = pins.buildings.map((s) =>
+      pinBox(s.x, s.y, W.buildings[s.index].title.length + 10),
+    );
+    const covering = boxes.flatMap((p, i) =>
+      boxes.slice(i + 1).filter((q) => p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1),
     );
     expect(covering).toEqual([]);
   });
@@ -960,6 +992,38 @@ describe("City3D", () => {
     fireEvent.pointerLeave(scene());
     fireEvent.pointerMove(scene(), { pointerType: "touch", clientX: q.x, clientY: q.y });
     expect(screen.queryByTestId("city-tip")).toBeNull();
+  });
+
+  it("names only the building under the pointer and the chosen one when names wait for hover", async () => {
+    const names = () => screen.queryAllByTestId(/^city-(cap|area)-/).map((n) => n.textContent);
+    withGl();
+    const always = city();
+    size(canvasOf());
+    await frame();
+    fireEvent.click(screen.getByRole("radio", { name: "Records" }));
+    await frame();
+    // The precondition: close up, the city names its buildings by itself.
+    expect(screen.queryAllByTestId(/^city-cap-/).length).toBeGreaterThan(0);
+    always.unmount();
+
+    withGl();
+    city({ names: "hover" });
+    size(canvasOf());
+    await frame();
+    fireEvent.click(screen.getByRole("radio", { name: "Records" }));
+    await frame();
+    expect(screen.getByTestId("city-map")).toHaveAttribute("data-names", "hover");
+    expect(names()).toEqual([]);
+    const p = JSON.parse(scene().getAttribute("data-probe")!);
+    fireEvent.pointerMove(scene(), { pointerType: "mouse", clientX: p.x, clientY: p.y });
+    await frame();
+    const shown = screen.queryAllByTestId(/^city-cap-/);
+    expect(shown).toHaveLength(1);
+    expect(shown[0]).toHaveTextContent("Cart");
+    expect(screen.queryAllByTestId(/^city-area-/)).toHaveLength(0);
+    fireEvent.pointerLeave(scene());
+    await frame();
+    expect(names()).toEqual([]);
   });
 
   it("opens the city in the browser's full screen, and leaves it again", async () => {

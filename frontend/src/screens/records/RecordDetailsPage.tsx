@@ -39,7 +39,6 @@ import {
   ProofMosaic,
   SectionChips,
   SectionRail,
-  StepList,
   cx,
   type RailItem,
 } from "./parts";
@@ -48,7 +47,7 @@ import {
   BusinessRuleList,
   CaseOfLines,
   DecisionList,
-  ExampleTables,
+  ScenarioSteps,
   RecordLookup,
   type RecordBusinessRule,
   type RecordCaseOf,
@@ -432,7 +431,6 @@ function ScenarioCard({
 }) {
   const { t } = useText();
   const outline = !!s.examples?.length;
-  const params = outline ? new Set(s.examples!.flatMap((b) => b.columns)) : undefined;
   return (
     <article
       className={cx("t-b-scn", !s.proven && "t-b-scn--open")}
@@ -458,7 +456,7 @@ function ScenarioCard({
           <Badge tone="warn">{t("ui.screens-records.recorddetailspage-open")}</Badge>
         )}
       </header>
-      <StepList steps={s.steps} params={params} render={render} />
+      <ScenarioSteps id={s.id} steps={s.steps} examples={s.examples} render={render} />
       {s.deviation ? (
         <p className="t-b-scn__deviation" data-testid="scenario-deviation">
           <span className="t-label">
@@ -467,7 +465,6 @@ function ScenarioCard({
           {render(s.deviation)}
         </p>
       ) : null}
-      {outline ? <ExampleTables blocks={s.examples!} scenarioId={s.id} /> : null}
       {s.caseOf?.length ? (
         <CaseOfLines cases={s.caseOf} render={render} onOpen={onOpenRule} />
       ) : null}

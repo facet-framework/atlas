@@ -1,7 +1,8 @@
 /** The reader's own choices in Atlas that act outside the settings page:
  * density and motion of the shell, whether a fresh start returns to the last
  * place, whether chat sessions outlive the page, whether the chat follows a
- * growing answer, and how many places the history keeps. Stored per browser
+ * growing answer, how many places the history keeps, and how tall the product
+ * city stands and when it names its areas and buildings. Stored per browser
  * under one key; a stored value this version does not know falls back to its
  * default, field by field. */
 
@@ -12,6 +13,15 @@ export const PREFERENCES_KEY = "facet.atlas.preferences";
 /** The history keeps at least one place (the one the reader is on) and at most this many. */
 export const HISTORY_LIMIT_MIN = 1;
 export const HISTORY_LIMIT_MAX = 1000;
+
+/** Least heights the product city may be given, in pixels; `null` leaves it to the window. */
+export const CITY_HEIGHTS = [480, 640, 800, 960, 1200] as const;
+export type CityHeight = (typeof CITY_HEIGHTS)[number];
+
+/** How the product city draws its names: a tag hanging from the foundation, a
+ * pin standing on the roof, or map lettering without a box. */
+export const CITY_LABELS = ["tag", "pin", "map"] as const;
+export type CityLabels = (typeof CITY_LABELS)[number];
 
 export type Preferences = {
   density: "compact" | "normal" | "spacious";
@@ -25,6 +35,12 @@ export type Preferences = {
   historyLimit: number;
   /** On: the chat follows the end of a growing answer instead of pinning the question to the top. */
   followAnswer: boolean;
+  /** The product city's least height; `null` follows the window. */
+  cityHeight: CityHeight | null;
+  /** `hover`: the city names only the place under the pointer and the chosen one. */
+  cityNames: "always" | "hover";
+  /** How the city draws its names. */
+  cityLabels: CityLabels;
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -34,6 +50,9 @@ export const DEFAULT_PREFERENCES: Preferences = {
   keepChat: true,
   historyLimit: 200,
   followAnswer: false,
+  cityHeight: null,
+  cityNames: "always",
+  cityLabels: "tag",
 };
 
 function storage(): Storage | undefined {
@@ -76,6 +95,13 @@ export function readPreferences(s: Pick<Storage, "getItem"> | undefined = storag
     keepChat: typeof raw.keepChat === "boolean" ? raw.keepChat : d.keepChat,
     historyLimit: parseHistoryLimit(raw.historyLimit) ?? d.historyLimit,
     followAnswer: typeof raw.followAnswer === "boolean" ? raw.followAnswer : d.followAnswer,
+    cityHeight:
+      raw.cityHeight === null
+        ? null
+        : (CITY_HEIGHTS.find((h) => h === raw.cityHeight) ?? d.cityHeight),
+    cityNames:
+      raw.cityNames === "hover" || raw.cityNames === "always" ? raw.cityNames : d.cityNames,
+    cityLabels: CITY_LABELS.find((l) => l === raw.cityLabels) ?? d.cityLabels,
   };
 }
 

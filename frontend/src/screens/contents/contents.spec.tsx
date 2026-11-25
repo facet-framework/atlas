@@ -1332,6 +1332,29 @@ describe("answer cards, fix details, pins and the calibration statement", () => 
     expect(reduced).toMatch(/\.t-c-dcard,\s*\.t-c-dcard-scrim \{\s*animation: none;/);
   });
 
+  it("keeps the matrix head docked under the view bar, with no row showing between them", () => {
+    // jsdom lays nothing out: the rendered head is tied to the rules that place it.
+    const css = readFileSync(join(__dirname, "..", "styles", "contents.css"), "utf8");
+    const rule = (sel: string) =>
+      new RegExp(`\\n${sel.replace(/\./g, "\\.")} \\{([^}]*)\\}`).exec(css)?.[1] ?? "";
+    render(<KnowledgePage {...kprops} view="matrix" />);
+    const matrix = screen.getByTestId("knowledge-matrix");
+    const head = within(matrix).getAllByRole("row")[0];
+    // The precondition: the head is the row of column headers, styled by these rules.
+    expect(within(head).getAllByRole("columnheader")).toHaveLength(kprops.slots.length + 1);
+    expect(matrix).toHaveClass("t-c-kmatrix");
+    expect(head).toHaveClass("t-c-kmatrix__row--head");
+    expect(rule(".t-c-kmatrix__row--head")).toMatch(/position: sticky;/);
+    expect(rule(".t-c-kmatrix__row--head")).toMatch(/top: var\(--t-c-cover/);
+    // Hidden overflow makes the matrix its head's scroll box, and the top offset
+    // then pushes the head down into the rows.
+    expect(rule(".t-c-kmatrix")).toMatch(/overflow: clip;/);
+    expect(rule(".t-c-kmatrix")).not.toMatch(/overflow: (hidden|auto|scroll)/);
+    // The bar the head docks under is solid to its lower edge.
+    expect(rule(".t-c-kind__bar")).toMatch(/background: var\(--t-ground\);/);
+    expect(rule(".t-c-kind__bar")).not.toMatch(/transparent/);
+  });
+
   it("shows a fix by its short hash, copies the full one, and opens its details", () => {
     const sha = "32061fd166034ff1bf10125ed354d269c7cd8daf";
     const fix = {

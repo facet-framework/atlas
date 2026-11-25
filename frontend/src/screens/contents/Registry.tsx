@@ -49,6 +49,8 @@ const K_VIEWS: (ViewDef<KnowledgeView> & { label: TextKey })[] = [
 ];
 
 /** Knowledge: five slots per record, filled or open — as a matrix, or as the list of open questions. */
+// @facet: registry/catalogue/contents-catalogue
+// @facet-role: related
 export function KnowledgePage(p: KnowledgePageProps) {
   const { t, plural, number } = useText();
   const all = p.totals.filled + p.totals.open;

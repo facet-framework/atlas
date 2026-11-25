@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
 } from "react";
@@ -68,6 +69,13 @@ export type ProductPageProps = {
   onTime?: (index: number) => void;
   onPage?: (page: number) => void;
   onSort?: (key: string) => void;
+  /** The city's least height in pixels; absent follows the window. */
+  cityHeight?: number | null;
+  /** `hover`: the city names only the place under the pointer and the chosen one. */
+  cityNames?: "always" | "hover";
+  cityLabels?: "tag" | "pin" | "map";
+  /** Switches the names of every map view between always shown and shown on hover. */
+  onCityNames?: (names: "always" | "hover") => void;
 };
 
 /** "Treemap" is the same word in every language, so it carries no text key. */
@@ -130,7 +138,16 @@ export function ProductPage(props: ProductPageProps) {
   const today = early ? headline(props.features) : null;
 
   return (
-    <div className="t-page t-a-product" data-testid="product" data-view={view}>
+    <div
+      className="t-page t-a-product"
+      data-testid="product"
+      data-view={view}
+      style={
+        props.cityHeight
+          ? ({ "--t-a-city-min": `${props.cityHeight}px` } as CSSProperties)
+          : undefined
+      }
+    >
       <header className="t-a-product__head">
         <div className="t-stack" style={{ gap: 6 }}>
           <span className="t-eyebrow">
@@ -162,10 +179,23 @@ export function ProductPage(props: ProductPageProps) {
             options={VIEWS.map((v) => ({ ...v, label: v.label ? t(v.label) : "Treemap" }))}
             onChange={onView}
           />
+          {view !== "list" && props.onCityNames ? (
+            <IconButton
+              icon="eye"
+              label={t("ui.screens-frame.productpage-names-only-hover")}
+              pressed={props.cityNames === "hover"}
+              data-testid="names-on-hover"
+              onClick={() => props.onCityNames?.(props.cityNames === "hover" ? "always" : "hover")}
+            />
+          ) : null}
         </div>
       </header>
 
-      <div className="t-a-product__body" data-selected={sel ? "true" : undefined}>
+      <div
+        className="t-a-product__body"
+        data-selected={sel ? "true" : undefined}
+        data-names={props.cityNames ?? "always"}
+      >
         <div className="t-a-product__canvas">
           {loading ? (
             <CitySkeleton />
@@ -177,6 +207,8 @@ export function ProductPage(props: ProductPageProps) {
               onSelect={onSelect}
               onOpenDomain={props.onOpenDomain}
               onOpenCapability={props.onOpenCapability}
+              names={props.cityNames}
+              labels={props.cityLabels}
               fallback={
                 <>
                   <City

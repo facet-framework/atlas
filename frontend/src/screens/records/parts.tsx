@@ -265,15 +265,18 @@ export function splitParams(
 }
 
 /** Given/When/Then rows. `params` are an Outline's declared columns, drawn as
- * parameter tokens; `render` draws the prose around them (markup, terms). */
+ * parameter tokens; `values` fills each token with the current case's value,
+ * where the case has one; `render` draws the prose around them (markup, terms). */
 
 export function StepList({
   steps,
   params,
+  values,
   render,
 }: {
   steps: GwtStep[];
   params?: ReadonlySet<string>;
+  values?: Readonly<Record<string, string>>;
   render?: (text: string) => ReactNode;
 }) {
   const { t } = useText();
@@ -291,9 +294,10 @@ export function StepList({
                       key={j}
                       className="t-b-param"
                       data-testid="step-param"
+                      data-param={part.name}
                       title={t("ui.screens-records.parts-column-name", { name: part.name })}
                     >
-                      {part.name}
+                      {values?.[part.name] ?? part.name}
                     </span>
                   ) : (
                     <span key={j}>{prose(part.text)}</span>

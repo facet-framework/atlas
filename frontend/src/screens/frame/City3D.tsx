@@ -78,6 +78,10 @@ export type City3DProps = {
   onOpenCapability?: (domain: string, capability: string) => void;
   /** Drawn instead of the scene when the browser offers no WebGL. */
   fallback: ReactNode;
+  /** `hover`: only the place under the pointer and the chosen one are named. */
+  names?: "always" | "hover";
+  /** How names are drawn: a tag at the foundation, a pin on the roof, or map lettering. */
+  labels?: "tag" | "pin" | "map";
 };
 
 /** A press that moves less than this many pixels is a click. */
@@ -99,6 +103,15 @@ type Overlay = {
 };
 
 const EMPTY: Overlay = { level: "mid", yaw: 0, zoom: 1, districts: [], buildings: [], probe: "" };
+
+/** The district and building under the pointer; a storey stands for its building. */
+function hoveredOf(world: World, place: Place | null) {
+  if (!place || !placeExists(world, place)) return { district: -1, building: -1 };
+  if (place.kind === "district") return { district: place.index, building: -1 };
+  const building =
+    place.kind === "building" ? place.index : (world.floors[place.index]?.building ?? -1);
+  return { district: -1, building };
+}
 
 /** Which districts and buildings carry the choice: the chosen place, or the chosen record's. */
 function chosenOf(world: World, place: Place | null, selected: string | null) {
@@ -249,7 +262,20 @@ export function City3D(props: City3DProps) {
             !!peak && peak[0] >= 0 && peak[0] <= cw && peak[1] >= 0 && peak[1] <= ch,
         });
     }
-    const labels = labelsOf(w, c, farAt.current, cw, ch, chosen);
+    // Named on hover: the place under the pointer is always named, as the chosen one is.
+    const under = live.current.props.names === "hover" ? hoveredOf(w, h?.place ?? null) : null;
+    const labels = labelsOf(
+      w,
+      c,
+      farAt.current,
+      cw,
+      ch,
+      {
+        district: under && under.district >= 0 ? under.district : chosen.district,
+        building: under && under.building >= 0 ? under.building : chosen.building,
+      },
+      live.current.props.labels ?? "tag",
+    );
     const next: Overlay = {
       level,
       yaw: Math.round((c.yaw * 180) / Math.PI),
@@ -556,9 +582,20 @@ export function City3D(props: City3DProps) {
   if (failed) return <>{fallback}</>;
 
   const chosen = chosenOf(world, shown, selected);
-  const placed = { districts: overlay.districts, buildings: overlay.buildings };
-  const s = sums(world);
   const hovered = hover && placeExists(world, hover.place) ? hover : null;
+  // Named on hover: the place under the pointer and the chosen ones; the rest
+  // of the picture stays unnamed.
+  const under = hoveredOf(world, hovered?.place ?? null);
+  const quiet = props.names === "hover";
+  const placed = {
+    districts: quiet
+      ? overlay.districts.filter((l) => l.index === under.district || l.index === chosen.district)
+      : overlay.districts,
+    buildings: quiet
+      ? overlay.buildings.filter((l) => l.index === under.building || l.index === chosen.building)
+      : overlay.buildings,
+  };
+  const s = sums(world);
   return (
     <>
       <div
@@ -566,6 +603,8 @@ export function City3D(props: City3DProps) {
         className="t-a-citymap t-a-city3d"
         data-testid="city-map"
         data-full={full || undefined}
+        data-names={props.names ?? "always"}
+        data-labels={props.labels ?? "tag"}
       >
         {/** The scene is one focusable group that takes the pointer and the keys
          * itself: a canvas has no parts a reader could tab to. What it draws is

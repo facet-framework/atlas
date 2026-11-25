@@ -8,7 +8,7 @@
 
 import { PluginDraw } from "../plugin-guard";
 import { useEffect, useState } from "react";
-import { EmptyState, Switch } from "@facet-tools/ui";
+import { EmptyState, Select, Switch } from "@facet-tools/ui";
 
 import { useSurfaceText as useText, type FacetText } from "@/screens/text";
 import { contents } from "@/screens";
@@ -30,6 +30,8 @@ import { HISTORY_KEY } from "../history";
 import { forgetSessions } from "../chat";
 import { reloadDocument } from "../reload";
 import {
+  CITY_HEIGHTS,
+  CITY_LABELS,
   HISTORY_LIMIT_MAX,
   HISTORY_LIMIT_MIN,
   PREFERENCES_KEY,
@@ -528,6 +530,62 @@ export function SettingsPlace({
               if (patch.focus != null) ctx.setFocus(patch.focus);
             }}
           />
+          <div className="t-surface t-c-setgroup" data-testid="city-settings">
+            <contents.SettingRow
+              label={ctx.t("ui.reader-pages.settings-product-city-height")}
+              desc={ctx.t("ui.reader-pages.settings-least-height-3d-city-product-page")}
+              control={
+                <Select
+                  aria-label={ctx.t("ui.reader-pages.settings-product-city-height")}
+                  data-testid="city-height"
+                  value={prefs.cityHeight == null ? "window" : String(prefs.cityHeight)}
+                  options={[
+                    { value: "window", label: ctx.t("ui.reader-pages.settings-follows-window") },
+                    ...CITY_HEIGHTS.map((h) => ({
+                      value: String(h),
+                      label: ctx.t("ui.reader-pages.settings-px-pixels", { px: h }),
+                    })),
+                  ]}
+                  onValueChange={(v) =>
+                    prefer({
+                      cityHeight:
+                        v === "window" ? null : (CITY_HEIGHTS.find((h) => String(h) === v) ?? null),
+                    })
+                  }
+                />
+              }
+            />
+            <contents.SettingRow
+              label={ctx.t("ui.reader-pages.settings-city-name-style")}
+              desc={ctx.t("ui.reader-pages.settings-how-product-city-draws-names-areas")}
+              control={
+                <Select
+                  aria-label={ctx.t("ui.reader-pages.settings-city-name-style")}
+                  data-testid="city-labels"
+                  value={prefs.cityLabels}
+                  options={[
+                    { value: "tag", label: ctx.t("ui.reader-pages.settings-tag-foundation") },
+                    { value: "pin", label: ctx.t("ui.reader-pages.settings-pin-roof") },
+                    { value: "map", label: ctx.t("ui.reader-pages.settings-map-lettering") },
+                  ]}
+                  onValueChange={(v) =>
+                    prefer({ cityLabels: CITY_LABELS.find((l) => l === v) ?? "tag" })
+                  }
+                />
+              }
+            />
+            <contents.SettingRow
+              label={ctx.t("ui.reader-pages.settings-names-only-hover")}
+              desc={ctx.t("ui.reader-pages.settings-city-names-area-building-under-pointer")}
+              control={
+                <Switch
+                  label={ctx.t("ui.reader-pages.settings-names-only-hover")}
+                  checked={prefs.cityNames === "hover"}
+                  onChange={(on) => prefer({ cityNames: on ? "hover" : "always" })}
+                />
+              }
+            />
+          </div>
         </>
       );
       break;

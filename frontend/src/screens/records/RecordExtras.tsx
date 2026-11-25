@@ -1,15 +1,15 @@
 /** The parts of the record page that read a record's own declarations beyond
- * its promises: an Outline's example tables, the business rules and the
+ * its promises: an Outline's example cases, the business rules and the
  * decisions it rests on, a dependency cycle it sits on, and the lookup panel
  * that shows a term or a referenced record beside the page. */
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Badge, Button, Chip, Sheet, Icon } from "@facet-tools/ui";
+import { Badge, Button, Chip, Sheet, Icon, IconButton } from "@facet-tools/ui";
 
 import { useText } from "../text";
-import { LIFECYCLE, type Lifecycle } from "./model";
-import { cx } from "./parts";
+import { LIFECYCLE, type GwtStep, type Lifecycle } from "./model";
+import { StepList, cx, splitParams } from "./parts";
 
 /** One `examples` block of a Scenario Outline, columns inherited where it declares none. */
 export type RecordExamples = { name: string; columns: string[]; rows: string[][] };
@@ -54,51 +54,234 @@ export type LookupTarget =
     }
   | { kind: "missing"; what: "term" | "record"; id: string };
 
-/** An Outline's examples: one table per block under its name, rows in record order. */
-export function ExampleTables({
+/** One case of an Outline: a row of one examples block, as column → value. */
+export type ExampleCase = { block: string; values: Record<string, string> };
+
+/** Every row of every block, in record order. A row shorter than its
+ * columns leaves the missing columns out rather than inventing a value. */
+export function casesOf(blocks: RecordExamples[]): ExampleCase[] {
+  return blocks.flatMap((b) =>
+    b.rows.map((row) => ({
+      block: b.name,
+      values: Object.fromEntries(
+        b.columns.flatMap((c, i) => (i < row.length ? [[c, row[i]] as const] : [])),
+      ),
+    })),
+  );
+}
+
+/** Steps through an Outline's cases: which case of how many, the block it
+ * belongs to, the values of columns no step names, and a switch for the
+ * table of every case. */
+// @facet: registry/records/scenario-outline-reading
+// @facet-role: related
+export function ExampleStepper({
+  cases,
+  at,
+  onAt,
+  scenarioId,
+  shown,
+  open,
+  onOpen,
+}: {
+  cases: ExampleCase[];
+  at: number;
+  onAt: (i: number) => void;
+  scenarioId: string;
+  /** Columns a step already shows in place. */
+  shown: ReadonlySet<string>;
+  /** Whether the table of every case is open below the steps. */
+  open: boolean;
+  onOpen: (open: boolean) => void;
+}) {
+  const { t } = useText();
+  const c = cases[at];
+  if (!c) return null;
+  const rest = Object.entries(c.values).filter(([k]) => !shown.has(k));
+  return (
+    <div
+      className="t-b-cases"
+      role="group"
+      aria-label={t("ui.screens-records.recordextras-examples")}
+      data-testid={`examples-${scenarioId}`}
+    >
+      <IconButton
+        icon="back"
+        size="small"
+        label={t("ui.screens-records.recordextras-previous-example")}
+        disabled={at === 0}
+        onClick={() => onAt(at - 1)}
+        data-testid="example-previous"
+      />
+      <span className="t-b-cases__at t-mono" aria-live="polite" data-testid="example-position">
+        {t("ui.screens-records.recordextras-example-n-total", { n: at + 1, total: cases.length })}
+      </span>
+      <IconButton
+        icon="forward"
+        size="small"
+        label={t("ui.screens-records.recordextras-next-example")}
+        disabled={at === cases.length - 1}
+        onClick={() => onAt(at + 1)}
+        data-testid="example-next"
+      />
+      <IconButton
+        icon="table"
+        size="small"
+        label={t(
+          open
+            ? "ui.screens-records.recordextras-hide-table-all-examples"
+            : "ui.screens-records.recordextras-show-table-all-examples",
+        )}
+        aria-expanded={open}
+        aria-controls={`examples-table-${scenarioId}`}
+        onClick={() => onOpen(!open)}
+        data-testid="examples-table-toggle"
+      />
+      {c.block ? (
+        <span className="t-b-cases__block" data-testid="example-block">
+          {c.block}
+        </span>
+      ) : null}
+      {rest.map(([k, v]) => (
+        <span key={k} className="t-b-cases__value" data-testid="example-value">
+          <span className="t-muted">{k}</span> <span className="t-mono">{v}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Every case of an Outline, one table per block under its name. The case the
+ * steps show is marked; choosing a row shows that case. */
+export function ExampleTable({
   blocks,
+  at,
+  onAt,
   scenarioId,
 }: {
   blocks: RecordExamples[];
+  at: number;
+  onAt: (i: number) => void;
   scenarioId: string;
 }) {
   const { t } = useText();
+  // The number of the first case of each block, counted across all blocks.
+  const firsts = blocks.map((_, bi) =>
+    blocks.slice(0, bi).reduce((n, earlier) => n + earlier.rows.length, 0),
+  );
   return (
-    <div className="t-b-examples" data-testid={`examples-${scenarioId}`}>
-      {blocks.map((b, i) => (
-        <div key={i} className="t-table-wrap">
-          <table
-            className="t-table t-table--dense"
-            aria-label={b.name || t("ui.screens-records.recordextras-examples")}
-            data-testid="examples-block"
-          >
-            <caption className="t-b-examples__name">
-              {b.name || t("ui.screens-records.recordextras-examples")}
-            </caption>
-            <thead>
-              <tr>
-                {b.columns.map((c) => (
-                  <th key={c} scope="col" className="t-mono">
-                    {c}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {b.rows.map((row, r) => (
-                <tr key={r}>
-                  {row.map((cell, c) => (
-                    <td key={c} data-label={b.columns[c]} className="t-mono">
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+    <div
+      className="t-b-examples"
+      id={`examples-table-${scenarioId}`}
+      data-testid={`examples-table-${scenarioId}`}
+    >
+      {blocks.map((b, bi) => {
+        const offset = firsts[bi];
+        const name = b.name || t("ui.screens-records.recordextras-examples");
+        return (
+          <div key={bi} className="t-b-examples__block">
+            {b.name ? <div className="t-b-examples__name">{b.name}</div> : null}
+            <div className="t-table-wrap">
+              <table
+                className="t-table t-table--dense"
+                aria-label={name}
+                data-testid="examples-block"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col" className="t-b-examples__n">
+                      <span>#</span>
+                    </th>
+                    {b.columns.map((c) => (
+                      <th key={c} scope="col">
+                        <span className="t-mono">{c}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {b.rows.map((row, r) => {
+                    const i = offset + r;
+                    return (
+                      <tr
+                        key={r}
+                        data-clickable="true"
+                        aria-current={i === at || undefined}
+                        className={cx(i === at && "t-b-examples__row--at")}
+                        onClick={() => onAt(i)}
+                      >
+                        <td className="t-b-examples__n">
+                          <button
+                            type="button"
+                            className="t-b-examples__pick"
+                            aria-label={t("ui.screens-records.recordextras-show-example-n", {
+                              n: i + 1,
+                            })}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAt(i);
+                            }}
+                          >
+                            {i + 1}
+                          </button>
+                        </td>
+                        {b.columns.map((c, ci) => (
+                          <td key={ci} data-label={c} className="t-mono">
+                            {row[ci] ?? ""}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+/** A promise's steps. An Outline's steps carry the values of one case at a
+ * time, with the stepper above them and the table of every case on demand. */
+export function ScenarioSteps({
+  id,
+  steps,
+  examples,
+  render,
+}: {
+  id: string;
+  steps: GwtStep[];
+  examples?: RecordExamples[] | null;
+  render?: (text: string) => ReactNode;
+}) {
+  const [at, setAt] = useState(0);
+  const [table, setTable] = useState(false);
+  if (!examples?.length) return <StepList steps={steps} render={render} />;
+  const params = new Set(examples.flatMap((b) => b.columns));
+  // Every case of every block; the steps show the first until the reader steps on.
+  const cases = casesOf(examples);
+  const here = Math.min(at, cases.length - 1);
+  const shown = new Set(
+    steps.flatMap((st) =>
+      splitParams(st.text, params).flatMap((p) => (p.kind === "param" ? [p.name] : [])),
+    ),
+  );
+  return (
+    <>
+      <ExampleStepper
+        cases={cases}
+        at={here}
+        onAt={setAt}
+        scenarioId={id}
+        shown={shown}
+        open={table}
+        onOpen={setTable}
+      />
+      <StepList steps={steps} params={params} values={cases[here]?.values} render={render} />
+      {table ? <ExampleTable blocks={examples} at={here} onAt={setAt} scenarioId={id} /> : null}
+    </>
   );
 }
 
