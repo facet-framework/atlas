@@ -42,11 +42,11 @@ func TestReadStableArtifact(t *testing.T) {
 		t.Fatal(err)
 	}
 	entry.SHA256 = sum
-	if err := writeMetadata(dir, manifest{Version: "1.2.3", Channel: "stable", Platforms: []artifact{entry}}); err != nil {
+	if err := writeMetadata(dir, manifest{ManifestVersion: 1, Version: "1.2.3", Channel: "stable", Platforms: []artifact{entry}}); err != nil {
 		t.Fatal(err)
 	}
 	info, got, err := readArtifact(dir)
-	if err != nil || info.Version != "1.2.3" || info.Channel != "stable" || got.Archive != entry.Archive {
+	if err != nil || info.ManifestVersion != 1 || info.Version != "1.2.3" || info.Channel != "stable" || got.Archive != entry.Archive || got.Size != int64(len("archive contents")) {
 		t.Fatalf("readArtifact() = %+v, %+v, %v", info, got, err)
 	}
 }

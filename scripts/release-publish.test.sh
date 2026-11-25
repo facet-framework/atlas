@@ -11,7 +11,7 @@ export PRERELEASE=true
 mkdir "$work/bin" "$work/dist"
 cd "$work"
 printf '# Release notes\n' > CHANGELOG.md
-for asset in checksums.txt facet-atlas_linux_amd64.tar.gz release-manifest.json; do
+for asset in checksums.txt facet-atlas_linux_amd64.tar.gz release-manifest.json release-manifest.json.sig; do
   printf 'Fixture asset\n' > "dist/$asset"
 done
 
@@ -54,17 +54,18 @@ case "$operation" in
     echo draft > "$FIXTURE/state"
     ;;
   upload)
-    [ "$state" = draft ] && [ "$#" -eq 6 ] || exit 70
+    [ "$state" = draft ] && [ "$#" -eq 7 ] || exit 70
     [ "$1 $2 $3" = 'dist/checksums.txt dist/facet-atlas_linux_amd64.tar.gz dist/release-manifest.json' ]
-    [ "$4 $5 $6" = "--repo $REPO --clobber" ]
+    [ "$4" = dist/release-manifest.json.sig ]
+    [ "$5 $6 $7" = "--repo $REPO --clobber" ]
     echo upload >> "$FIXTURE/writes"
     if [ -f "$FIXTURE/upload-failure" ]; then
       echo 'Simulated upload failure' >&2
       exit 72
     fi
-    printf '%s\n' "${3##*/}" "${1##*/}" > "$FIXTURE/assets"
-    if [ ! -f "$FIXTURE/missing-asset" ]; then
-      printf '%s\n' "${2##*/}" >> "$FIXTURE/assets"
+    printf '%s\n' "${3##*/}" "${1##*/}" "${2##*/}" > "$FIXTURE/assets"
+    if [ ! -f "$FIXTURE/missing-signature" ]; then
+      printf '%s\n' "${4##*/}" >> "$FIXTURE/assets"
     fi
     ;;
   edit)
@@ -97,6 +98,9 @@ expect 2 'cannot read release'
 mv dist/release-manifest.json "$work/"
 expect 2 'requires checksums.txt and release-manifest.json'
 mv release-manifest.json dist/
+mv dist/release-manifest.json.sig "$work/"
+expect 2 'requires release-manifest.json.sig'
+mv release-manifest.json.sig dist/
 [ ! -e "$work/writes" ]
 
 echo absent > "$work/state"
@@ -105,10 +109,10 @@ expect 72 'Simulated upload failure'
 [ "$(cat "$work/state")" = draft ]
 [ "$(cat "$work/writes")" = "$(printf 'create\nupload')" ]
 unlink "$work/upload-failure"
-touch "$work/missing-asset"
+touch "$work/missing-signature"
 expect 2 'does not contain exactly the expected assets'
 [ "$(cat "$work/state")" = draft ]
-unlink "$work/missing-asset"
+unlink "$work/missing-signature"
 touch "$work/read-failure"
 expect 2 'cannot verify uploaded assets'
 [ "$(cat "$work/state")" = draft ]

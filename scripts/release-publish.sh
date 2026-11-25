@@ -1,5 +1,7 @@
 #!/bin/sh
 # Release policy: docs/facets/policies/workspace/public-release.yaml
+# @facet: workspace/contracts/signed-release-manifest
+# @facet-role: related
 # Publish the verified release assets through a draft that can be resumed.
 set -eu
 
@@ -12,9 +14,10 @@ case "$version" in *-rc.*) prerelease=true ;; esac
 [ -n "${GH_TOKEN:-}" ] || fail 'a workflow token is required'
 [ -f "$dist/checksums.txt" ] && [ -f "$dist/release-manifest.json" ] ||
   fail 'the release requires checksums.txt and release-manifest.json'
+[ -f "$dist/release-manifest.json.sig" ] || fail 'the release requires release-manifest.json.sig'
 
 set -- "$dist/"*
-[ "$#" -gt 2 ] || fail 'the release has no archives'
+[ "$#" -gt 3 ] || fail 'the release has no archives'
 for asset do
   [ -f "$asset" ] || fail "invalid release asset $asset"
 done

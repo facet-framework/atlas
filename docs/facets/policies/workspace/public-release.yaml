@@ -12,6 +12,10 @@ contract:
       requirement: The release workflow must wait for successful CI on the squash commit and approval in the main-only release environment before tagging that commit and publishing its artifacts.
     - id: protection
       requirement: Publication must stop when the workflow cannot verify the repository's release settings with read-only access. The release environment must disallow administrator bypass, and the main and version-tag rulesets must have empty bypass lists. The version-tag ruleset must allow creation and restrict updates and deletions. Published releases must be immutable.
+    - id: release-signing
+      requirement: Publication must stop if the release environment signing secret is missing or the manifest signature fails verification against the tracked keys. The signature checksum must be included in the attestation and the draft must contain the signature asset before publication.
+    - id: dry-run-signing
+      requirement: A manual dry run must sign and verify the manifest with a temporary key before uploading the build artifact.
 verification:
   compliance_checks:
     - id: scripts/release-pr-check.test.sh
@@ -19,6 +23,8 @@ verification:
     - id: scripts/check-release.sh
       cadence: continuous integration
     - id: scripts/release-publish.test.sh
+      cadence: continuous integration
+    - id: backend/cmd/release/signing_test.go::TestManifestSigningRequiresEnvironmentKey
       cadence: continuous integration
 lineage:
   owner:
