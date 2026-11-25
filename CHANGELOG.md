@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-rc.4
+
+Fourth release candidate: signed release manifests.
+
+- Every release publishes `release-manifest.json.sig`, an Ed25519 signature over the exact bytes of `release-manifest.json`. FACET Core verifies it with an embedded public key before it installs a newer Atlas.
+- Each platform entry of `release-manifest.json` states the archive size in bytes.
+- Atlas is built with FACET Core 0.1.0-rc.4.
+
 ## 0.1.0-rc.3
 
 Third release candidate: readable Scenario Outlines and a product city you can tune.

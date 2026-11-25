@@ -148,6 +148,17 @@ jobs:
           go-version: "1.26.8"
           cache: false
       - run: sh scripts/release-collect.sh dist/platforms dist/release
+      - name: Sign and verify with an ephemeral key
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          work=$(mktemp -d "$RUNNER_TEMP/atlas-signing.XXXXXX")
+          trap 'rm -rf "$work"' EXIT
+          manifest=dist/release/release-manifest.json
+          (cd dist/release && sha256sum --check --strict checksums.txt)
+          go run ./backend/cmd/release keygen "$work/seed" | jq '{keys: [.]}' > "$work/keys.json"
+          go run ./backend/cmd/release sign "$manifest" "$work/seed"
+          go run ./backend/cmd/release verify "$manifest" "$manifest.sig" "$work/keys.json"
+          (cd dist/release && sha256sum release-manifest.json.sig >> checksums.txt)
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-dist
@@ -176,6 +187,19 @@ jobs:
           name: release-dist
           path: dist/release
       - run: cd dist/release && sha256sum --check --strict checksums.txt
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version: "1.26.8"
+          cache: false
+      - name: Sign and verify the release manifest
+        env:
+          ATLAS_RELEASE_SIGNING_KEY: ${{ secrets.ATLAS_RELEASE_SIGNING_KEY }}
+        run: |
+          manifest=dist/release/release-manifest.json
+          go run ./backend/cmd/release sign "$manifest" -
+          unset ATLAS_RELEASE_SIGNING_KEY
+          go run ./backend/cmd/release verify "$manifest" "$manifest.sig" release/signing-keys.json
+          (cd dist/release && sha256sum release-manifest.json.sig >> checksums.txt)
       - name: Recheck release protections
         env:
           GH_TOKEN: ${{ secrets.RELEASE_SETTINGS_TOKEN }}

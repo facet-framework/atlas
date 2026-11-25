@@ -19,7 +19,7 @@ from the archive together.
 For example, on Linux x64:
 
 ```sh
-archive=facet-atlas_0.1.0-rc.3_linux_amd64.tar.gz
+archive=facet-atlas_0.1.0-rc.4_linux_amd64.tar.gz
 grep "  $archive\$" checksums.txt | sha256sum --check
 gh attestation verify "$archive" --repo facet-framework/atlas
 tar -xzf "$archive"
@@ -30,7 +30,7 @@ On macOS use `shasum -a 256 --check` for the checksum. In the extraction
 directory, remove the browser quarantine attribute from all four executables
 with `xattr -dr com.apple.quarantine .` once.
 
-On Windows, compare `(Get-FileHash .\facet-atlas_0.1.0-rc.3_windows_amd64.zip -Algorithm SHA256).Hash`
+On Windows, compare `(Get-FileHash .\facet-atlas_0.1.0-rc.4_windows_amd64.zip -Algorithm SHA256).Hash`
 with its entry in `checksums.txt`, run `gh attestation verify` on that archive,
 extract it with `Expand-Archive`, then run `.\facet.exe --root C:\path\to\project ui`.
 
