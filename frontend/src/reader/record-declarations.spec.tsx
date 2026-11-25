@@ -104,33 +104,38 @@ afterEach(() => {
 const where = () => window.location.pathname;
 
 describe("a Scenario Outline on the record page", () => {
-  it("marks each declared placeholder as a parameter and leaves an undeclared one as text", () => {
+  const params = (card: HTMLElement) =>
+    within(card)
+      .getAllByTestId("step-param")
+      .map((n) => n.textContent);
+
+  it("fills each declared placeholder with the first case and leaves an undeclared one as text", () => {
     mount(`/record/${ID}`);
     const card = screen.getByTestId("scenario-priority-outline");
-    expect(
-      within(card)
-        .getAllByTestId("step-param")
-        .map((n) => n.textContent),
-    ).toEqual(["marker", "priority"]);
+    expect(params(card)).toEqual(["!high", "high"]);
     expect(card).toHaveTextContent("<html> stays text");
     expect(card).not.toHaveTextContent("<marker>");
   });
 
-  it("draws every case under its block's headings, the second block under the first one's columns", () => {
+  it("steps through every case, the second block under the first one's columns", () => {
     mount(`/record/${ID}`);
-    const tables = within(screen.getByTestId("examples-priority-outline")).getAllByRole("table");
-    expect(tables.map((t) => t.getAttribute("aria-label"))).toEqual(["markers", "unknown markers"]);
+    const card = screen.getByTestId("scenario-priority-outline");
+    const stepper = within(screen.getByTestId("examples-priority-outline"));
+    const next = stepper.getByRole("button", { name: "Next example" });
+    expect(stepper.getByTestId("example-position")).toHaveTextContent("Example 1 of 3");
+    expect(stepper.getByTestId("example-block")).toHaveTextContent("markers");
+    fireEvent.click(next);
+    expect(params(card)).toEqual(["!low", "low"]);
+    fireEvent.click(next);
+    // The second block declares no columns: its row fills the first block's.
+    expect(stepper.getByTestId("example-block")).toHaveTextContent("unknown markers");
+    expect(params(card)).toEqual(["!x", "none"]);
     expect(
-      within(tables[1])
-        .getAllByRole("columnheader")
-        .map((c) => c.textContent),
+      within(card)
+        .getAllByTestId("step-param")
+        .map((n) => n.getAttribute("data-param")),
     ).toEqual(["marker", "priority"]);
-    expect(
-      within(tables[0])
-        .getAllByRole("row")
-        .slice(1)
-        .map((r) => r.textContent),
-    ).toEqual(["!highhigh", "!lowlow"]);
+    expect(next).toBeDisabled();
   });
 
   it("leaves a statement without examples exactly as written", () => {
@@ -139,6 +144,32 @@ describe("a Scenario Outline on the record page", () => {
     expect(within(card).queryByRole("table")).not.toBeInTheDocument();
     expect(within(card).queryByTestId("step-param")).not.toBeInTheDocument();
     expect(exampleBlocks(MODEL.byId[ID], "task-added")).toEqual([]);
+  });
+});
+
+describe("a Scenario Outline in the records lens", () => {
+  it("fills the steps with the first case, steps through the cases and opens their table", () => {
+    mount("/records");
+    // The precondition: the lens holds the record that declares the Outline.
+    expect(screen.getByTestId("lens-focus-name")).toHaveTextContent("quick-add");
+    fireEvent.click(screen.getByRole("button", { name: /priority-outline/ }));
+    const stepper = within(screen.getByTestId("examples-priority-outline"));
+    const panel = screen.getByRole("tabpanel");
+    const params = () =>
+      within(panel)
+        .getAllByTestId("step-param")
+        .map((n) => n.textContent);
+    expect(params()).toEqual(["!high", "high"]);
+    expect(stepper.getByTestId("example-position")).toHaveTextContent("Example 1 of 3");
+
+    fireEvent.click(stepper.getByRole("button", { name: "Next example" }));
+    expect(params()).toEqual(["!low", "low"]);
+
+    fireEvent.click(stepper.getByRole("button", { name: "Show table of all examples" }));
+    const tables = within(panel).getAllByRole("table");
+    expect(tables.map((t) => t.getAttribute("aria-label"))).toEqual(["markers", "unknown markers"]);
+    fireEvent.click(within(tables[1]).getByRole("button", { name: "Show example 3" }));
+    expect(params()).toEqual(["!x", "none"]);
   });
 });
 

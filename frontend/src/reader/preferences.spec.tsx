@@ -115,6 +115,104 @@ describe("settings, density", () => {
   });
 });
 
+describe("settings, product city", () => {
+  /** jsdom has no WebGL: a context that answers what the city asks while it sets itself up. */
+  function withWebGl() {
+    const fixed: Record<string, unknown> = {
+      getProgramParameter: () => true,
+      getAttribLocation: () => 0,
+      getUniformLocation: () => ({}),
+      isContextLost: () => false,
+      getExtension: () => ({ loseContext: () => undefined }),
+    };
+    const gl = new Proxy(
+      {},
+      {
+        get: (_, key: string) =>
+          key in fixed ? fixed[key] : /^[A-Z_0-9]+$/.test(key) ? 0 : () => ({}),
+      },
+    );
+    return jest
+      .spyOn(HTMLCanvasElement.prototype, "getContext")
+      .mockImplementation(() => gl as unknown as RenderingContext);
+  }
+
+  it("gives the city the chosen least height, name style and names on hover only, on the product page", async () => {
+    const spy = withWebGl();
+    const first = await mount("/product");
+    // The precondition: by default the city follows the window and names by itself.
+    expect(screen.getByTestId("product").style.getPropertyValue("--t-a-city-min")).toBe("");
+    expect(screen.getByTestId("city-map")).toHaveAttribute("data-names", "always");
+    expect(screen.getByTestId("city-map")).toHaveAttribute("data-labels", "tag");
+    first.unmount();
+
+    const settings = await mount("/settings");
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: t("ui.reader-pages.settings-product-city-height") }),
+      "800",
+    );
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: t("ui.reader-pages.settings-city-name-style") }),
+      "pin",
+    );
+    await userEvent.click(
+      screen.getByRole("switch", { name: t("ui.reader-pages.settings-names-only-hover") }),
+    );
+    settings.unmount();
+
+    await mount("/product");
+    expect(screen.getByTestId("product").style.getPropertyValue("--t-a-city-min")).toBe("800px");
+    expect(screen.getByTestId("city-map")).toHaveAttribute("data-names", "hover");
+    expect(screen.getByTestId("city-map")).toHaveAttribute("data-labels", "pin");
+    // The stylesheet gives that height to the page body and the canvas the city
+    // fills; the city itself keeps its own floor, so the legend below it stays
+    // inside the canvas instead of running over the time slider.
+    const css = readFileSync(join(__dirname, "..", "screens", "styles", "frame.css"), "utf8");
+    expect(css.match(/min-height: var\(--t-a-city-min, max\(360px, 50vh\)\);/g) ?? []).toHaveLength(
+      2,
+    );
+    expect(css).toMatch(/\.t-a-city3d \{\s*min-height: 320px;/);
+    // Each style has its own drawing: the pin stands above its point, the
+    // lettering drops the box.
+    expect(css).toMatch(
+      /\[data-labels="pin"\] \.t-a-city3d__label:not\(\.t-a-city3d__label--district\) \{\s*transform: translate\(-50%, calc\(-100% - 28px\)\);/,
+    );
+    expect(css).toMatch(
+      /\[data-labels="map"\] \.t-a-city3d__label \{[^}]*background: none;[^}]*text-shadow:/,
+    );
+    spy.mockRestore();
+  });
+});
+
+describe("product view, names on hover", () => {
+  it("hides the names of the city and the treemap until hover from the view itself, and keeps it", async () => {
+    const first = await mount("/product");
+    const toggle = () => screen.getByTestId("names-on-hover");
+    const body = () => screen.getByTestId("product").querySelector(".t-a-product__body")!;
+    // The precondition: names show by default.
+    expect(toggle()).toHaveAttribute("aria-pressed", "false");
+    expect(body()).toHaveAttribute("data-names", "always");
+    await userEvent.click(toggle());
+    expect(toggle()).toHaveAttribute("aria-pressed", "true");
+    expect(body()).toHaveAttribute("data-names", "hover");
+    await userEvent.click(screen.getByRole("radio", { name: "Treemap" }));
+    expect(screen.getByTestId("treemap")).toBeInTheDocument();
+    expect(body()).toHaveAttribute("data-names", "hover");
+    first.unmount();
+
+    // The settings page shows the same choice.
+    await mount("/settings");
+    expect(
+      screen.getByRole("switch", { name: t("ui.reader-pages.settings-names-only-hover") }),
+    ).toBeChecked();
+    // The flat views hide their names by the same attribute.
+    const css = readFileSync(join(__dirname, "..", "screens", "styles", "frame.css"), "utf8");
+    expect(css).toMatch(
+      /\.t-a-product__body\[data-names="hover"\] \.t-a-treemap__label,\s*\.t-a-product__body\[data-names="hover"\] \.t-a-city__label \{\s*opacity: 0;/,
+    );
+  });
+});
+
 describe("settings, motion", () => {
   it("offers only System and Reduced, and Reduced marks the shell until System is picked", async () => {
     const first = await mount("/settings");
@@ -287,6 +385,9 @@ describe("preferences store", () => {
           historyLimit: 5000,
           keepChat: "yes",
           restoreLast: false,
+          cityHeight: 500,
+          cityNames: "never",
+          cityLabels: "neon",
         }),
     };
     expect(readPreferences(store)).toEqual({
@@ -296,8 +397,16 @@ describe("preferences store", () => {
       keepChat: true,
       historyLimit: 200,
       followAnswer: false,
+      cityHeight: null,
+      cityNames: "always",
+      cityLabels: "tag",
     });
     expect(readPreferences({ getItem: () => "[1]" }).historyLimit).toBe(200);
+    expect(
+      readPreferences({
+        getItem: () => JSON.stringify({ cityHeight: 800, cityNames: "hover", cityLabels: "map" }),
+      }),
+    ).toMatchObject({ cityHeight: 800, cityNames: "hover", cityLabels: "map" });
   });
 
   it("takes only whole numbers from 1 to 1000 as a maximum", () => {

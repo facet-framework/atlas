@@ -14,6 +14,7 @@ import {
   type RecordsQuery,
 } from "../derive-reader";
 import type { PageContext } from "../context";
+import { usePreferences, writePreferences } from "../preferences";
 import { driftComparison } from "../derive-roles";
 import { OverviewGenerative } from "../generative";
 import { href, type Route } from "../route";
@@ -206,8 +207,13 @@ export function ProductPlace({ ctx }: { ctx: PageContext }) {
   });
   const dates = creationDates(ctx.features);
   const time = dates.length > 1 ? { dates, index: s.time ?? dates.length - 1 } : undefined;
+  const prefs = usePreferences();
   return (
     <frame.ProductPage
+      cityHeight={prefs.cityHeight}
+      cityNames={prefs.cityNames}
+      cityLabels={prefs.cityLabels}
+      onCityNames={(cityNames) => writePreferences({ cityNames })}
       domains={ctx.domains}
       features={ctx.features}
       view={s.view}

@@ -47,12 +47,17 @@ export function RecordsPlace({ ctx }: { ctx: PageContext }) {
     return r ? r.dependsOn.length + r.dependedOnBy.length : 0;
   };
   const { focusId, lensHits, ...props } = recordsProps(ctx.rows, q, ctx.t, neighbours);
+  // The lens reads the record's declarations too, so an Outline shows its cases there.
+  const lensFocus = (id: string | null | undefined) => {
+    const base = id ? recordOf(ctx.model, id, ctx.overview.history, ctx.overview) : null;
+    return base ? withDeclarations(ctx.model, base) : null;
+  };
   return (
     <records.RecordsPage
       {...props}
       mobile={ctx.mobile}
       lens={{
-        focus: focusId ? recordOf(ctx.model, focusId, ctx.overview.history, ctx.overview) : null,
+        focus: lensFocus(focusId),
         hits: lensHits,
         tab: q.lensTab,
         open: q.lensOpen,

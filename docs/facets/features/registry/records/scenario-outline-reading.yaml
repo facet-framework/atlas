@@ -2,28 +2,67 @@ schema_version: '0.1'
 id: registry/records/scenario-outline-reading
 lifecycle: active
 intent:
-  summary: Read example tables with the promises they illustrate.
+  summary: Read a Scenario Outline one case at a time, with the case's values in its steps.
 contract:
   scenarios:
     - id: scenario-outline-reading
       statement: |
         Given a promise with an examples block
         When the reader opens the promise
-        Then the view shows its example columns and rows
+        Then its steps show the first case's values in place of the declared placeholders
+        And a placeholder no column declares stays text
+    - id: step-through-cases
+      statement: |
+        Given an outline with cases in two example blocks
+        When the reader steps forward and back through its cases
+        Then the steps show each case's values in record order, with the case's position and its block's name
+        And stepping stops at the first and at the last case
+    - id: unshown-column-value
+      statement: |
+        Given a case with a value for a column no step names
+        When the reader opens the promise
+        Then the value is named beside the case
+    - id: open-cases-table
+      statement: |
+        Given an outline with cases in two example blocks
+        When the reader opens the table of all its cases
+        Then every case is listed under its block's name, with the case the steps show marked
+        And choosing a row shows that case in the steps
+    - id: cases-in-the-lens
+      statement: |
+        Given the records lens holds a record with an outline
+        When the reader unfolds the outline's promise there
+        Then its steps show the first case's values, and the reader steps through the cases and opens their table as on the record page
     - id: inherit-example-columns
       statement: |
         Given an outline has two example blocks and only the first declares columns
-        When the reader opens the record's promise
-        Then the second table uses the first table's column headings
+        When the reader steps to a case of the second block
+        Then its values fill the first block's columns
 lineage:
   owner:
     team: atlas
   created_at: '2026-11-20'
 verification:
   unit_tests:
-    - id: frontend/src/reader/record-declarations.spec.tsx::draws every case under its block's headings,
-        the second block under the first one's columns
+    - id: frontend/src/reader/record-declarations.spec.tsx::fills each declared placeholder with the first case and leaves an undeclared one as text
       proves:
+        - scenario-outline-reading
+    - id: frontend/src/reader/record-declarations.spec.tsx::steps through every case, the second block under the first one's columns
+      proves:
+        - step-through-cases
         - inherit-example-columns
-
-
+    - id: frontend/src/screens/records/record-extras.spec.tsx::fills each declared placeholder with the first case and leaves an undeclared one as text
+      proves:
+        - scenario-outline-reading
+    - id: frontend/src/screens/records/record-extras.spec.tsx::steps through every case of every block, in record order, and stops at both ends
+      proves:
+        - step-through-cases
+    - id: frontend/src/screens/records/record-extras.spec.tsx::names the value of a column no step shows beside the case
+      proves:
+        - unshown-column-value
+    - id: frontend/src/screens/records/record-extras.spec.tsx::opens the table of every case, marks the case the steps show, and shows a case chosen from it
+      proves:
+        - open-cases-table
+    - id: frontend/src/reader/record-declarations.spec.tsx::fills the steps with the first case, steps through the cases and opens their table
+      proves:
+        - cases-in-the-lens

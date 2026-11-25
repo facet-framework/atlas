@@ -940,6 +940,7 @@ export function labelsOf(
   w: number,
   h: number,
   chosen: { district: number; building: number },
+  style: "tag" | "pin" | "map" = "tag",
 ): { districts: Spot[]; buildings: Spot[] } {
   const m = viewProjection(c, w / h);
   const level = levelOf(c.dist, farAt);
@@ -997,9 +998,9 @@ export function labelsOf(
       districts.push({ index: d.index, x: f.x, y: f.y });
     });
   districts.sort((a, b) => a.index - b.index);
-  /** Whether another building stands between the eye and this front foot. */
+  /** Whether another building stands between the eye and this point of it. */
   const hidden = (b: Building3D, front: Vec3) => {
-    const to: Vec3 = [front[0] - eye[0], PLATE + 0.2 - eye[1], front[2] - eye[2]];
+    const to: Vec3 = [front[0] - eye[0], front[1] - eye[1], front[2] - eye[2]];
     const far = Math.hypot(to[0], to[1], to[2]);
     const ray = { origin: eye, dir: unit(to) };
     return world.buildings.some((o) => {
@@ -1026,10 +1027,32 @@ export function labelsOf(
         const across =
           ((b.x1 - b.x0) * Math.abs(side[0]) + (b.z1 - b.z0) * Math.abs(side[2])) * scale;
         if (!mine && across < titleWidth(b.title) * NAME_FITS) return;
-        const f = foot(b.x0, b.z0, b.x1, b.z1, PLATE);
+        // A pin stands on the middle of the roof; the other styles hang from the foot.
+        const roof: Vec3 = [b.cx, b.top + 0.01, b.cz];
+        const r = style === "pin" ? project(m, roof, w, h) : null;
+        const f =
+          style === "pin"
+            ? r &&
+              Number.isFinite(r[0]) &&
+              Number.isFinite(r[1]) &&
+              r[0] >= 0 &&
+              r[0] <= w &&
+              r[1] >= 0 &&
+              r[1] <= h
+              ? { x: Math.round(r[0]), y: Math.round(r[1]), front: roof }
+              : null
+            : foot(b.x0, b.z0, b.x1, b.z1, PLATE);
         if (!f) return;
-        const box = nameBox(f.x, f.y, b.title.length + 10);
-        if (!mine && (!fits(box) || hidden(b, f.front))) return;
+        const box =
+          style === "pin"
+            ? pinBox(f.x, f.y, b.title.length + 10)
+            : nameBox(f.x, f.y, b.title.length + 10);
+        if (
+          !mine &&
+          (!fits(box) ||
+            hidden(b, style === "pin" ? f.front : [f.front[0], PLATE + 0.2, f.front[2]]))
+        )
+          return;
         taken.push(box);
         buildings.push({ index: b.index, x: f.x, y: f.y });
       });
@@ -1062,6 +1085,16 @@ export function nameBox(x: number, top: number, chars: number): Box {
   const width = Math.min(NAME_WIDTH, want);
   const lines = want > NAME_WIDTH ? 2 : 1;
   return { x0: x - width / 2, x1: x + width / 2, y0: top, y1: top + NAME_LINE * lines + 6 };
+}
+
+/** How far a pin's name stands above the roof it names, in pixels. */
+export const PIN_STEM = 28;
+
+/** The room a pin's name takes: centred over its roof point, above a stem. */
+export function pinBox(x: number, roof: number, chars: number): Box {
+  const under = nameBox(x, 0, chars);
+  const height = under.y1 - under.y0;
+  return { x0: under.x0, x1: under.x1, y0: roof - PIN_STEM - height, y1: roof };
 }
 
 const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;

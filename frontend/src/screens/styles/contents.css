@@ -189,7 +189,9 @@
   top: var(--t-bars-h);
   z-index: 3;
   padding: 6px 0;
-  background: linear-gradient(var(--t-ground) 70%, transparent);
+  /* Solid to its edge: a sticky table head docks right below it, and a fade
+     would let the rows show between the two. */
+  background: var(--t-ground);
 }
 .t-c-kind__tools {
   margin-left: auto;
@@ -576,7 +578,9 @@ li + li > .t-c-openrow {
   box-shadow:
     var(--t-shadow-1),
     inset 0 0 0 1px var(--t-line);
-  overflow: hidden;
+  /* clip, not hidden: hidden makes the matrix the sticky head's scroll box,
+     and its top offset then pushes the head down into the rows. */
+  overflow: clip;
 }
 .t-c-kmatrix__row {
   display: grid;
@@ -592,6 +596,7 @@ li + li > .t-c-openrow {
 .t-c-kmatrix__row--head {
   position: sticky;
   top: var(--t-c-cover, var(--t-bars-h));
+  z-index: 1;
   background: var(--t-raised);
   font-size: var(--t-fs-12);
   color: var(--t-muted);

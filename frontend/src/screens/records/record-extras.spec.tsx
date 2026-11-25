@@ -81,38 +81,122 @@ function props(over: Partial<RecordDetailsPageProps> = {}): RecordDetailsPagePro
 }
 
 describe("an Outline reads as one", () => {
-  it("marks each declared placeholder as a parameter and leaves an undeclared one as text", () => {
+  const params = (card: HTMLElement) =>
+    within(card)
+      .getAllByTestId("step-param")
+      .map((p) => p.textContent);
+
+  it("fills each declared placeholder with the first case and leaves an undeclared one as text", () => {
     render(<RecordDetailsPage {...props()} />);
     const card = screen.getByTestId(`scenario-${outline.id}`);
+    expect(params(card)).toEqual(["100", "TEN", "90"]);
     expect(
       within(card)
         .getAllByTestId("step-param")
-        .map((p) => p.textContent),
-    ).toEqual(["subtotal", "code", "price"]);
+        .map((p) => p.getAttribute("title")),
+    ).toEqual(["Column subtotal", "Column code", "Column price"]);
     expect(card).toHaveTextContent("<html> stays text");
     expect(card).not.toHaveTextContent("<price>");
+    // The cases are stepped through, not listed below the promise.
+    expect(within(card).queryByRole("table")).not.toBeInTheDocument();
   });
 
-  it("draws every block as a table under its name, rows in record order", () => {
+  it("steps through every case of every block, in record order, and stops at both ends", () => {
     render(<RecordDetailsPage {...props()} />);
-    const tables = within(screen.getByTestId(`examples-${outline.id}`)).getAllByRole("table");
+    const card = screen.getByTestId(`scenario-${outline.id}`);
+    const stepper = within(screen.getByTestId(`examples-${outline.id}`));
+    const position = () => stepper.getByTestId("example-position").textContent;
+    const block = () => stepper.getByTestId("example-block").textContent;
+    const previous = stepper.getByRole("button", { name: "Previous example" });
+    const next = stepper.getByRole("button", { name: "Next example" });
+    expect(position()).toBe("Example 1 of 3");
+    expect(block()).toBe("valid codes");
+    expect(previous).toBeDisabled();
+
+    fireEvent.click(next);
+    expect(position()).toBe("Example 2 of 3");
+    expect(params(card)).toEqual(["50", "TEN", "45"]);
+
+    fireEvent.click(next);
+    expect(position()).toBe("Example 3 of 3");
+    expect(block()).toBe("expired codes");
+    expect(params(card)).toEqual(["100", "OLD", "100"]);
+    expect(next).toBeDisabled();
+
+    fireEvent.click(previous);
+    expect(params(card)).toEqual(["50", "TEN", "45"]);
+  });
+
+  it("opens the table of every case, marks the case the steps show, and shows a case chosen from it", () => {
+    render(<RecordDetailsPage {...props()} />);
+    const card = screen.getByTestId(`scenario-${outline.id}`);
+    const stepper = within(screen.getByTestId(`examples-${outline.id}`));
+    const toggle = stepper.getByRole("button", { name: "Show table of all examples" });
+    // The precondition: closed, the cases are stepped through, not listed.
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(within(card).queryByRole("table")).not.toBeInTheDocument();
+
+    fireEvent.click(toggle);
+    expect(stepper.getByRole("button", { name: "Hide table of all examples" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    const tables = within(card).getAllByRole("table");
     expect(tables.map((t) => t.getAttribute("aria-label"))).toEqual([
       "valid codes",
       "expired codes",
     ]);
-    const rows = within(tables[0]).getAllByRole("row").slice(1);
-    expect(rows.map((r) => r.textContent)).toEqual(["100TEN90", "50TEN45"]);
+    // Every heading is wrapped, so it takes the table's own heading padding.
+    for (const th of within(tables[0]).getAllByRole("columnheader")) {
+      expect(th.firstElementChild?.tagName).toBe("SPAN");
+    }
     expect(
-      within(tables[1])
+      within(tables[0])
         .getAllByRole("columnheader")
         .map((c) => c.textContent),
-    ).toEqual(["subtotal", "code", "price"]);
+    ).toEqual(["#", "subtotal", "code", "price"]);
+    const rows = [
+      ...tables[0].querySelectorAll("tbody tr"),
+      ...tables[1].querySelectorAll("tbody tr"),
+    ];
+    expect(rows.map((r) => r.textContent)).toEqual(["1100TEN90", "250TEN45", "3100OLD100"]);
+    expect(rows.map((r) => r.getAttribute("aria-current"))).toEqual(["true", null, null]);
+
+    fireEvent.click(within(tables[1]).getByRole("button", { name: "Show example 3" }));
+    expect(stepper.getByTestId("example-position")).toHaveTextContent("Example 3 of 3");
+    expect(params(card)).toEqual(["100", "OLD", "100"]);
+    expect(rows.map((r) => r.getAttribute("aria-current"))).toEqual([null, null, "true"]);
+
+    fireEvent.click(rows[1]);
+    expect(params(card)).toEqual(["50", "TEN", "45"]);
+
+    fireEvent.click(stepper.getByRole("button", { name: "Hide table of all examples" }));
+    expect(within(card).queryByRole("table")).not.toBeInTheDocument();
   });
 
-  it("leaves a scenario without examples as written: no table and no marked step", () => {
+  it("names the value of a column no step shows beside the case", () => {
+    const extra = {
+      ...outline,
+      examples: [
+        {
+          name: "",
+          columns: ["subtotal", "code", "price", "channel"],
+          rows: [["100", "TEN", "90", "web"]],
+        },
+      ],
+    };
+    render(<RecordDetailsPage {...props({ record: { ...record, scenarios: [extra, plain] } })} />);
+    const stepper = within(screen.getByTestId(`examples-${outline.id}`));
+    expect(stepper.getAllByTestId("example-value").map((v) => v.textContent)).toEqual([
+      "channel web",
+    ]);
+    expect(stepper.queryByTestId("example-block")).not.toBeInTheDocument();
+  });
+
+  it("leaves a scenario without examples as written: no stepper and no marked step", () => {
     render(<RecordDetailsPage {...props()} />);
     const card = screen.getByTestId(`scenario-${plain.id}`);
-    expect(within(card).queryByRole("table")).not.toBeInTheDocument();
+    expect(within(card).queryByTestId(`examples-${plain.id}`)).not.toBeInTheDocument();
     expect(within(card).queryByTestId("step-param")).not.toBeInTheDocument();
     expect(card).toHaveTextContent("a <b> in prose");
   });

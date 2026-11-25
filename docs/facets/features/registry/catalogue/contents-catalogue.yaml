@@ -10,9 +10,18 @@ contract:
         Given a loaded registry
         When the reader opens Contents
         Then the catalogue shows tiles that lead to available content views
+    - id: knowledge-matrix-head
+      statement: |
+        Given the Knowledge view shows its slot matrix
+        When the reader scrolls through the records
+        Then the row of slot questions stays docked under the view bar
+        And no record row shows between the bar and that row
 lineage:
   owner:
     team: atlas
   created_at: '2026-11-20'
-
-
+verification:
+  unit_tests:
+    - id: frontend/src/screens/contents/contents.spec.tsx::keeps the matrix head docked under the view bar, with no row showing between them
+      proves:
+        - knowledge-matrix-head

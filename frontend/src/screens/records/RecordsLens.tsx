@@ -4,7 +4,8 @@ import { Badge, Button, Tabs, Icon } from "@facet-tools/ui";
 
 import { useText } from "../text";
 import { KNOWLEDGE_SLOTS, type RecordRow } from "./model";
-import { LifecycleBadge, ProofBar, StepList, cx } from "./parts";
+import { LifecycleBadge, ProofBar, cx } from "./parts";
+import { ScenarioSteps } from "./RecordExtras";
 import type { RecordDetails } from "./RecordDetailsPage";
 import type { FieldGroup, FieldTile } from "./RecordsPage";
 
@@ -211,7 +212,7 @@ function Sheet({
                     </button>
                     {unfolded ? (
                       <div className="t-b-lens__steps">
-                        <StepList steps={s.steps} />
+                        <ScenarioSteps id={s.id} steps={s.steps} examples={s.examples} />
                         <span className="t-label">
                           {t("ui.screens-records.recordslens-tests-naming-promise")}
                         </span>

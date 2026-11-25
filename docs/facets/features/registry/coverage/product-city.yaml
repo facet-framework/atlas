@@ -42,6 +42,30 @@ contract:
         Then the city with its names and controls fills the screen, through
         the browser's own full screen where it has one and over the window
         where it has none, and returns to its place in the page
+    - id: the-city-height-is-a-setting
+      statement: |
+        Given the reader chose a least height for the product city in the settings
+        When the reader opens the product page
+        Then the city stands at least that tall, and without a choice it follows the window
+    - id: name-style-is-a-setting
+      statement: |
+        Given the reader chose a name style for the product city in the settings
+        When the reader opens the product page
+        Then with "Pin on the roof" a building's name stands on a stem over the middle of its roof,
+        with "Map lettering" names have no box and a ring in the surface colour,
+        and with "Tag at the foundation" they hang from the foundation as before
+    - id: names-wait-for-hover
+      statement: |
+        Given the reader chose names only on hover in the settings
+        When the pointer rests on a building and leaves it again
+        Then only that building and the chosen one are named while it rests, and nothing once it leaves
+    - id: names-on-hover-from-the-view
+      statement: |
+        Given the product page shows the city or the treemap
+        When the reader presses "Names only on hover" beside the view switch
+        Then the 3D city, the plan and the treemap show a name only while the pointer
+        is on its place, the choice is kept as the settings' "Names only on hover",
+        and pressing it again shows every name
 verification:
   unit_tests:
     - id: frontend/src/screens/frame/city3d.spec.tsx::keeps labels apart from each other and the controls at narrow and wide sizes
@@ -75,6 +99,20 @@ verification:
     - id: frontend/src/screens/frame/city3d.spec.tsx::covers the window where the browser has no full screen, until Escape
       proves:
         - the-city-opens-full-screen
+    - id: frontend/src/screens/frame/city3d.spec.tsx::stands a pin's name over the middle of its roof, above the foot, and never on another pin
+      proves:
+        - name-style-is-a-setting
+    - id: frontend/src/reader/preferences.spec.tsx::hides the names of the city and the treemap until hover from the view itself, and keeps it
+      proves:
+        - names-on-hover-from-the-view
+    - id: frontend/src/screens/frame/city3d.spec.tsx::names only the building under the pointer and the chosen one when names wait for hover
+      proves:
+        - names-wait-for-hover
+    - id: frontend/src/reader/preferences.spec.tsx::gives the city the chosen least height, name style and names on hover only, on the product page
+      proves:
+        - the-city-height-is-a-setting
+        - name-style-is-a-setting
+        - names-wait-for-hover
 lineage:
   owner:
     team: atlas

@@ -728,6 +728,11 @@
 }
 
 /** The city in 3D: a canvas under positioned names, with its controls on top. */
+/** A name shown because the pointer is on its building lets the pointer pass
+ * through: taking it would end the hover that shows it. */
+.t-a-city3d[data-names="hover"] .t-a-city3d__label:not([data-chosen]) {
+  pointer-events: none;
+}
 .t-a-city3d {
   min-height: 320px;
   overflow: hidden;
@@ -804,6 +809,94 @@
 .t-a-city3d__label:focus-visible::before,
 .t-a-city3d__label[data-chosen]::before {
   background: var(--t-signal);
+}
+/* Pin: a building's name stands above the middle of its roof on a stem, so
+ * it never hides the foundation; an area keeps its place at the foot, drawn
+ * as a solid sign. */
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label:not(.t-a-city3d__label--district) {
+  transform: translate(-50%, calc(-100% - 28px));
+  border-width: 1px;
+  border-radius: var(--t-r-ctl);
+  font-weight: 600;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 4px 12px rgb(0 0 0 / 0.12);
+}
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label:not(.t-a-city3d__label--district)::before {
+  top: 100%;
+  bottom: auto;
+  width: 2px;
+  height: 28px;
+  background: var(--t-ink);
+}
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label:not(.t-a-city3d__label--district)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 24px);
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--t-ink);
+  box-shadow: 0 0 0 2px var(--t-surface);
+}
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label--district {
+  border-color: var(--t-ink);
+  background: var(--t-ink);
+  color: var(--t-surface);
+  font-weight: 700;
+}
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label[data-chosen] {
+  border-color: var(--t-signal);
+  background: var(--t-signal);
+  color: var(--t-surface);
+}
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label[data-chosen]::before,
+.t-a-city3d[data-labels="pin"] .t-a-city3d__label[data-chosen]::after {
+  background: var(--t-signal);
+}
+/* Map lettering: no box, the text carries a ring in the surface colour so it
+ * reads over buildings and plates alike; areas in spaced capitals. */
+.t-a-city3d[data-labels="map"] .t-a-city3d__label {
+  border-color: transparent;
+  background: none;
+  font-size: var(--t-fs-13);
+  font-weight: 700;
+  text-shadow:
+    2.5px 0px 0 var(--t-surface),
+    2.3px 1px 0 var(--t-surface),
+    1.8px 1.8px 0 var(--t-surface),
+    1px 2.3px 0 var(--t-surface),
+    0px 2.5px 0 var(--t-surface),
+    -1px 2.3px 0 var(--t-surface),
+    -1.8px 1.8px 0 var(--t-surface),
+    -2.3px 1px 0 var(--t-surface),
+    -2.5px 0px 0 var(--t-surface),
+    -2.3px -1px 0 var(--t-surface),
+    -1.8px -1.8px 0 var(--t-surface),
+    -1px -2.3px 0 var(--t-surface),
+    0px -2.5px 0 var(--t-surface),
+    1px -2.3px 0 var(--t-surface),
+    1.8px -1.8px 0 var(--t-surface),
+    2.3px -1px 0 var(--t-surface);
+}
+.t-a-city3d[data-labels="map"] .t-a-city3d__label::before {
+  display: none;
+}
+.t-a-city3d[data-labels="map"] .t-a-city3d__label--district {
+  font-size: var(--t-fs-15);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.t-a-city3d[data-labels="map"] .t-a-city3d__label:hover,
+.t-a-city3d[data-labels="map"] .t-a-city3d__label:focus-visible,
+.t-a-city3d[data-labels="map"] .t-a-city3d__label[data-chosen] {
+  border-color: transparent;
+  color: var(--t-signal);
+  text-decoration: underline 2px;
+  text-underline-offset: 3px;
 }
 /* Full screen: the browser's own, or the window where the browser has none. */
 .t-a-city3d:fullscreen {
@@ -931,13 +1024,13 @@
 
   .t-a-product:not([data-view="list"]) .t-a-product__body {
     flex: 1 1 0;
-    min-height: max(360px, 50vh);
+    min-height: var(--t-a-city-min, max(360px, 50vh));
     grid-template-rows: minmax(0, 1fr);
   }
   .t-a-product:not([data-view="list"]) .t-a-product__canvas {
     display: flex;
     flex-direction: column;
-    min-height: max(360px, 50vh);
+    min-height: var(--t-a-city-min, max(360px, 50vh));
   }
   /** The page's height comes from the window, never from the drawing: a column
    * flex box still asks each child for its content height, and a tall city
@@ -1577,4 +1670,19 @@
   .t-a-list .t-list-row .t-a-mosaic {
     display: none;
   }
+}
+
+/* Names only on hover, in the flat views: an area's name shows while the
+ * pointer is on the area (treemap) or on the name's place (plan), or while it
+ * has the focus. */
+.t-a-product__body[data-names="hover"] .t-a-treemap__label,
+.t-a-product__body[data-names="hover"] .t-a-city__label {
+  opacity: 0;
+  transition: opacity var(--t-dur-1, 120ms);
+}
+.t-a-product__body[data-names="hover"] .t-a-treemap g:hover > .t-a-treemap__label,
+.t-a-product__body[data-names="hover"] .t-a-treemap g:focus-within > .t-a-treemap__label,
+.t-a-product__body[data-names="hover"] .t-a-city__label:hover,
+.t-a-product__body[data-names="hover"] .t-a-city__label:focus-visible {
+  opacity: 1;
 }
