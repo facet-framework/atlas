@@ -32,6 +32,7 @@ type manifest struct {
 
 type artifact struct {
 	Platform      string            `json:"platform"`
+	Size          int64             `json:"size"`
 	Archive       string            `json:"archive"`
 	SHA256        string            `json:"sha256"`
 	BinarySHA256  string            `json:"binary_sha256"`
@@ -56,8 +57,14 @@ func run(args []string) error {
 		return collect(args[1], args[2])
 	case len(args) == 3 && args[0] == "smoke":
 		return smoke(args[1], args[2])
+	case len(args) == 2 && args[0] == "keygen":
+		return generateSigningKey(args[1], os.Stdout)
+	case len(args) == 3 && args[0] == "sign":
+		return signManifest(args[1], args[2])
+	case len(args) == 4 && args[0] == "verify":
+		return verifyManifest(args[1], args[2], args[3])
 	default:
-		return errors.New("usage: release version VERSION | package VERSION PLATFORM OUTPUT | collect INPUT OUTPUT | smoke ARCHIVES PLATFORM")
+		return errors.New("usage: release version VERSION | package VERSION PLATFORM OUTPUT | collect INPUT OUTPUT | smoke ARCHIVES PLATFORM | keygen PRIVATE_KEY_FILE | sign MANIFEST PRIVATE_KEY_FILE_OR_DASH | verify MANIFEST SIGNATURE PUBLIC_KEYS_FILE")
 	}
 }
 
@@ -139,6 +146,14 @@ func emptyOutput(path string) error {
 }
 
 func writeMetadata(dir string, info manifest) error {
+	info.Platforms = slices.Clone(info.Platforms)
+	for i, entry := range info.Platforms {
+		stat, err := os.Stat(filepath.Join(dir, entry.Archive))
+		if err != nil {
+			return err
+		}
+		info.Platforms[i].Size = stat.Size()
+	}
 	data, err := json.MarshalIndent(info, "", "  ")
 	if err != nil {
 		return err

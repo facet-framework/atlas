@@ -1,0 +1,85 @@
+schema_version: '0.1'
+id: workspace/contracts/signed-release-manifest
+lifecycle: active
+intent:
+  summary: Sign the Atlas release manifest so clients can verify its authenticity with a trusted public key.
+contract:
+  scenarios:
+    - id: archive-size
+      statement: |
+        Given Atlas writes a version 1 release manifest for a packaged archive
+        When release tooling reads the manifest
+        Then the platform entry states the archive size in bytes
+    - id: sign-exact-bytes
+      statement: |
+        Given a release manifest and a valid Ed25519 seed supplied by file or environment
+        When the release command signs the manifest
+        Then it writes a JSON signature beside the manifest
+        And the signature contains the key ID and a padded standard base64 Ed25519 signature over the exact manifest bytes
+    - id: verify-trusted-signature
+      statement: |
+        Given a signed manifest and a trusted key list containing its signing public key
+        When the release command verifies the signature
+        Then verification succeeds
+    - id: reject-untrusted-signature
+      statement: |
+        Given a manifest and signature with <problem>
+        When the release command verifies the signature against the configured key list
+        Then verification fails with <reason>
+      examples:
+        - name: Verification failures
+          columns: [problem, reason]
+          rows:
+            - [a signature that does not verify with the selected public key, a signature verification error]
+            - [an unknown key ID, an unknown key ID error]
+            - [changed manifest bytes, a signature verification error]
+            - [an unsupported algorithm, an unsupported algorithm error]
+            - [an empty key list, a missing trusted keys error]
+    - id: generate-signing-key
+      statement: |
+        Given a new seed path
+        When the release command generates a signing key
+        Then it writes a single-line standard base64 seed to the file with mode 0600 on Unix
+        And it prints the derived public key and the first 16 hex characters of the SHA-256 digest of the raw public key as its key ID
+    - id: preserve-existing-key
+      statement: |
+        Given an existing seed file
+        When the release command generates a key at the same path
+        Then key generation fails and the file contents remain unchanged
+    - id: reject-missing-secret
+      statement: |
+        Given signing is configured to read its seed from the environment
+        When the release command signs without ATLAS_RELEASE_SIGNING_KEY
+        Then signing fails with a missing key error
+verification:
+  unit_tests:
+    - id: backend/cmd/release/main_test.go::TestReadStableArtifact
+      proves: [archive-size]
+    - id: backend/cmd/release/signing_test.go::TestManifestSigning
+      proves: [sign-exact-bytes, verify-trusted-signature, reject-untrusted-signature, generate-signing-key]
+    - id: backend/cmd/release/signing_test.go::TestKeygenRefusesOverwrite
+      proves: [generate-signing-key, preserve-existing-key]
+    - id: backend/cmd/release/signing_test.go::TestManifestSigningRequiresEnvironmentKey
+      proves: [reject-missing-secret]
+knowledge:
+  prerequisite_knowledge:
+    question: What do I need to sign or verify a manifest?
+    answer: Signing requires a private Ed25519 seed. Verification requires the matching public key in a trusted keys file.
+  not_for:
+    question: What does manifest verification cover?
+    answer: The verify command authenticates the manifest bytes. Checking downloaded archives requires checking the archive hashes in the manifest.
+  discoverability:
+    question: Where are the signing commands?
+    answer: Run `go run ./backend/cmd/release` from the repository root for the keygen, sign, and verify usage.
+  common_pitfalls:
+    question: Why can verification fail if the JSON still has the same values?
+    answer: The signature covers the exact bytes, so reformatting the JSON invalidates it.
+  success_signal:
+    question: How can I tell verification succeeded?
+    answer: The verify command exits with status zero.
+lineage:
+  related_policies:
+    - policy/workspace/public-release
+  owner:
+    team: atlas
+  created_at: '2026-11-25'

@@ -509,16 +509,16 @@
     {
       "ecosystem": "Go",
       "name": "github.com/facet-framework/core",
-      "version": "v0.1.0-rc.2",
+      "version": "v0.1.0-rc.4",
       "license": "Apache-2.0",
       "role": "compiled in the backend build",
       "license_files": [
         {
-          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.2/NOTICE",
-          "sha256": "916a6e5d9b7aaa7887d10f3f9df79c45ec8c66932af2f3d35dd74366aedc86bd"
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.4/NOTICE",
+          "sha256": "b0ef2c6d06db3dfe0467aae571247b1c58a521fb387b68a119002916da6eb493"
         },
         {
-          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.2/LICENSE",
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.4/LICENSE",
           "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
         }
       ]
