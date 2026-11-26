@@ -55,6 +55,14 @@ import {
   type Spot,
   type World,
 } from "./scene3d";
+import { StoreyLegend } from "./StoreyLegend";
+import {
+  NOT_MEASURED,
+  storeyCount,
+  storeyLabel,
+  storeyTotalText,
+  type StoreyLens,
+} from "./storeyLens";
 
 const STATE_NAME: Record<string, string> = {
   open: "ui.screens-frame.city3d-open",
@@ -69,6 +77,7 @@ const STATE_WINDOWS: Record<string, string> = {
 };
 
 export type City3DProps = {
+  lens?: StoreyLens;
   domains: DomainView[];
   features: FeatureView[];
   /** The chosen record, if any: its storey is marked. */
@@ -128,9 +137,10 @@ function chosenOf(world: World, place: Place | null, selected: string | null) {
 // @facet: registry/coverage/product-city
 // @facet-role: related
 export function City3D(props: City3DProps) {
-  const { domains, features, selected, fallback } = props;
-  const { t, plural } = useText();
-  const world = useMemo(() => buildWorld(domains, features), [domains, features]);
+  const { domains, features, selected, fallback, lens = "tests" } = props;
+  const text = useText();
+  const { t, plural } = text;
+  const world = useMemo(() => buildWorld(domains, features, lens), [domains, features, lens]);
   const probe = useMemo(() => probeFloor(world), [world]);
   const [failed, setFailed] = useState(false);
   const [place, setPlace] = useState<Place | null>(null);
@@ -189,6 +199,7 @@ export function City3D(props: City3DProps) {
     }
     const c = camera.current;
     const level = levelOf(c.dist, farAt.current);
+    const farMesh = level === "far";
     if (!palette.current) {
       const style = getComputedStyle(cv);
       palette.current = paletteOf((name) => style.getPropertyValue(name));
@@ -199,10 +210,10 @@ export function City3D(props: City3DProps) {
       {
         matrix,
         palette: palette.current,
-        far: level === "far",
+        far: farMesh,
         focus: [c.tx, c.ty, c.tz],
         fog: c.dist,
-        building: level === "far" ? -1 : chosen.building,
+        building: farMesh ? -1 : chosen.building,
         floor: chosen.floor,
         district: chosen.district,
         hover:
@@ -686,7 +697,7 @@ export function City3D(props: City3DProps) {
             data-testid="city-tip"
             style={{ left: hovered.x, top: hovered.y }}
           >
-            <Tip world={world} place={hovered.place} />
+            <Tip world={world} place={hovered.place} lens={lens} />
           </div>
         ) : null}
 
@@ -792,11 +803,13 @@ export function City3D(props: City3DProps) {
                               const f = world.floors[fi];
                               return (
                                 <li key={f.feature.id}>
-                                  {`${f.feature.id}: ${
-                                    f.windows.length
-                                      ? f.windows.map((x) => t(STATE_NAME[x])).join(", ")
-                                      : t("ui.screens-frame.city3d-no-scenarios")
-                                  }`}
+                                  {lens !== "tests"
+                                    ? storeyLabel(f.feature, lens, text)
+                                    : `${f.feature.id}: ${
+                                        f.windows.length
+                                          ? f.windows.map((x) => t(STATE_NAME[x])).join(", ")
+                                          : t("ui.screens-frame.city3d-no-scenarios")
+                                      }`}
                                 </li>
                               );
                             })}
@@ -814,33 +827,38 @@ export function City3D(props: City3DProps) {
           {said}
         </p>
       </div>
-      <div
-        className="t-a-legend t-meta"
-        aria-label={t("ui.screens-frame.city3d-legend")}
-        data-testid="city-legend"
-      >
-        {STATES.map((st) => (
-          <span key={st} className="t-row" style={{ gap: 6 }}>
-            <span className="t-a-city3d__pane" data-state={st} /> {t(STATE_NAME[st])}
+      {lens !== "tests" ? (
+        <StoreyLegend features={features} lens={lens} />
+      ) : (
+        <div
+          className="t-a-legend t-meta"
+          aria-label={t("ui.screens-frame.city3d-legend")}
+          data-testid="city-legend"
+        >
+          {STATES.map((st) => (
+            <span key={st} className="t-row" style={{ gap: 6 }}>
+              <span className="t-a-city3d__pane" data-state={st} /> {t(STATE_NAME[st])}
+            </span>
+          ))}
+          <span className="t-row" style={{ gap: 6 }}>
+            <span className="t-a-city3d__hatch" data-kind="planned" />{" "}
+            {t("ui.screens-frame.city3d-planned")}
           </span>
-        ))}
-        <span className="t-row" style={{ gap: 6 }}>
-          <span className="t-a-city3d__hatch" data-kind="planned" />{" "}
-          {t("ui.screens-frame.city3d-planned")}
-        </span>
-        <span className="t-row" style={{ gap: 6 }}>
-          <span className="t-a-city3d__hatch" data-kind="deprecated" />{" "}
-          {t("ui.screens-frame.city3d-deprecated")}
-        </span>
-        <span>{t("ui.screens-frame.city3d-storey-feature-window-scenario")}</span>
-      </div>
+          <span className="t-row" style={{ gap: 6 }}>
+            <span className="t-a-city3d__hatch" data-kind="deprecated" />{" "}
+            {t("ui.screens-frame.city3d-deprecated")}
+          </span>
+          <span>{t("ui.screens-frame.city3d-storey-feature-window-scenario")}</span>
+        </div>
+      )}
     </>
   );
 }
 
 /** What the pointer rests on: a building's storeys and the states of its windows. */
-function Tip({ world, place }: { world: World; place: Place }) {
-  const { plural } = useText();
+function Tip({ world, place, lens }: { world: World; place: Place; lens: StoreyLens }) {
+  const text = useText();
+  const { plural } = text;
   if (place.kind === "district") {
     const d = world.districts[place.index];
     return (
@@ -852,11 +870,35 @@ function Tip({ world, place }: { world: World; place: Place }) {
   }
   const floor = place.kind === "floor" ? world.floors[place.index] : null;
   const b = world.buildings[floor ? floor.building : place.index];
+  if (!floor && lens !== "tests") {
+    const counts = b.floors.flatMap((fi) => {
+      const count = storeyCount(world.floors[fi].feature, lens);
+      return count == null ? [] : [count];
+    });
+    return (
+      <>
+        <strong className="t-wrap">{b.title}</strong>
+        <span className="t-meta">
+          {counts.length
+            ? storeyTotalText(
+                text,
+                lens,
+                counts.reduce((sum, count) => sum + count, 0),
+              )
+            : text.t(NOT_MEASURED)}
+        </span>
+      </>
+    );
+  }
   const windows = floor ? floor.windows : b.floors.flatMap((fi) => world.floors[fi].windows);
   const c = countStates(windows);
   return (
     <>
-      <strong className="t-wrap">{floor ? floor.feature.id : b.title}</strong>
+      <strong className="t-wrap">
+        {floor && lens !== "tests"
+          ? storeyLabel(floor.feature, lens, text)
+          : (floor?.feature.id ?? b.title)}
+      </strong>
       {floor ? null : (
         <span className="t-meta">
           {plural("ui.screens-frame.city3d-count-features", b.floors.length)}

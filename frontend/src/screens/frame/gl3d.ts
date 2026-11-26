@@ -3,6 +3,7 @@
  * decides when a frame is due. */
 
 import { STRIDE, SURFACE, type Palette, type Rgb, type Vec3 } from "./scene3d";
+import { STOREY_COLOURS } from "./storeyLens";
 
 const VERTEX = `
 attribute vec3 aPos;
@@ -11,17 +12,20 @@ attribute vec2 aUv;
 attribute vec4 aPlace;
 attribute vec4 aLook;
 uniform mat4 uMatrix;
+uniform vec3 uStoreys[${STOREY_COLOURS.length}];
 varying vec3 vPos;
 varying vec3 vNormal;
 varying vec2 vUv;
 varying vec4 vPlace;
 varying vec4 vLook;
+varying vec3 vStorey;
 void main() {
   vPos = aPos;
   vNormal = aNormal;
   vUv = aUv;
   vPlace = aPlace;
   vLook = aLook;
+  vStorey = aLook.y < -0.5 ? uStoreys[int(-1.0 - aLook.y)] : vec3(0.0);
   gl_Position = uMatrix * vec4(aPos, 1.0);
 }
 `;
@@ -37,6 +41,7 @@ varying vec3 vNormal;
 varying vec2 vUv;
 varying vec4 vPlace;
 varying vec4 vLook;
+varying vec3 vStorey;
 uniform vec3 uBg, uGround, uDot, uPlate, uKerb, uBody, uRoof, uOk, uPlan, uWarn, uSignal, uRest;
 uniform vec3 uFocus;
 uniform float uFog;
@@ -59,16 +64,22 @@ void main() {
     colour = uPlate * light;
     if (same(vPlace.z, uDistrict)) colour = mix(colour, uSignal, 0.14);
   } else if (surface < ${SURFACE.block}.5) {
-    colour = mix(uPlan, uOk, vLook.w);
-    if (n.y > 0.5) colour = mix(colour, uRoof, 0.3);
+    colour = vLook.y < -0.5 ? vStorey : mix(uPlan, uOk, vLook.w);
+    if (vLook.y >= -0.5 && n.y > 0.5) colour = mix(colour, uRoof, 0.3);
     colour *= light;
     if (same(vPlace.z, uDistrict)) colour = mix(colour, uSignal, 0.3);
   } else {
     bool side = abs(n.y) < 0.5;
     colour = (side ? uBody : uRoof) * light;
     float stripe = step(0.5, fract((vPos.x + vPos.y - vPos.z) * 1.4));
-    if (surface > ${SURFACE.planned}.5) colour = mix(colour, uWarn, 0.16 + 0.24 * stripe);
-    else if (surface > ${SURFACE.floor}.5) colour = mix(colour, uRest, 0.3 + 0.35 * stripe);
+    if (vLook.y < -0.5) {
+      colour = vStorey * light;
+      if (same(vPlace.z, uDistrict)) colour = mix(colour, uSignal, 0.08);
+    } else if (surface > ${SURFACE.planned}.5) {
+      colour = mix(colour, uWarn, 0.16 + 0.24 * stripe);
+    } else if (surface > ${SURFACE.floor}.5) {
+      colour = mix(colour, uRest, 0.3 + 0.35 * stripe);
+    }
     if (same(vPlace.x, uHover)) colour = mix(colour, uSignal, 0.08);
     if (same(vPlace.x, uBuilding)) colour = mix(colour, uSignal, 0.12);
     if (same(vPlace.y, uFloor)) colour = mix(colour, uSignal, 0.45);
@@ -144,6 +155,8 @@ type Mesh = { buffer: WebGLBuffer | null; count: number };
  * program does not build. Null is a state, not an error: the caller draws the
  * city another way. */
 
+// @facet: registry/coverage/product-city
+// @facet-role: related
 export function createRenderer(canvas: HTMLCanvasElement): Renderer | null {
   let gl: WebGLRenderingContext | null = null;
   try {
@@ -185,6 +198,7 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer | null {
   const at = {
     matrix: uniform("uMatrix"),
     focus: uniform("uFocus"),
+    storeys: uniform("uStoreys[0]"),
     fog: uniform("uFog"),
     building: uniform("uBuilding"),
     floor: uniform("uFloor"),
@@ -225,6 +239,7 @@ export function createRenderer(canvas: HTMLCanvasElement): Renderer | null {
       g.uniformMatrix4fv(at.matrix, false, frame.matrix);
       for (const c of colourAt) g.uniform3fv(c.at, p[c.key] as Rgb);
       g.uniform3fv(at.focus, frame.focus);
+      g.uniform3fv(at.storeys, p.storeys.flat());
       g.uniform1f(at.fog, frame.fog);
       g.uniform1f(at.building, frame.building);
       g.uniform1f(at.floor, frame.floor);

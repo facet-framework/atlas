@@ -5,7 +5,7 @@ go 1.26.0
 toolchain go1.26.8
 
 require (
-	github.com/facet-framework/core v0.1.0-rc.4
+	github.com/facet-framework/core v0.1.0-rc.5
 	github.com/goccy/go-yaml v1.19.2
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/spf13/cobra v1.10.2
@@ -14,7 +14,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require golang.org/x/time v0.15.0 // indirect
+require (
+	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
+)
 
 require (
 	github.com/JohannesKaufmann/dom v0.3.1 // indirect

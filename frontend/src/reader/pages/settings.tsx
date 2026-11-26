@@ -12,6 +12,7 @@ import { EmptyState, Select, Switch } from "@facet-tools/ui";
 
 import { useSurfaceText as useText, type FacetText } from "@/screens/text";
 import { contents } from "@/screens";
+import { STOREY_LENSES, STOREY_LENS_LABEL, storeyLensOptions } from "@/screens/frame/storeyLens";
 import i18n, { addCustomLanguage, customLanguages } from "@/i18n";
 import { OFFICIAL_PLUGINS } from "@/plugin/official";
 import { ROLE_LIST } from "@/roles";
@@ -531,6 +532,20 @@ export function SettingsPlace({
             }}
           />
           <div className="t-surface t-c-setgroup" data-testid="city-settings">
+            <contents.SettingRow
+              label={ctx.t(STOREY_LENS_LABEL)}
+              control={
+                <Select
+                  aria-label={ctx.t(STOREY_LENS_LABEL)}
+                  data-testid="storey-lens-setting"
+                  value={prefs.storeyLens}
+                  options={storeyLensOptions(ctx.t)}
+                  onValueChange={(value) =>
+                    prefer({ storeyLens: STOREY_LENSES.find((lens) => lens === value) ?? "tests" })
+                  }
+                />
+              }
+            />
             <contents.SettingRow
               label={ctx.t("ui.reader-pages.settings-product-city-height")}
               desc={ctx.t("ui.reader-pages.settings-least-height-3d-city-product-page")}

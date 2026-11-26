@@ -206,6 +206,17 @@ export function ProductPlace({ ctx }: { ctx: PageContext }) {
     sort: { key: "proven", dir: "asc" },
   });
   const dates = creationDates(ctx.features);
+  const lastCreation = dates.at(-1);
+  if (
+    lastCreation &&
+    ctx.features.some((f) => f.fixCommits?.some(({ date }) => date > lastCreation))
+  ) {
+    const now = new Date();
+    const today = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
+      .toISOString()
+      .slice(0, 10);
+    if (today > lastCreation) dates.push(today);
+  }
   const time = dates.length > 1 ? { dates, index: s.time ?? dates.length - 1 } : undefined;
   const prefs = usePreferences();
   return (
@@ -213,6 +224,12 @@ export function ProductPlace({ ctx }: { ctx: PageContext }) {
       cityHeight={prefs.cityHeight}
       cityNames={prefs.cityNames}
       cityLabels={prefs.cityLabels}
+      storeyLens={prefs.storeyLens}
+      onStoreyLens={(storeyLens) => writePreferences({ storeyLens })}
+      storeyContentsHref={(lens) =>
+        href({ area: "contents", kind: lens === "fixes" ? "fixed" : lens })
+      }
+      onOpenStoreyContents={ctx.go}
       onCityNames={(cityNames) => writePreferences({ cityNames })}
       domains={ctx.domains}
       features={ctx.features}

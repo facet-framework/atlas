@@ -7,6 +7,7 @@
  * default, field by field. */
 
 import { useSyncExternalStore } from "react";
+import { STOREY_LENSES, type StoreyLens } from "@/screens/frame/storeyLens";
 
 export const PREFERENCES_KEY = "facet.atlas.preferences";
 
@@ -41,6 +42,7 @@ export type Preferences = {
   cityNames: "always" | "hover";
   /** How the city draws its names. */
   cityLabels: CityLabels;
+  storeyLens: StoreyLens;
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
@@ -53,6 +55,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   cityHeight: null,
   cityNames: "always",
   cityLabels: "tag",
+  storeyLens: "tests",
 };
 
 function storage(): Storage | undefined {
@@ -102,6 +105,7 @@ export function readPreferences(s: Pick<Storage, "getItem"> | undefined = storag
     cityNames:
       raw.cityNames === "hover" || raw.cityNames === "always" ? raw.cityNames : d.cityNames,
     cityLabels: CITY_LABELS.find((l) => l === raw.cityLabels) ?? d.cityLabels,
+    storeyLens: STOREY_LENSES.find((lens) => lens === raw.storeyLens) ?? d.storeyLens,
   };
 }
 

@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { germanLabel } from "@/i18n/testing-labels.spec-support";
 import { act, screen, within, fireEvent } from "@testing-library/react";
 import { renderInEnglish as render, renderInEnglish as renderEnglish } from "../testing";
@@ -879,6 +881,29 @@ describe("ProductPage", () => {
     expect(onSelect).toHaveBeenCalledWith(null);
     await userEvent.click(screen.getByTestId("tower-workspace/board/column"));
     expect(onSelect).toHaveBeenLastCalledWith(null);
+  });
+
+  it("stands the selection in a column of its own beside the city, the time and the area strip", () => {
+    render(
+      <ProductPage
+        domains={DOMAINS}
+        features={FEATURES}
+        view="city"
+        selected="workspace/board/column"
+      />,
+    );
+    const stage = screen.getByTestId("product-stage");
+    const main = screen.getByTestId("product-main");
+    const selection = screen.getByTestId("selection");
+    expect(stage).toHaveAttribute("data-selected", "true");
+    expect(main).toContainElement(screen.getByTestId("district-strip"));
+    expect(main).toContainElement(screen.getByTestId("city"));
+    expect(main).not.toContainElement(selection);
+    expect(stage).toContainElement(selection);
+    const css = readFileSync(join(__dirname, "../styles/frame.css"), "utf8");
+    expect(css).toMatch(
+      /\.t-a-product__stage\[data-selected\] \{\s*grid-template-columns: minmax\(0, 1fr\) 340px;/,
+    );
   });
 
   it("puts the selection in a sheet on mobile", () => {

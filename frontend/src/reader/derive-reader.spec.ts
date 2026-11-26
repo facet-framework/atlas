@@ -13,6 +13,51 @@ const features = D.featureViews(model, derived);
 const domains = D.domainViews(model);
 
 describe("feature views", () => {
+  it("derives storey counts from the defect register and declared deviations", () => {
+    const record = model.features.find((feature) => feature.scenarios.length > 0)!;
+    const [scenario] = record.scenarios;
+    const rec = {
+      ...record,
+      scenarios: [
+        {
+          ...scenario,
+          deviation: { reason: "Unexpected result", confirmedBy: "", trackedAs: "" },
+        },
+      ],
+    };
+    const noRegister = { ...rec, defects: { ...rec.defects, present: false } };
+    expect(D.featureView(model, derived, noRegister)).toMatchObject({
+      fixCount: null,
+      deviationCount: 1,
+    });
+    const empty = { ...rec.defects, present: true, total: 0, fixes: [] };
+    expect(D.featureView(model, derived, { ...rec, defects: empty })).toMatchObject({
+      fixCount: 0,
+      fixCommits: [],
+      deviationCount: 1,
+    });
+    const fixes = [
+      {
+        date: "2026-08-01",
+        commit: "abc1234",
+        files: [],
+        subject: "",
+        issue: "",
+        recordedBy: "",
+      },
+    ];
+    expect(
+      D.featureView(model, derived, {
+        ...rec,
+        defects: { ...empty, total: 1, fixes },
+      }),
+    ).toMatchObject({
+      fixCount: 1,
+      fixCommits: [{ commit: "abc1234", date: "2026-08-01" }],
+      deviationCount: 1,
+    });
+  });
+
   it("lists every feature and assumption with its measured counts", () => {
     expect(features).toHaveLength(model.features.length + model.assumptions.length);
     const qa = features.find((f) => f.id === "tasks/create/quick-add")!;

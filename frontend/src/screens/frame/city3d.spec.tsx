@@ -4,6 +4,7 @@ import { renderInEnglish as render, renderInEnglish as renderEnglish } from "../
 import { City3D } from "./City3D";
 import { ProductPage } from "./ProductPage";
 import { DOMAINS, FEATURES } from "./data.spec-support";
+import { STOREY_COLOURS } from "./storeyLens";
 import type { DomainView, FeatureView } from "./model";
 import {
   FIT_HEIGHT,
@@ -36,6 +37,7 @@ import {
   project,
   rayAt,
   STRIDE,
+  SURFACE,
   viewOfPlace,
   viewProjection,
   windowColour,
@@ -50,10 +52,16 @@ import {
 function fakeGl() {
   const calls: string[] = [];
   const lose = jest.fn();
+  const uniform3fv = jest.fn();
+  const uniformMatrix4fv = jest.fn();
+  const drawArrays = jest.fn(() => calls.push("drawArrays"));
   const fixed: Record<string, unknown> = {
     getProgramParameter: () => true,
     getAttribLocation: () => 0,
-    getUniformLocation: () => ({}),
+    getUniformLocation: (_program: unknown, name: string) => name,
+    uniform3fv,
+    uniformMatrix4fv,
+    drawArrays,
     isContextLost: () => false,
     getExtension: () => ({ loseContext: lose }),
   };
@@ -71,7 +79,7 @@ function fakeGl() {
       },
     },
   );
-  return { gl, calls, lose };
+  return { gl, calls, lose, uniform3fv, uniformMatrix4fv, drawArrays };
 }
 
 function withGl() {
@@ -1220,4 +1228,155 @@ describe("City3D", () => {
     city();
     expect(screen.getByTestId("fallback")).toBeInTheDocument();
   });
+});
+
+it("encodes fix and deviation colours on storeys and retains windows for test coverage", () => {
+  const source = FEATURES.find(
+    (feature) =>
+      feature.scenarios > 0 &&
+      DOMAINS.some(
+        (domain) =>
+          domain.id === feature.domain &&
+          domain.capabilities.some((capability) => capability.id === feature.capability),
+      ),
+  )!;
+  const counts = [0, 2, 3, 7, 8, 19, 20, null];
+  const features = counts.map((fixCount, i) => ({
+    ...source,
+    id: source.id + "-" + i,
+    fixCount,
+    deviationCount: i % 2,
+  }));
+  const fixes = buildWorld(DOMAINS, features, "fixes");
+  expect(fixes.floors.map((floor) => floor.lensColour)).toEqual([0, 1, 2, 2, 3, 3, 4, 7]);
+  expect(fixes.floors.every((floor) => floor.windows.length === 0)).toBe(true);
+  const mesh = meshOf(fixes, false);
+  const encoded = new Map<number, number>();
+  for (let offset = 0; offset < mesh.length; offset += STRIDE) {
+    const floor = mesh[offset + 9];
+    if (floor >= 0) encoded.set(floor, mesh[offset + 13]);
+  }
+  expect([...encoded.values()]).toEqual([-1, -2, -3, -3, -4, -4, -5, -8]);
+
+  // A planned and a deprecated record show their count colour, not the hatching.
+  const lifecycles = buildWorld(
+    DOMAINS,
+    [
+      { ...features[4], lifecycle: "planned" },
+      { ...features[6], lifecycle: "deprecated" },
+    ],
+    "fixes",
+  );
+  expect(lifecycles.floors.map((floor) => [floor.kind, floor.lensColour])).toEqual([
+    ["planned", 3],
+    ["deprecated", 4],
+  ]);
+  const lifecycleMesh = meshOf(lifecycles, false);
+  const lifecycleBands = new Set<number>();
+  for (let offset = 0; offset < lifecycleMesh.length; offset += STRIDE)
+    if (lifecycleMesh[offset + 9] >= 0) lifecycleBands.add(lifecycleMesh[offset + 13]);
+  expect([...lifecycleBands]).toEqual([-4, -5]);
+
+  const deviations = buildWorld(DOMAINS, features, "deviations");
+  expect(deviations.floors.map((floor) => floor.lensColour)).toEqual([5, 6, 5, 6, 5, 6, 5, 6]);
+  expect(deviations.floors.every((floor) => floor.windows.length === 0)).toBe(true);
+  const tests = buildWorld(DOMAINS, features);
+  expect(tests.floors.map((floor) => floor.lensColour)).toEqual(counts.map(() => null));
+  expect(tests.floors[0].windows).toEqual(windowsOf(features[0]));
+  expect(tests.floors[0].windows.length).toBeGreaterThan(0);
+});
+
+it("shows the active storey legend in WebGL and describes measured floors", async () => {
+  const { calls } = withGl();
+  const feature = { ...F[0], fixCount: 3, deviationCount: 0 };
+  const props = { domains: D, features: [feature], selected: null, fallback: null };
+  const { rerender } = render(<City3D {...props} lens="fixes" />);
+  expect(screen.getByTestId("storey-legend")).toHaveTextContent("3–7");
+  expect(screen.getByTestId("city-list")).toHaveTextContent(feature.id + ": 3 fixes");
+  await frame();
+  expect(calls).toContain("drawArrays");
+
+  rerender(<City3D {...props} lens="deviations" />);
+  expect(screen.getByTestId("storey-legend")).toHaveTextContent("With deviations");
+  expect(screen.getByTestId("city-list")).toHaveTextContent(feature.id + ": 0 deviations");
+
+  rerender(<City3D {...props} />);
+  expect(screen.getByTestId("city-legend")).toBeInTheDocument();
+  expect(screen.queryByTestId("storey-legend")).not.toBeInTheDocument();
+});
+
+it("uploads all eight theme storey colours to the WebGL uniform in palette order", async () => {
+  const { uniform3fv } = withGl();
+  const rgb = Array.from({ length: 8 }, (_, i) => [i * 30 + 1, i * 30 + 2, i * 30 + 3]);
+  const css = new Map<string, string>(
+    STOREY_COLOURS.map((name, i) => [name, `rgb(${rgb[i].join(", ")})`]),
+  );
+  const computed = window.getComputedStyle;
+  jest.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) => {
+    const style = computed(element, pseudo);
+    if (!(element instanceof HTMLCanvasElement)) return style;
+    const read = style.getPropertyValue.bind(style);
+    jest.spyOn(style, "getPropertyValue").mockImplementation((name) => css.get(name) ?? read(name));
+    return style;
+  });
+
+  city({ lens: "fixes" });
+  await frame();
+  expect(uniform3fv).toHaveBeenCalledWith(
+    "uStoreys[0]",
+    rgb.flat().map((value) => value / 255),
+  );
+});
+
+it("draws and picks district blocks at far zoom in the Bug fixes lens", async () => {
+  const { drawArrays, uniformMatrix4fv } = withGl();
+  const features = F.map((feature, i) => ({ ...feature, fixCount: [2, 9, null, null][i] }));
+  const world = buildWorld(D, features, "fixes");
+  const blocks = meshOf(world, true);
+  const bands = new Map<number, number>();
+  for (let i = 0; i < blocks.length; i += STRIDE) {
+    if (blocks[i + 12] === SURFACE.block) bands.set(blocks[i + 10], blocks[i + 13]);
+  }
+  expect([...bands]).toEqual([
+    [0, -4],
+    [1, -8],
+  ]);
+
+  city({ lens: "fixes", features });
+  size(canvasOf());
+  await frame();
+  const onScreen = (point: [number, number, number]) => {
+    const matrix = uniformMatrix4fv.mock.lastCall![2];
+    const [x, y] = project(matrix, point, 800, 400)!;
+    return { clientX: Math.round(x), clientY: Math.round(y) };
+  };
+  const cart = world.buildings[0];
+  fireEvent.pointerMove(scene(), {
+    pointerType: "mouse",
+    ...onScreen([cart.cx, cart.top, cart.cz]),
+  });
+  expect(screen.getByTestId("city-tip")).toHaveTextContent("Cart11 fixes");
+
+  fireEvent.click(screen.getByRole("radio", { name: "Areas" }));
+  await frame();
+  expect(scene()).toHaveAttribute("data-level", "far");
+  expect(drawArrays).toHaveBeenLastCalledWith(0, 0, blocks.length / STRIDE);
+  expect(screen.getByTestId("city-area-shop")).toBeInTheDocument();
+  expect(screen.queryByTestId("city-cap-shop/cart")).not.toBeInTheDocument();
+  const shop = world.districts[0];
+  const point = onScreen([(shop.x0 + shop.x1) / 2, shop.height, (shop.z0 + shop.z1) / 2]);
+  fireEvent.pointerMove(scene(), { pointerType: "mouse", ...point });
+  expect(screen.getByTestId("city-tip")).toHaveTextContent("Shop3 records");
+  fireEvent.pointerDown(scene(), { pointerId: 1, button: 0, ...point });
+  fireEvent.pointerUp(scene(), { pointerId: 1, button: 0, ...point });
+  expect(scene()).toHaveAttribute("data-chosen", "shop");
+
+  fireEvent.keyDown(scene(), { key: "Home" });
+  await frame();
+  expect(scene()).toHaveAttribute("data-chosen", "");
+  fireEvent.click(screen.getByRole("radio", { name: "Areas" }));
+  await frame();
+  expect(scene()).toHaveAttribute("data-level", "far");
+  fireEvent.keyDown(scene(), { key: "Enter" });
+  expect(scene()).toHaveAttribute("data-chosen", "shop");
 });
