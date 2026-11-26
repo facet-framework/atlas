@@ -58,6 +58,11 @@ export function featureView(
     drift: model.driftIds[rec.id]?.length ?? 0,
     knowledgeOpen: open.length,
     knowledgeMeasured: hasKnowledge,
+    fixCount: rec.defects.present ? rec.defects.total : null,
+    fixCommits: rec.defects.present
+      ? rec.defects.fixes.map(({ commit, date }) => ({ commit, date }))
+      : undefined,
+    deviationCount: rec.scenarios.filter((scenario) => scenario.deviation).length,
     knowledgeSlots:
       active && hasKnowledge ? OVERVIEW_SLOT_KEYS.map((k) => !open.includes(k)) : undefined,
     mosaic: f

@@ -469,6 +469,23 @@
     },
     {
       "ecosystem": "Go",
+      "name": "golang.org/x/mod",
+      "version": "v0.42.0",
+      "license": "BSD-3-Clause",
+      "role": "compiled in the backend build",
+      "license_files": [
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fmod@v0.42.0/LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/go/golang.org%2Fx%2Fmod@v0.42.0/PATENTS",
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "ecosystem": "Go",
       "name": "golang.org/x/oauth2",
       "version": "v0.35.0",
       "license": "BSD-3-Clause",
@@ -509,16 +526,16 @@
     {
       "ecosystem": "Go",
       "name": "github.com/facet-framework/core",
-      "version": "v0.1.0-rc.4",
+      "version": "v0.1.0-rc.5",
       "license": "Apache-2.0",
       "role": "compiled in the backend build",
       "license_files": [
         {
-          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.4/NOTICE",
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.5/NOTICE",
           "sha256": "b0ef2c6d06db3dfe0467aae571247b1c58a521fb387b68a119002916da6eb493"
         },
         {
-          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.4/LICENSE",
+          "path": "THIRD_PARTY_LICENSES/go/github.com%2Ffacet-framework%2Fcore@v0.1.0-rc.5/LICENSE",
           "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
         }
       ]

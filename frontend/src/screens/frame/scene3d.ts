@@ -6,6 +6,7 @@
  * one block whose height counts its records and whose colour is its proven
  * share. */
 
+import { STOREY_COLOURS, UNMEASURED_COLOUR, storeyColour, type StoreyLens } from "./storeyLens";
 import type { DomainView, FeatureView, ScenarioState } from "./model";
 
 export type Vec3 = [number, number, number];
@@ -61,6 +62,7 @@ export type Floor3D = {
   kind: FloorKind;
   /** One state per scenario, in the record's order: the storey's windows. */
   windows: ScenarioState[];
+  lensColour: number | null;
 };
 
 /** The order windows are drawn in along a storey, left to right. */
@@ -147,7 +149,13 @@ function kindOf(f: FeatureView): FloorKind {
  * stands in the middle of its lot with a footprint that varies a little by
  * name, and its records are stacked on it in the order they come. */
 
-export function buildWorld(domains: DomainView[], features: FeatureView[]): World {
+// @facet: registry/coverage/product-city
+// @facet-role: related
+export function buildWorld(
+  domains: DomainView[],
+  features: FeatureView[],
+  lens: StoreyLens = "tests",
+): World {
   const districts: District3D[] = [];
   const buildings: Building3D[] = [];
   const floors: Floor3D[] = [];
@@ -211,7 +219,8 @@ export function buildWorld(domains: DomainView[], features: FeatureView[]): Worl
           district: di,
           level: building.floors.length,
           kind: kindOf(f),
-          windows: windowsOf(f),
+          windows: lens === "tests" ? windowsOf(f) : [],
+          lensColour: lens === "tests" ? null : storeyColour(f, lens),
         };
         floors.push(floor);
         building.floors.push(floor.index);
@@ -630,7 +639,8 @@ export const STRIDE = 16;
 
 /** The triangles of the city. Each vertex carries its place (building, floor,
  * district) and its look (surface, scenarios, proven, share), so selection and
- * windows are decided in the shader without another buffer. */
+ * windows are decided in the shader without another buffer. A negative
+ * scenario count encodes the storey palette index in a count lens. */
 
 export function meshOf(world: World, far: boolean): Float32Array {
   const out: number[] = [];
@@ -736,13 +746,28 @@ export function meshOf(world: World, far: boolean): Float32Array {
     );
   }
   if (far) {
+    const bands = new Map<number, number>();
+    for (const f of world.floors) {
+      if (f.lensColour == null) continue;
+      const district = f.district;
+      const previous = bands.get(district);
+      // An unmeasured storey gives the block its colour only if no storey is measured.
+      if (
+        previous == null ||
+        (f.lensColour !== UNMEASURED_COLOUR &&
+          (previous === UNMEASURED_COLOUR || f.lensColour > previous))
+      ) {
+        bands.set(district, f.lensColour);
+      }
+    }
     for (const d of world.districts) {
       if (!d.records) continue;
+      const band = bands.get(d.index);
       box(
         [d.x0 + BLOCK_INSET, PLATE, d.z0 + BLOCK_INSET],
         [d.x1 - BLOCK_INSET, d.height, d.z1 - BLOCK_INSET],
         [-1, -1, d.index, 0],
-        [SURFACE.block, d.scenarios, d.proven, shareOf(d)],
+        [SURFACE.block, band == null ? d.scenarios : -1 - band, d.proven, shareOf(d)],
         true,
       );
     }
@@ -762,7 +787,12 @@ export function meshOf(world: World, far: boolean): Float32Array {
           [b.x0, y0, b.z0],
           [b.x1, y0 + 1, b.z1],
           [b.index, fi, b.district, level],
-          [surface, f.windows.length, c.proven, c.unbacked],
+          [
+            surface,
+            f.lensColour == null ? f.windows.length : -1 - f.lensColour,
+            c.proven,
+            c.unbacked,
+          ],
           level === b.floors.length - 1,
         );
       });
@@ -869,6 +899,7 @@ export type Palette = {
   warn: Rgb;
   signal: Rgb;
   rest: Rgb;
+  storeys: Rgb[];
   dark: boolean;
 };
 
@@ -900,6 +931,7 @@ export function paletteOf(token: (name: string) => string): Palette {
     warn: read("--t-warn"),
     signal: read("--t-signal"),
     rest: read("--t-muted"),
+    storeys: STOREY_COLOURS.map((name) => read(name)),
     dark,
   };
 }

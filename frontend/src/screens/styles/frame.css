@@ -597,6 +597,43 @@
 
 /** Product ---------------------------------------------------------------------------------- */
 
+:root,
+[data-t-mode="light"] {
+  --t-storey-fixes-zero: #f4e8d3;
+  --t-storey-fixes-low: #f4c47f;
+  --t-storey-fixes-medium: #e89848;
+  --t-storey-fixes-high: #c76430;
+  --t-storey-fixes-peak: #963b22;
+  --t-storey-deviations-none: #cbd2d9;
+  --t-storey-deviations-present: #bd394a;
+  --t-storey-unmeasured: #a79db9;
+}
+[data-t-mode="dark"] {
+  --t-storey-fixes-zero: #413327;
+  --t-storey-fixes-low: #745033;
+  --t-storey-fixes-medium: #aa6136;
+  --t-storey-fixes-high: #dd7a3a;
+  --t-storey-fixes-peak: #ffb561;
+  --t-storey-deviations-none: #475664;
+  --t-storey-deviations-present: #f46778;
+  --t-storey-unmeasured: #7f7596;
+}
+
+.t-a-product__tools,
+.t-a-storey-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--t-s-2);
+}
+.t-a-storey-control {
+  max-width: 100%;
+}
+.t-a-storey-control [role="radiogroup"] {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
 .t-a-product__head {
   display: flex;
   align-items: flex-end;
@@ -650,14 +687,24 @@
 .t-steady__reserve {
   visibility: hidden;
 }
-.t-a-product__body {
-  position: relative;
+.t-a-product__stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--t-s-4);
 }
-.t-a-product__body[data-selected] {
+.t-a-product__stage[data-ranked],
+.t-a-product__stage[data-selected] {
   grid-template-columns: minmax(0, 1fr) 340px;
+}
+.t-a-product__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.t-a-product__body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 .t-a-product__canvas {
   position: relative;
@@ -678,6 +725,55 @@
   position: sticky;
   top: calc(var(--t-bars-h) + 16px);
   padding: var(--t-s-4);
+}
+
+.t-a-storey-ranking {
+  gap: var(--t-s-2);
+}
+.t-a-storey-ranking__rows {
+  display: grid;
+  gap: var(--t-s-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.t-a-storey-ranking__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 8px;
+  width: 100%;
+  padding: var(--t-s-2);
+  border: 0;
+  border-radius: var(--t-r-ctl);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.t-a-storey-ranking__row:hover {
+  background: var(--t-signal-wash);
+}
+.t-a-storey-ranking__row .t-mono {
+  overflow-wrap: anywhere;
+}
+.t-a-storey-ranking__bar {
+  grid-column: 1 / -1;
+  height: 4px;
+  border-radius: var(--t-r-pill);
+  overflow: hidden;
+  background: var(--t-sunken);
+}
+.t-a-storey-ranking__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.t-a-legend__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
 }
 
 .t-a-city,
@@ -1022,6 +1118,11 @@
    * in a short window the page scrolls, and the slider and the strip stay
    * under the city instead of over it. */
 
+  /** The stage takes the window's rest; a selection taller than that makes it,
+   * and the page, longer. */
+  .t-a-product:not([data-view="list"]) .t-a-product__stage {
+    flex: 1 1 0;
+  }
   .t-a-product:not([data-view="list"]) .t-a-product__body {
     flex: 1 1 0;
     min-height: var(--t-a-city-min, max(360px, 50vh));
@@ -1583,8 +1684,12 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 2px;
   }
-  .t-a-product__body[data-selected] {
+  .t-a-product__stage[data-selected],
+  .t-a-product__stage[data-ranked] {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .t-a-storey-ranking {
+    display: none;
   }
   .t-a-product__head .t-h1 {
     font-size: var(--t-fs-28);

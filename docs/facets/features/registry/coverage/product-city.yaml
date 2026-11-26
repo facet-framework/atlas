@@ -66,6 +66,122 @@ contract:
         Then the 3D city, the plan and the treemap show a name only while the pointer
         is on its place, the choice is kept as the settings' "Names only on hover",
         and pressing it again shows every name
+    - id: selection-beside-the-page
+      statement: |
+        Given the product page on a wide screen and a chosen record
+        When its selection is longer than the city
+        Then the selection stands in a column of its own beside the city, the time
+        and the area strip, the area strip wraps into the narrower width, and nothing
+        lies under the selection
+    - id: switch-storey-lens
+      statement: |
+        Given the Product page starts with Test coverage
+        When the reader switches lenses and changes the view
+        Then the city and treemap offer the lens control and show the matching legend and record colours
+        And the list hides the lens control
+    - id: webgl-storey-legend
+      statement: |
+        Given the Product city renders in WebGL
+        When the reader changes the storey lens
+        Then the city shows the legend for that lens
+        And the accessible city list describes the count on each measured storey in a count lens
+    - id: storey-lens-preference
+      statement: |
+        Given the reader can set the storey lens in Appearance and Product
+        When the reader changes it in either place
+        Then the latest choice is kept and shown in both places
+    - id: count-lens-storeys
+      audience: engineering
+      statement: |
+        Given the theme defines eight storey colours
+        When WebGL draws the city with the Bug fixes lens
+        Then the storey palette uniform receives all eight RGB colours in palette order
+    - id: count-lens-windows
+      statement: |
+        Given a city with records in each fix-count band and records with and without deviations
+        When the reader chooses Bug fixes or Deviations
+        Then the storeys show the corresponding fix band or deviation colour and hide the scenario windows
+        And returning to Test coverage shows the scenario windows
+    - id: count-lens-hatching
+      statement: |
+        Given the map contains a planned or deprecated record
+        When the reader chooses Bug fixes or Deviations
+        Then the record shows the count colour in place of the lifecycle hatching
+    - id: rank-storey-counts
+      statement: |
+        Given a wide Product view with the Bug fixes lens and no record selected
+        When at least eight records have bug fixes
+        Then the side column shows the total and the eight highest counts in descending order
+        And choosing a row selects its record and shows both counts in the selection
+    - id: rank-shared-fixes
+      statement: |
+        Given two records in different areas have the same slug and share a fix commit
+        When the reader views the Bug fixes ranking
+        Then the total counts the commit once
+        And each row shows its own record id and includes the fix in its count
+    - id: empty-count-ranking
+      statement: |
+        Given the ranking has no rows because there are no records or the measured counts are zero
+        When the reader views the count ranking
+        Then it shows None and hides the All records link
+    - id: mobile-storey-lens
+      statement: |
+        Given the Product treemap is open on mobile with the Bug fixes lens
+        When no record is selected
+        Then the lens control is available and the ranking is hidden
+    - id: open-storey-contents
+      statement: |
+        Given the Product map shows a count lens ranking
+        And at least one record has a positive count
+        When the reader follows its All records link
+        Then the matching Fixed or Deviations page opens in Contents
+    - id: count-fixes-through-the-selected-day
+      statement: |
+        Given a visible record with dated fixes and undated deviations
+        When the reader moves the time slider
+        Then its fix count includes fixes dated on or before the selected day
+        And its undated deviations remain counted
+    - id: count-fixes-on-a-past-map
+      statement: |
+        Given the Bug fixes treemap has visible records with fixes before, on and after a past stop
+        When the reader moves the time slider to that stop
+        Then the ranking total and row order use only fixes through the chosen day
+        And the treemap colours reflect the counts through that day
+        And at the last stop every fix counts, including fixes without a date
+    - id: local-today-stop
+      statement: |
+        Given Product has dated records and a record without a creation date
+        When the reader uses the time slider
+        Then the current local day extends the creation dates only when a fix follows the last creation date and the local day is later
+        And the record without a creation date appears at the last stop and is hidden at earlier stops
+    - id: count-lens-district-blocks
+      statement: |
+        Given the 3D city shows the Bug fixes lens
+        When the reader zooms out to Areas
+        Then the city draws district blocks and shows district labels
+        And the block takes the highest measured fix band in the district, or the unmeasured colour when every record is unmeasured
+        And pointing, clicking and pressing Enter at that zoom level target districts
+    - id: count-lens-building-tooltip
+      statement: |
+        Given a capability building contains two records with measured fix counts
+        When the reader points at the building in the Bug fixes lens
+        Then the tooltip shows the sum of their fix counts
+    - id: unmeasured-storey-count
+      statement: |
+        Given a record without a defect register
+        When the reader views the Bug fixes lens or selects the record
+        Then the missing fix count is shown as Not measured in the map and selection
+    - id: unmeasured-count-ranking
+      statement: |
+        Given the ranking has records and none has a measured fix count
+        When the reader views the Bug fixes ranking
+        Then it shows Not measured and hides the All records link
+    - id: measure-storey-counts-from-records
+      statement: |
+        Given a record with a declared deviation
+        When Atlas reads the record
+        Then it counts the deviation and reads fix counts, commit hashes and dates from the defect register
+        And an absent register leaves the fix count unmeasured
 verification:
   unit_tests:
     - id: frontend/src/screens/frame/city3d.spec.tsx::keeps labels apart from each other and the controls at narrow and wide sizes
@@ -108,11 +224,63 @@ verification:
     - id: frontend/src/screens/frame/city3d.spec.tsx::names only the building under the pointer and the chosen one when names wait for hover
       proves:
         - names-wait-for-hover
+    - id: frontend/src/screens/frame/frame.spec.tsx::stands the selection in a column of its own beside the city, the time and the area strip
+      proves:
+        - selection-beside-the-page
     - id: frontend/src/reader/preferences.spec.tsx::gives the city the chosen least height, name style and names on hover only, on the product page
       proves:
         - the-city-height-is-a-setting
         - name-style-is-a-setting
         - names-wait-for-hover
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::offers storey lenses on both maps and updates the legend and cell colours
+      proves:
+        - switch-storey-lens
+    - id: frontend/src/screens/frame/city3d.spec.tsx::shows the active storey legend in WebGL and describes measured floors
+      proves:
+        - webgl-storey-legend
+    - id: frontend/src/reader/preferences.spec.tsx::shares the saved storey lens between Appearance and Product
+      proves:
+        - storey-lens-preference
+    - id: frontend/src/screens/frame/city3d.spec.tsx::uploads all eight theme storey colours to the WebGL uniform in palette order
+      proves:
+        - count-lens-storeys
+    - id: frontend/src/screens/frame/city3d.spec.tsx::encodes fix and deviation colours on storeys and retains windows for test coverage
+      proves:
+        - count-lens-windows
+        - count-lens-hatching
+    - id: frontend/src/screens/frame/city3d.spec.tsx::draws and picks district blocks at far zoom in the Bug fixes lens
+      proves:
+        - count-lens-district-blocks
+        - count-lens-building-tooltip
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::counts a shared fix once in the ranking and shows both record ids and row counts
+      proves:
+        - rank-shared-fixes
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::shows None and no Contents link with %s
+      proves:
+        - empty-count-ranking
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::ranks eight affected records and lets readers select a record
+      proves:
+        - rank-storey-counts
+        - mobile-storey-lens
+    - id: frontend/src/reader/preferences.spec.tsx::opens the Contents page from the %s ranking
+      proves:
+        - open-storey-contents
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::counts dated fixes through the chosen day and retains undated deviations
+      proves:
+        - count-fixes-through-the-selected-day
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::updates the ranking total, row order and treemap band when the time slider moves
+      proves:
+        - count-fixes-on-a-past-map
+    - id: frontend/src/reader/preferences.spec.tsx::adds a local-today slider stop only for a fix after the last creation date (%s)
+      proves:
+        - local-today-stop
+    - id: frontend/src/screens/frame/storeyLens.spec.tsx::shows unmeasured fixes in the legend, ranking and selection
+      proves:
+        - unmeasured-storey-count
+        - unmeasured-count-ranking
+    - id: frontend/src/reader/derive-reader.spec.ts::derives storey counts from the defect register and declared deviations
+      proves:
+        - measure-storey-counts-from-records
 lineage:
   owner:
     team: atlas

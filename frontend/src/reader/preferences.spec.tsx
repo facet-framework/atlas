@@ -5,7 +5,7 @@
 
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
-import { act, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { AgentState, AgentStream } from "@/model";
 import { taskflowModel } from "@/model/fixtures";
@@ -39,9 +39,9 @@ const readers: HostReaders = {
 
 const silent = (): AgentStream => ({ addEventListener: () => undefined, close: () => undefined });
 
-async function mount(path: string) {
+async function mount(path: string, corpus = model) {
   window.history.replaceState(null, "", path);
-  const view = render(<Atlas model={model} readers={readers} openStream={silent} />);
+  const view = render(<Atlas model={corpus} readers={readers} openStream={silent} />);
   // The host's state arrives after the first paint.
   await act(async () => undefined);
   return view;
@@ -388,6 +388,7 @@ describe("preferences store", () => {
           cityHeight: 500,
           cityNames: "never",
           cityLabels: "neon",
+          storeyLens: "invalid",
         }),
     };
     expect(readPreferences(store)).toEqual({
@@ -400,6 +401,7 @@ describe("preferences store", () => {
       cityHeight: null,
       cityNames: "always",
       cityLabels: "tag",
+      storeyLens: "tests",
     });
     expect(readPreferences({ getItem: () => "[1]" }).historyLimit).toBe(200);
     expect(
@@ -432,3 +434,104 @@ describe("preferences store", () => {
     expect(end.cursor).toBe(1);
   });
 });
+
+it("shares the saved storey lens between Appearance and Product", async () => {
+  const settings = await mount("/settings");
+  const select = within(screen.getByTestId("city-settings")).getByRole("combobox", {
+    name: "Storeys show",
+  });
+  expect(select).toHaveValue("tests");
+  await userEvent.selectOptions(select, "fixes");
+  expect(readPreferences().storeyLens).toBe("fixes");
+  settings.unmount();
+
+  const product = await mount("/product");
+  const control = within(screen.getByTestId("storey-lens"));
+  expect(control.getByRole("radio", { name: "Bug fixes" })).toBeChecked();
+  await userEvent.click(control.getByRole("radio", { name: "Deviations" }));
+  expect(readPreferences().storeyLens).toBe("deviations");
+  product.unmount();
+
+  await mount("/settings");
+  expect(screen.getByTestId("storey-lens-setting")).toHaveValue("deviations");
+});
+
+it.each([
+  ["Bug fixes", "/contents/fixed"],
+  ["Deviations", "/contents/deviations"],
+])("opens the Contents page from the %s ranking", async (label, path) => {
+  const [record, ...others] = model.features;
+  const fix = {
+    commit: "abc1234",
+    date: record.createdAt,
+    subject: "Fix",
+    files: [],
+    issue: "",
+    recordedBy: "",
+  };
+  const measured = {
+    ...record,
+    defects: { ...record.defects, present: true, total: 1, fixes: [fix] },
+    scenarios: record.scenarios.map((scenario) => ({
+      ...scenario,
+      deviation: { reason: "Unexpected result", confirmedBy: "test", trackedAs: "" },
+    })),
+  };
+  await mount("/product", { ...model, features: [measured, ...others] });
+  await userEvent.click(
+    within(screen.getByTestId("storey-lens")).getByRole("radio", { name: label }),
+  );
+  const link = within(screen.getByTestId("storey-ranking")).getByRole("link", { name: /^All / });
+  expect(link).toHaveAttribute("href", path);
+  await userEvent.click(link);
+  expect(where()).toBe(path);
+});
+
+it.each([
+  ["2026-03-02", "2026-03-02", "2026-03-01", "1", "2", "None"],
+  ["2026-03-01", "2026-03-01", "2026-02-01", "0", "1", "Not measured"],
+])(
+  "adds a local-today slider stop only for a fix after the last creation date (%s)",
+  async (fixDate, latest, past, pastIndex, max, emptyLabel) => {
+    // UTC is already March 3, but UTC−8 is still March 2.
+    jest.useFakeTimers({ now: new Date("2026-03-03T03:00:00Z") });
+    const offset = jest.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(480);
+    const [dated, undated] = model.features;
+    const fix = {
+      commit: "abc1234",
+      date: fixDate,
+      subject: "Fix",
+      files: [],
+      issue: "",
+      recordedBy: "",
+    };
+    const first = {
+      ...dated,
+      createdAt: "2026-03-01",
+      defects: { ...dated.defects, present: true, total: 1, fixes: [fix] },
+    };
+    const second = { ...undated, createdAt: "" };
+    const earlier = { ...model.features[2], createdAt: "2026-02-01" };
+    const corpus = { ...model, features: [first, second, earlier], assumptions: [] };
+    window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ storeyLens: "fixes" }));
+    try {
+      await mount("/product", corpus);
+      const slider = screen.getByRole("slider");
+      expect(slider).toHaveAttribute("aria-valuetext", latest);
+      expect(slider).toHaveAttribute("max", max);
+      expect(screen.getByTestId("tower-" + second.id)).toBeInTheDocument();
+      expect(screen.getByTestId("storey-total")).toHaveTextContent(/^1 fix$/);
+
+      fireEvent.change(slider, { target: { value: pastIndex } });
+      expect(slider).toHaveAttribute("aria-valuetext", past);
+      expect(screen.queryByTestId("tower-" + second.id)).not.toBeInTheDocument();
+      expect(screen.getByTestId("storey-total")).toHaveTextContent(emptyLabel);
+      fireEvent.click(screen.getByRole("button", { name: "Today" }));
+      expect(slider).toHaveAttribute("aria-valuetext", latest);
+      expect(screen.getByTestId("tower-" + second.id)).toBeInTheDocument();
+    } finally {
+      offset.mockRestore();
+      jest.useRealTimers();
+    }
+  },
+);

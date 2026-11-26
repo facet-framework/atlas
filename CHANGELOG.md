@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-rc.5
+
+Fifth release candidate: bug fixes and deviations in the product city.
+
+- On desktop, the selected feature opens in a side column alongside the city, timeline, and district strip.
+- Choose whether storeys show test coverage, bug fixes, or deviations. The city and treemap use the chosen colors, with legends for bug fixes and deviations. On desktop, these views rank affected features when nothing is selected.
+- Bug fix counts use the same fix history as Contents → Fixed and count a commit that fixes several features only once in the total. Move the timeline back to see only fixes recorded by the selected date.
+- Atlas is built with FACET Core 0.1.0-rc.5.
+
 ## 0.1.0-rc.4
 
 Fourth release candidate: signed release manifests.

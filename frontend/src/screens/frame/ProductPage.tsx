@@ -28,6 +28,20 @@ import {
 
 import { Mosaic, Ring, pct, pctText, shareFill } from "./charts";
 import { City3D } from "./City3D";
+import { STOREY_NONE, StoreyLegend } from "./StoreyLegend";
+import {
+  NOT_MEASURED,
+  STOREY_LENS_LABEL,
+  STOREY_LENS_NAMES,
+  storeyCount,
+  storeyCountText,
+  storeyFill,
+  storeyLensOptions,
+  storeyLabel,
+  storeyTotalText,
+  type CountLens,
+  type StoreyLens,
+} from "./storeyLens";
 import {
   ZOOM_IN_MAX,
   ZOOM_OUT_MAX,
@@ -76,6 +90,10 @@ export type ProductPageProps = {
   cityLabels?: "tag" | "pin" | "map";
   /** Switches the names of every map view between always shown and shown on hover. */
   onCityNames?: (names: "always" | "hover") => void;
+  storeyLens?: StoreyLens;
+  onStoreyLens?: (lens: StoreyLens) => void;
+  storeyContentsHref?: (lens: CountLens) => string;
+  onOpenStoreyContents?: (href: string) => void;
 };
 
 /** "Treemap" is the same word in every language, so it carries no text key. */
@@ -92,6 +110,16 @@ export function visibleAt(features: FeatureView[], time?: { dates: string[]; ind
   return features.filter((f) => f.createdAt != null && f.createdAt <= at);
 }
 
+// @facet: registry/coverage/product-city
+// @facet-role: related
+function countAt(feature: FeatureView, day?: string): FeatureView {
+  if (!day || !feature.fixCommits) return feature;
+  const fixCommits = feature.fixCommits.filter(({ date }) => date && date <= day);
+  return { ...feature, fixCommits, fixCount: fixCommits.length };
+}
+
+// @facet: registry/coverage/product-city
+// @facet-role: primary
 export function ProductPage(props: ProductPageProps) {
   const {
     domains,
@@ -103,12 +131,16 @@ export function ProductPage(props: ProductPageProps) {
     onView,
     onTime,
     onSelect,
+    storeyLens = "tests",
   } = props;
   const { t, plural } = useText();
   const known = props.features.filter((f) => domains.some((d) => d.id === f.domain));
-  const features = visibleAt(known, time);
+  // The last stop is the present: every fix counts there, dated or not.
+  const day = time && time.index < time.dates.length - 1 ? time.dates[time.index] : undefined;
+  const features = visibleAt(known, time).map((feature) => countAt(feature, day));
   const sel = selected ? (features.find((f) => f.id === selected) ?? null) : null;
   const loading = state === "loading";
+  const rank = !sel && !mobile && !loading && view !== "list" && storeyLens !== "tests";
   const early = !!time && time.index < time.dates.length - 1;
   const range = useRef<HTMLInputElement>(null);
 
@@ -179,6 +211,17 @@ export function ProductPage(props: ProductPageProps) {
             options={VIEWS.map((v) => ({ ...v, label: v.label ? t(v.label) : "Treemap" }))}
             onChange={onView}
           />
+          {view !== "list" ? (
+            <div className="t-a-storey-control" data-testid="storey-lens">
+              <span className="t-meta">{t(STOREY_LENS_LABEL)}</span>
+              <Segment
+                label={t(STOREY_LENS_LABEL)}
+                value={storeyLens}
+                options={storeyLensOptions(t)}
+                onChange={props.onStoreyLens}
+              />
+            </div>
+          ) : null}
           {view !== "list" && props.onCityNames ? (
             <IconButton
               icon="eye"
@@ -191,48 +234,127 @@ export function ProductPage(props: ProductPageProps) {
         </div>
       </header>
 
+      {/** The selection is a column of its own beside the city, the time and the
+       * strip: a long selection lengthens the page and narrows what stands
+       * beside it, and never lies over it. */}
       <div
-        className="t-a-product__body"
-        data-selected={sel ? "true" : undefined}
-        data-names={props.cityNames ?? "always"}
+        className="t-a-product__stage"
+        data-testid="product-stage"
+        data-selected={sel && !mobile ? "true" : undefined}
+        data-ranked={rank || undefined}
       >
-        <div className="t-a-product__canvas">
-          {loading ? (
-            <CitySkeleton />
-          ) : view === "city" ? (
-            <City3D
+        <div className="t-a-product__main" data-testid="product-main">
+          <div className="t-a-product__body" data-names={props.cityNames ?? "always"}>
+            <div className="t-a-product__canvas">
+              {loading ? (
+                <CitySkeleton />
+              ) : view === "city" ? (
+                <City3D
+                  domains={domains}
+                  features={features}
+                  selected={sel?.id ?? null}
+                  onSelect={onSelect}
+                  onOpenDomain={props.onOpenDomain}
+                  onOpenCapability={props.onOpenCapability}
+                  names={props.cityNames}
+                  labels={props.cityLabels}
+                  lens={storeyLens}
+                  fallback={
+                    <>
+                      <City
+                        domains={domains}
+                        features={features}
+                        selected={sel?.id ?? null}
+                        onSelect={onSelect}
+                        onOpenDomain={props.onOpenDomain}
+                        lens={storeyLens}
+                      />
+                      {storeyLens === "tests" ? (
+                        <Legend view="city" />
+                      ) : (
+                        <StoreyLegend features={features} lens={storeyLens} />
+                      )}
+                    </>
+                  }
+                />
+              ) : view === "treemap" ? (
+                <Treemap
+                  domains={domains}
+                  features={features}
+                  selected={sel?.id ?? null}
+                  onSelect={onSelect}
+                  lens={storeyLens}
+                />
+              ) : (
+                <FeatureTable {...props} features={features} />
+              )}
+              {!loading && view === "treemap" ? (
+                storeyLens === "tests" ? (
+                  <Legend view={view} />
+                ) : (
+                  <StoreyLegend features={features} lens={storeyLens} />
+                )
+              ) : null}
+            </div>
+          </div>
+
+          {time ? (
+            <div className="t-a-time t-surface" data-testid="time">
+              <Icon name="clock" size={16} />
+              <label className="t-a-time__label" htmlFor="t-a-time-range">
+                {t("ui.screens-frame.productpage-time")}
+              </label>
+              <input
+                ref={range}
+                id="t-a-time-range"
+                className="t-a-time__range"
+                type="range"
+                min={0}
+                max={time.dates.length - 1}
+                value={time.index}
+                aria-valuetext={time.dates[time.index]}
+                onChange={(e) => onTime?.(Number(e.target.value))}
+              />
+              <span className="t-mono t-a-time__date">{time.dates[time.index]}</span>
+              <span className="t-meta t-hide-mobile t-steady">
+                <Steady
+                  shown={t("ui.screens-frame.productpage-shown-total-records", {
+                    shown: features.length,
+                    total: known.length,
+                  })}
+                  reserve={t("ui.screens-frame.productpage-shown-total-records", {
+                    shown: known.length,
+                    total: known.length,
+                  })}
+                />
+              </span>
+              {/** "Today" keeps its place at today, only unseen, so the rail never changes length. */}
+              <Button
+                size="small"
+                variant="quiet"
+                icon="forward"
+                className="t-a-time__today"
+                data-idle={early ? undefined : "true"}
+                aria-hidden={early ? undefined : true}
+                tabIndex={early ? undefined : -1}
+                onClick={() => {
+                  onTime?.(time.dates.length - 1);
+                  // The button leaves with the click; the slider keeps the focus.
+                  range.current?.focus();
+                }}
+              >
+                {t("ui.screens-frame.productpage-today")}
+              </Button>
+            </div>
+          ) : null}
+
+          {!loading ? (
+            <DistrictStrip
               domains={domains}
               features={features}
-              selected={sel?.id ?? null}
-              onSelect={onSelect}
               onOpenDomain={props.onOpenDomain}
-              onOpenCapability={props.onOpenCapability}
-              names={props.cityNames}
-              labels={props.cityLabels}
-              fallback={
-                <>
-                  <City
-                    domains={domains}
-                    features={features}
-                    selected={sel?.id ?? null}
-                    onSelect={onSelect}
-                    onOpenDomain={props.onOpenDomain}
-                  />
-                  <Legend view="city" />
-                </>
-              }
             />
-          ) : view === "treemap" ? (
-            <Treemap
-              domains={domains}
-              features={features}
-              selected={sel?.id ?? null}
-              onSelect={onSelect}
-            />
-          ) : (
-            <FeatureTable {...props} features={features} />
-          )}
-          {!loading && view === "treemap" ? <Legend view={view} /> : null}
+          ) : null}
         </div>
         {sel && !mobile ? (
           <aside
@@ -241,62 +363,10 @@ export function ProductPage(props: ProductPageProps) {
           >
             <Selection f={sel} {...props} />
           </aside>
+        ) : rank ? (
+          <StoreyRanking {...props} features={features} lens={storeyLens} />
         ) : null}
       </div>
-
-      {time ? (
-        <div className="t-a-time t-surface" data-testid="time">
-          <Icon name="clock" size={16} />
-          <label className="t-a-time__label" htmlFor="t-a-time-range">
-            {t("ui.screens-frame.productpage-time")}
-          </label>
-          <input
-            ref={range}
-            id="t-a-time-range"
-            className="t-a-time__range"
-            type="range"
-            min={0}
-            max={time.dates.length - 1}
-            value={time.index}
-            aria-valuetext={time.dates[time.index]}
-            onChange={(e) => onTime?.(Number(e.target.value))}
-          />
-          <span className="t-mono t-a-time__date">{time.dates[time.index]}</span>
-          <span className="t-meta t-hide-mobile t-steady">
-            <Steady
-              shown={t("ui.screens-frame.productpage-shown-total-records", {
-                shown: features.length,
-                total: known.length,
-              })}
-              reserve={t("ui.screens-frame.productpage-shown-total-records", {
-                shown: known.length,
-                total: known.length,
-              })}
-            />
-          </span>
-          {/** "Today" keeps its place at today, only unseen, so the rail never changes length. */}
-          <Button
-            size="small"
-            variant="quiet"
-            icon="forward"
-            className="t-a-time__today"
-            data-idle={early ? undefined : "true"}
-            aria-hidden={early ? undefined : true}
-            tabIndex={early ? undefined : -1}
-            onClick={() => {
-              onTime?.(time.dates.length - 1);
-              // The button leaves with the click; the slider keeps the focus.
-              range.current?.focus();
-            }}
-          >
-            {t("ui.screens-frame.productpage-today")}
-          </Button>
-        </div>
-      ) : null}
-
-      {!loading ? (
-        <DistrictStrip domains={domains} features={features} onOpenDomain={props.onOpenDomain} />
-      ) : null}
 
       {mobile ? (
         <Sheet
@@ -367,7 +437,9 @@ function City({
   selected,
   onSelect,
   onOpenDomain,
+  lens,
 }: {
+  lens: StoreyLens;
   domains: DomainView[];
   features: FeatureView[];
   selected: string | null;
@@ -567,6 +639,7 @@ function City({
           <Tower
             key={b.feature.id}
             b={b}
+            lens={lens}
             selected={selected === b.feature.id}
             onSelect={onSelect}
           />
@@ -644,17 +717,25 @@ function City({
 
 function Tower({
   b,
+  lens,
   selected,
   onSelect,
 }: {
   b: Building;
+  lens: StoreyLens;
   selected: boolean;
   onSelect?: (id: string | null) => void;
 }) {
-  const { t } = useText();
+  const text = useText();
+  const { t } = text;
   const { x, y, w, h, feature: f } = b;
   const p = pct(f.proven, f.scenarios);
-  const fill = f.lifecycle === "planned" ? "var(--t-plan-wash)" : shareFill(p);
+  const fill =
+    lens !== "tests"
+      ? storeyFill(f, lens)
+      : f.lifecycle === "planned"
+        ? "var(--t-plan-wash)"
+        : shareFill(p);
   const top = quad(
     [
       [x, y, h],
@@ -689,17 +770,21 @@ function Tower({
       role="button"
       tabIndex={0}
       aria-pressed={selected}
-      aria-label={t(
-        f.drift
-          ? "ui.screens-frame.productpage-id-scenarios-scenarios-share-test-named"
-          : "ui.screens-frame.productpage-id-scenarios-scenarios-share-test-named-tower",
-        {
-          id: f.id,
-          scenarios: f.scenarios,
-          share: pctText(p, t),
-        },
-      )}
-      data-planned={f.lifecycle === "planned" || undefined}
+      aria-label={
+        lens !== "tests"
+          ? storeyLabel(f, lens, text)
+          : t(
+              f.drift
+                ? "ui.screens-frame.productpage-id-scenarios-scenarios-share-test-named"
+                : "ui.screens-frame.productpage-id-scenarios-scenarios-share-test-named-tower",
+              {
+                id: f.id,
+                scenarios: f.scenarios,
+                share: pctText(p, t),
+              },
+            )
+      }
+      data-planned={(lens === "tests" && f.lifecycle === "planned") || undefined}
       data-selected={selected || undefined}
       data-testid={`tower-${f.id}`}
       onClick={() => onSelect?.(selected ? null : f.id)}
@@ -710,7 +795,7 @@ function Tower({
       <polygon points={left} className="t-a-tower__l" />
       <polygon points={top} className="t-a-tower__t" />
       {f.drift ? <circle cx={mx * UNIT} cy={my * UNIT} r="3" className="t-a-tower__drift" /> : null}
-      <title>{f.id}</title>
+      <title>{lens === "tests" ? f.id : storeyLabel(f, lens, text)}</title>
     </g>
   );
 }
@@ -810,17 +895,20 @@ function CapLabel({
 /** Treemap ----------------------------------------------------------------------------------------------- */
 
 function Treemap({
+  lens,
   domains,
   features,
   selected,
   onSelect,
 }: {
+  lens: StoreyLens;
   domains: DomainView[];
   features: FeatureView[];
   selected: string | null;
   onSelect?: (id: string | null) => void;
 }) {
-  const { t, number: nf } = useText();
+  const text = useText();
+  const { t, number: nf } = text;
   const W = 1200;
   const H = 620;
   const weight = (f: FeatureView) => Math.max(1, f.scenarios);
@@ -900,21 +988,30 @@ function Treemap({
                         role="button"
                         tabIndex={0}
                         aria-pressed={selected === f.id}
-                        aria-label={t("ui.screens-frame.productpage-id-share-test-named", {
-                          id: f.id,
-                          share: pctText(p, t),
-                        })}
+                        aria-label={
+                          lens !== "tests"
+                            ? storeyLabel(f, lens, text)
+                            : t("ui.screens-frame.productpage-id-share-test-named", {
+                                id: f.id,
+                                share: pctText(p, t),
+                              })
+                        }
                         className="t-a-treemap__cell"
                         data-selected={selected === f.id || undefined}
                         style={{
-                          fill: f.lifecycle === "planned" ? "var(--t-plan-wash)" : shareFill(p),
+                          fill:
+                            lens !== "tests"
+                              ? storeyFill(f, lens)
+                              : f.lifecycle === "planned"
+                                ? "var(--t-plan-wash)"
+                                : shareFill(p),
                         }}
                         onClick={() => onSelect?.(selected === f.id ? null : f.id)}
                         onKeyDown={(e) =>
                           onKey(e, () => onSelect?.(selected === f.id ? null : f.id))
                         }
                       >
-                        <title>{f.id}</title>
+                        <title>{lens === "tests" ? f.id : storeyLabel(f, lens, text)}</title>
                       </rect>
                     );
                   })}
@@ -1071,6 +1168,92 @@ function FeatureTable({
 
 /** Selection ----------------------------------------------------------------------------------------------- */
 
+function StoreyRanking({
+  lens,
+  features,
+  onSelect,
+  storeyContentsHref,
+  onOpenStoreyContents,
+}: ProductPageProps & { lens: CountLens }) {
+  const text = useText();
+  const { t, plural, number } = text;
+  const heading = t(
+    lens === "fixes"
+      ? "ui.screens-frame.productpage-most-bug-fixes"
+      : "ui.screens-frame.productpage-most-deviations",
+  );
+  const counts = features.flatMap((feature) => {
+    const count = storeyCount(feature, lens);
+    return count == null ? [] : [{ feature, count }];
+  });
+  const affected = counts
+    .filter(({ count }) => count > 0)
+    .sort((a, b) => b.count - a.count || a.feature.id.localeCompare(b.feature.id));
+  const total =
+    lens === "fixes"
+      ? new Set(
+          counts.flatMap(({ feature }) => feature.fixCommits?.map(({ commit }) => commit) ?? []),
+        ).size
+      : counts.reduce((sum, row) => sum + row.count, 0);
+  const href = storeyContentsHref?.(lens);
+  return (
+    <aside
+      className="t-raised t-a-product__aside t-stack t-a-storey-ranking"
+      aria-label={heading}
+      data-testid="storey-ranking"
+    >
+      <h2 className="t-h3">{heading}</h2>
+      <p className="t-meta" data-testid="storey-total">
+        {affected.length
+          ? storeyTotalText(text, lens, total)
+          : t(features.length && !counts.length ? NOT_MEASURED : STOREY_NONE)}
+      </p>
+      <ol className="t-a-storey-ranking__rows">
+        {affected.slice(0, 8).map(({ feature, count }) => (
+          <li key={feature.id}>
+            <button
+              type="button"
+              className="t-a-storey-ranking__row"
+              onClick={() => onSelect?.(feature.id)}
+            >
+              <span className="t-mono t-wrap">{feature.id}</span>
+              <span className="t-num">{number(count)}</span>
+              <span className="t-a-storey-ranking__bar" aria-hidden="true">
+                <span
+                  style={{
+                    width: `${(100 * count) / affected[0].count}%`,
+                    background: storeyFill(feature, lens),
+                  }}
+                />
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      {href && affected.length ? (
+        <a
+          className="t-a-link"
+          href={href}
+          onClick={(event) => {
+            if (
+              !onOpenStoreyContents ||
+              event.ctrlKey ||
+              event.metaKey ||
+              event.shiftKey ||
+              event.altKey
+            )
+              return;
+            event.preventDefault();
+            onOpenStoreyContents(href);
+          }}
+        >
+          {plural("ui.screens-frame.productpage-all-count-records", affected.length)}
+        </a>
+      ) : null}
+    </aside>
+  );
+}
+
 function Selection({
   f,
   bare,
@@ -1078,7 +1261,8 @@ function Selection({
   onOpenCapability,
   onSelect,
 }: ProductPageProps & { f: FeatureView; bare?: boolean }) {
-  const { t, plural, number: nf } = useText();
+  const text = useText();
+  const { t, plural, number: nf } = text;
   const p = pct(f.proven, f.scenarios);
   return (
     <div className="t-stack t-a-sel" style={{ gap: 14 }} data-testid="selection">
@@ -1126,6 +1310,12 @@ function Selection({
         <dd>{nf(f.anchors)}</dd>
         <dt>{t("ui.screens-frame.productpage-tests")}</dt>
         <dd>{nf(f.tests)}</dd>
+        <dt>{t(STOREY_LENS_NAMES.fixes)}</dt>
+        <dd data-testid="selected-fix-count">{storeyCountText(text, storeyCount(f, "fixes"))}</dd>
+        <dt>{t(STOREY_LENS_NAMES.deviations)}</dt>
+        <dd data-testid="selected-deviation-count">
+          {storeyCountText(text, storeyCount(f, "deviations"))}
+        </dd>
         <dt>{t("ui.screens-frame.productpage-drift")}</dt>
         <dd className={f.drift ? "t-warn" : undefined}>
           {f.drift

@@ -33,6 +33,11 @@ export type FeatureView = {
   mosaic?: boolean[];
   /** State per scenario, in record order; absent when only counts are known. */
   scenarioStates?: ScenarioState[];
+  /** Count is null when the source did not measure this record. */
+  fixCount?: number | null;
+  deviationCount?: number | null;
+  /** Dates from the defect register, used at historical slider positions. */
+  fixCommits?: { commit: string; date: string }[];
   changedAt?: string;
 };
 
