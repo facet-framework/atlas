@@ -47,7 +47,7 @@
     "prettier": "^3.4.2",
     "tsup": "^8.3.5",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.65.0",
+    "typescript-eslint": "^8.74.0",
     "ts-jest": "29.4.12"
   },
   "pnpm": {
